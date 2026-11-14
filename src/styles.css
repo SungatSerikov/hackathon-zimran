@@ -757,7 +757,7 @@ nav > button.active {
   width: 100%;
   text-align: center;
   color: #473f2c;
-  font: 13em var(--pixel);
+  font: inherit;
   pointer-events: none;
 }
 .scene-vignette {

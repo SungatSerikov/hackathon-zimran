@@ -21,6 +21,7 @@ const activeSprites: Partial<Record<DeskAction, string>> = {
   monitor: "scene/monitor_on.png",
   safe: "scene/safe_open.png",
 };
+const calendarMonths = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 export function Asset({
   src,
   children,
@@ -228,7 +229,10 @@ export function Scene({
                   top: `${spriteMeta.calendar.page.y / item.h * 100}%`,
                   width: `${spriteMeta.calendar.page.w / item.w * 100}%`,
                   height: `${spriteMeta.calendar.page.h / item.h * 100}%`,
-                }}>{date.split("/")[1]}</span>
+                }}>
+                  <span className="calendar-month">{calendarMonths[Number(date.split("/")[0]) - 1]}</span>
+                  <span className="calendar-day">{date.split("/")[1]?.replace(/^0/, "")}</span>
+                </span>
               )}
               {item.id === "clock" && availableAssets.has("/assets/scene/clock.png") && (
                 <span className="clock-live-hands" aria-hidden="true">

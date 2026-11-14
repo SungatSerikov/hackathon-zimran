@@ -1719,10 +1719,26 @@ body,
   gap: 12px;
 }
 .calendar-live-date {
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1em;
   padding: 0;
   line-height: 1;
+}
+.calendar-month {
+  font: 400 3.5em/1 var(--pixel);
+  letter-spacing: .12em;
+  color: #8b5944;
+}
+.calendar-day {
+  font: 400 14em/1 var(--pixel);
+  letter-spacing: -.06em;
+  text-indent: -.06em;
+  color: #493c2e;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 0 #fff7dd;
 }
 .clock-live-hands {
   position: absolute;
