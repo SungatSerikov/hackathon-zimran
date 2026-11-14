@@ -1,134 +1,211 @@
 # Case Desk
 
-A browser detective game for Business Cup 2.0. Read a complaint, follow clues through a fictional records archive, pin evidence, and decide what really happened. English interface; no account required.
+**A pixel detective game where everyday paperwork hides the crime.**
+Business Cup 2.0 · Entertainment track · Team **GreedX**
 
-All cases take place in **Riverton**, the fictional city used throughout the menu, bureau, documents, and archive. Use this name for new case content and assets.
+- ▶ **Play:** `LIVE_URL` — any modern browser, no sign-up, no install, no payment
+- 📊 **Pitch deck:** 10-slide PDF in the submission
+- 💻 **Code:** https://github.com/SungatSerikov/hackathon-zimran
 
-## Run locally
+![Case Desk — the detective desk](docs/screenshots/immersive-desk.png)
 
-Use **Node.js 22.12+** and npm.
+## TL;DR
+
+- **What:** you run the complaints desk of a small-town US consumer bureau. Read invoices, bank statements and chats, search the clues on an in-game computer, pin evidence and stamp the company **GUILTY** or **NOT GUILTY**.
+- **For whom:** US adults 25–45 who love mysteries and puzzles and have 5–15 free minutes.
+- **Why it matters:** short breaks feel wasted, and Americans lost **$12.5B to fraud in 2024** (FTC). The game is fun first and quietly trains the instincts that protect real money.
+- **Business:** free to start; **Detective Pass $4.99/month** for the case archive, weekly cases and unlimited hints. ≈1.7M subscribers = $100M ARR.
+- **Built in 24 hours:** 2 complete cases, a real search engine, a case validator, an in-game economy, **202 automated tests**.
+
+---
+
+## How Case Desk meets the judging criteria
+
+| Criterion | Weight | Our evidence | Check it |
+| --- | --- | --- | --- |
+| **Does it work?** Product & engineering | 40% | Live web app, both cases playable end-to-end with no login. Core logic is real: fair clue search, a validator that proves every case is solvable, scoring, wallet. 202 tests, typed React + TypeScript. | [Try it in 2 minutes](#try-it-in-2-minutes) · [Engineering](#engineering) · `npm test` |
+| **What do we sell?** Value & retention | 20% | Case fees fill a safe, score + leaderboard per case, daily streak, paid informant hints, new cases on a schedule. | [Why players come back](#why-players-come-back) |
+| **Who do we sell to?** Problem & user | 15% | One user (US mystery/puzzle fans, 25–45) and one pain (wasted downtime), with a real-money angle (everyday scams). | [Problem and user](#problem-and-user) |
+| **Why does it make money?** Business potential | 15% | Freemium subscription, web-first (no app-store fee), $100M ARR math, LTV ≈ 4× CAC (assumptions stated). | [Business model](#business-model) |
+| **Is it new?** Originality | 10% | Detective story + fair search engine + real-life money instincts in 10-minute browser sessions. | [What makes it new](#what-makes-it-new) |
+
+Pass/fail: **B2C** ✅ · **web only** ✅ · **deck + live link + public repo** ✅
+
+---
+
+## Try it in 2 minutes
+
+| # | Do this | You should see |
+| --- | --- | --- |
+| 1 | Open the live link → **Case files** → **The Double Charge** (tutorial) | A pixel office desk; a client arrives with a claim |
+| 2 | Click the **folder**, open the invoice and the bank statement | Two $480 charges from **different merchants** |
+| 3 | Click the **computer**, search `FXR Services LLC` | A business-registry record unlocks |
+| 4 | Pin two documents to the **cork board** | The evidence counter goes up |
+| 5 | Click the **stamps** → **GUILTY**, pick the culprit, the method and the two pinned documents | Verdict, score breakdown, a fee paid into the **safe** |
+
+Then play **The Missing Refund** (~12 min): a lookalike “support” site, a return label to a warehouse, and a twist — the store is **NOT GUILTY**.
+
+Also try: searching a name you have not seen yet (nothing unlocks — the search is fair), a wrong accusation (−1 coffee mug, +60 s), the **informant phone** (paid hint), the **SOUND** button (background jazz). Spoiler walkthroughs: [`docs/CASE_WALKTHROUGHS.md`](docs/CASE_WALKTHROUGHS.md).
+
+---
+
+## Problem and user
+
+**Pain 1 — wasted downtime.** Busy adults with jobs, kids and bills scroll through short breaks and come out with nothing: no challenge, no feeling of being sharper.
+
+**Pain 2 — everyday money traps.** US consumers reported losing **$12.5 billion to fraud in 2024**, up 25% in a year; 38% of people who reported fraud lost money; email was the #1 contact method *(FTC Consumer Sentinel Network, March 2025)*. Double charges, fake invoices and lookalike support sites are exactly the paperwork people don’t check.
+
+**User.** US adults 25–45 who already play daily word games, watch detective shows or listen to true-crime podcasts, with 5–15 minutes at lunch, on a commute or after the kids’ bedtime.
+
+**Job to be done:** *“Give me a short, smart break that makes me feel clever — and harder to fool.”*
+
+---
+
+## The product
+
+Every prop on the desk is a working tool.
+
+| Desk object | What it does |
+| --- | --- |
+| 🖥 Computer | Records search: type names, phones, addresses, order numbers, or click highlighted clues |
+| 📁 Folder | The case file — 8 document types: receipt, contract, chat, email, ad, bank statement, note, record |
+| 📌 Cork board | Pinned evidence |
+| ⏱ Clock · 📅 Calendar | Investigation timer · in-world date (to check deadlines) and play streak |
+| ☕ Coffee ×3 | Lives: each wrong conclusion costs one mug and +60 s |
+| 💰 Safe | Your bureau cash: fees for solved cases |
+| ☎ Phone | Paid informant hints |
+| 🗄 Cabinet | Premium case archive (subscription preview) |
+| 🔴🟢 Stamps | The verdict on the company named in the claim: **GUILTY / NOT GUILTY** |
+
+A correct verdict needs **all four parts** — the stamp, the responsible person, the method (out of 3–4 plausible versions) and **two pinned supporting documents** — so guessing does not win.
+
+**Shipped content:** *The Double Charge* (tutorial · 6 documents · 3 characters) and *The Missing Refund* (14 documents · 5 characters · false leads). Desktop and phones (375 px+), keyboard shortcuts (**F A E H V**, **Esc**), fullscreen, reduced motion.
+
+---
+
+## Why players come back
+
+| Mechanic | Status | Effect |
+| --- | --- | --- |
+| Case fees into the safe: +50% for speed, +$50 for no mistakes, 25% on replays | ✅ live | Visible progress, reason to replay faster |
+| Score, best scores and a leaderboard per case | ✅ live (shared board via optional Supabase) | Competition |
+| Daily play streak on the desk calendar | ✅ live | Habit |
+| Informant hints for in-game cash ($40, two levels) | ✅ live | Natural path to the paid tier |
+| New cases on a schedule: weekly, then a daily mini-case | 🗺 next, powered by the case pipeline | A reason to open it tomorrow |
+| Detective duels: send a case to a friend and race their replay | 🗺 next (interest button live) | Viral and social loop |
+
+---
+
+## Business model
+
+| Tier | Price | Includes |
+| --- | --- | --- |
+| Free | $0 | Tutorial + current case, $100 starting cash, leaderboard |
+| **Detective Pass** | **$4.99 / month** | Full archive, weekly cases, unlimited hints, private leagues, author debriefs |
+| Bureau cash pack | $1.99 one-off | $500 in-game cash for hints |
+
+- **Web-first:** Stripe payments, no 15–30% app-store fee.
+- **Demand exists:** mobile puzzle games earned ≈**$10B** in in-app revenue worldwide in 2025, +14% YoY *(Naavik)*; **6.5M+** NYT subscribers pay for a bundle that includes Games *(NYT Co., Q4 2025)*.
+- **$100M ARR:** $59.88 per subscriber per year → **≈1.7M subscribers**, about a quarter of the NYT bundle base.
+- **Unit economics (our planning assumptions):** LTV ≈ $39 ($4.85 net/month × ~8 months); CAC target ≤ $10 via shareable cases, duel invites and short “solve this case” videos → **LTV/CAC ≈ 4×**.
+- **Cheap content:** cases are JSON graphs checked by our validator, so an LLM drafts, the validator rejects broken cases, an editor polishes — hours per case, not weeks.
+
+---
+
+## What makes it new
+
+| Alternative | Gets right | Missing |
+| --- | --- | --- |
+| Daily puzzle apps | Short, habit-forming | No story, no real-life payoff |
+| Mystery subscription boxes | Deep detective story | Physical, slow, one case a month |
+| Detective PC games with database search | Investigation feel | One-time purchase, then over |
+| Scam-awareness trainings | Real-life skill | Boring, corporate |
+| **Case Desk** | **10-minute story + real-life instinct** | **Browser-based, ongoing cases, competitive** |
+
+Inspired by the genre of desk and document-inspection games; all art, characters, cases, UI and code are our own.
+
+---
+
+## Engineering
+
+**Stack:** React 19 · TypeScript · Vite 7 · Tailwind 4 · Vitest · optional Supabase (REST + RLS) · Vercel static hosting. Pixel art is produced by our own dependency-free Node scripts in `tools/`.
+
+```mermaid
+flowchart LR
+  JSON[Case JSON<br/>src/cases] --> V[Validator<br/>scripts/validate-cases.ts]
+  V -->|build fails if unsolvable| B[Vite build]
+  JSON --> E[Engine<br/>src/engine]
+  E --> S[Search + clue unlock]
+  E --> H[Hints: shortest remaining path]
+  E --> VD[Verdict + score]
+  E --> W[Wallet: fees and hints]
+  S & H & VD & W --> UI[React desk<br/>src/screens + src/components]
+  UI --> LS[(localStorage<br/>progress, wallet, streak)]
+  UI -. optional .-> SB[(Supabase<br/>shared leaderboard)]
+```
+
+| Module | Responsibility |
+| --- | --- |
+| `src/engine/search.ts`, `normalize.ts`, `clues.ts` | Fair search: normalized queries (phones by digits, order numbers by alphanumerics), 1-character typo tolerance; an entry unlocks only after its key appears in a document the player has seen |
+| `src/engine/validate.ts` + `scripts/validate-cases.ts` | Case as a graph: schema, IDs, dates, solvability, ≥80% reachable documents, shortest query path (2 searches tutorial, 3 main). Build fails on an unsolvable case |
+| `src/engine/hint.ts` | Next step of the shortest remaining path: first clue type + source document, then the exact query |
+| `src/engine/verdict.ts`, `score.ts` | 4-part verdict check; `score = max(0, 1000 − seconds − 150·wrong − 5·extraSearches − 50·hints)` |
+| `src/engine/wallet.ts` | Fees `100·difficulty` + speed/clean bonuses, replays 25%, idempotent per run ID |
+| `src/store/`, `src/lib/` | Run reducer and attempt protection; safe storage, streak, records service, audio and music |
+| `src/components/`, `src/screens/` | Desk scene, records computer, document renderer, dialogs; menu, desk, results |
+| `src/scene/layout.json`, `sprite-meta.json` | Desk hotspots and overlay zones, editable without code |
+
+<details>
+<summary><b>Run locally, deploy, art and case workflow</b></summary>
+
+Requires **Node.js 22.12+**.
 
 ```bash
 npm ci
-npm run dev
+npm run dev        # play locally
+npm test           # 202 tests
+npm run validate   # case schema, reachability, shortest paths
+npm run build      # validate + TypeScript + production build
+npm run preview    # preview the production build
 ```
 
-Open the localhost URL printed by Vite. No environment variables are required to play both cases. If your computer's global npm cache is not writable, use `npm ci --cache /tmp/case-desk-npm-cache` instead of changing system permissions.
+- **No environment variables** are needed to play. Optional shared leaderboard: run `supabase/schema.sql` in Supabase, copy `.env.example` to `.env.local`, set `VITE_SUPABASE_URL` and the **public anon key** (never a service-role key).
+- **Deploy:** import into Vercel (framework Vite, build `npm run build`, output `dist`; `vercel.json` included). Disable deployment protection so the link opens without login.
+- **Art:** replace PNGs in `public/assets/` keeping names and sizes; move hotspots in `src/scene/layout.json`; preview with `npm run scene:preview`. Contract: [`ASSETS.md`](ASSETS.md), prompts: [`ASSET_PROMPTS.md`](ASSET_PROMPTS.md).
+- **New cases:** follow [`CASE_TEMPLATE.md`](CASE_TEMPLATE.md) and `src/types.ts`; `npm run validate` proves the case is solvable. Product spec: [`SPEC.md`](SPEC.md).
 
-```bash
-npm test          # engine, data, reducer, persistence and records tests
-npm run validate  # schema, clue reachability and shortest solution paths
-npm run build     # validation + TypeScript + production output in dist/
-npm run preview   # preview the production build locally
-```
+</details>
 
-## What works
+---
 
-- **The Double Charge:** guided tutorial, 6 documents, 3 characters.
-- **The Missing Refund:** a complete investigation, 14 documents, 5 characters.
-- A pixel-art office with a background that fills the window, title menu, dossier selection and client arrivals. The office remains visible on mobile, with a touch-friendly toolbelt at 375px.
-- Physical-object interfaces: paper folder, CRT archive, corkboard, stamped verdict, safe and informant phone. Optional procedural sound effects and reduced-motion support.
-- Search using clues from discovered records; exact normalized matches and one-character typo tolerance for longer keys. Hidden guesses do not unlock evidence.
-- A records computer with a document reader beside search results. Click highlighted names/references in the visible record or type a query; open returned records without leaving the computer. Narrow screens use document/results tabs.
-- Eight document types, unread markers, pin/unpin and an evidence board. Reopening unchanged search results is free; searches are checked again when new clues unlock more records.
-- GUILTY/NOT_GUILTY stamp + responsible person + explanation + **two pinned supporting documents**.
-- Three attempts. Each wrong conclusion adds 60 seconds and removes one coffee. Repeating the identical conclusion does not burn another attempt accidentally.
-- Stopwatch, score breakdown, solution explanation, fresh attempts, best scores, progress saved per browser, daily play streak.
-- A bureau safe starting at $100, case fees with speed/accuracy bonuses, 25% replay fees, and paid two-level informant hints ($40 and 50 points per call).
-- Local leaderboard and duel-interest tracking. Optional Supabase enables shared records.
-- A clearly labeled subscription preview. **No subscription purchase, notification subscription or multiplayer is implemented.**
+## Quality
 
-The current repository specification takes precedence over the earlier one-attempt concept. Correctness requires all four answer components; incomplete submissions are not charged as attempts. The timer counts investigation time, including records and search. It pauses for the client introduction, pause/help menu, subscription preview, and after leaving the desk. A browser refresh resumes saved progress after choosing Continue.
+- **202 automated tests** (15 files): search normalization and typo tolerance, clue unlocking, validator on valid, broken and unsolvable cases, verdicts, scoring, wallet maths and idempotency, hint paths on both shipped cases, streaks, storage failures, background-music player.
+- Case tests guarantee every searchable clue is visible in the UI text of a reachable document.
+- Manual browser QA: both endings, wrong answers and the three-strike failure, reload and resume, replay, previews, readable documents at 375 px.
 
-## Game controls
+---
 
-Click the objects in the office or use the bottom toolbelt. **F** opens the folder, **A** the archive, **E** the evidence board, **H** the informant and **V** the verdict. Shortcuts are disabled while a dialog or input is active. **Escape** closes an object window; at the desk it opens Pause. “Show objects” marks clickable props. Tutorial hints have a close button and a “Tutorial hint” toggle; they collapse after advancing a step and stay collapsed when resuming an investigation. Hiding them no longer changes the size of the office. Audio starts off and can be enabled from the title screen or the speaker button; the preference is saved locally. The ⛶ button in the menu and desk enters browser fullscreen; click it again or press Escape to exit. A rejected fullscreen request leaves the game playable in the window.
+## Honest limits of this demo
 
-Scores follow `max(0, 1000 - elapsedSeconds - 150*wrongAttempts - 5*extraSearches - 50*paidHints)`. `elapsedSeconds` includes the additional 60 seconds per wrong attempt. Failed cases score zero. The exact shortest path is calculated by the same search rules used by the game: 2 searches for the tutorial and 3 for the main case. A natural main-case walkthrough is 4 searches; we preserved the partner's accessible clue graph instead of inserting artificial steps.
+- **Payments are not live:** Detective Pass and the cash pack are clearly labeled previews.
+- **Duels are not implemented** — only an interest counter.
+- Progress, wallet and streak live in browser storage: no accounts or cross-device sync; in-game cash has no monetary value.
+- Answers ship in the client bundle; leaderboard scores are self-reported (no anti-cheat). Without Supabase the leaderboard is local and labeled so.
+- All people, companies and places are fictional; domains use `.example`, phones the reserved 555-01XX range. Entertainment, not financial or legal advice.
 
-## Artist workflow
+---
 
-The partner's original assets, prompts, scene editor and layout are included. The game reads **`src/scene/layout.json`** in its existing format (`base.w/h`, object `x/y/w/h/z`, `sprite`, `action`). The interactive scene scales proportionally to fit the available viewport, preserving all hotspot coordinates and pixelated image rendering. Phones retain the scene and provide larger task buttons below it.
+## Roadmap
 
-1. Replace matching PNG files in `public/assets/scene/`, `public/assets/portraits/` or `public/assets/ui/`.
-2. Keep filename, transparency, base size and existing case portrait references. Do not bake document text or interaction labels into art.
-3. Adjust positions/sizes in `src/scene/layout.json` if the object composition changes.
-4. Reload the running app; missing images use CSS placeholders. Restart Vite after adding new image filenames (the build scans available art), or if your filesystem does not deliver file-watch events. For such filesystems, run `CASE_DESK_POLL=1 npm run dev`.
-5. `npm run build` includes all current assets in `dist/`.
+- **30 days:** weekly cases from the LLM → validator → editor pipeline; Detective Pass on Stripe; share-a-case links.
+- **90 days:** asynchronous detective duels with friend replays; daily mini-case; private leagues.
 
-```bash
-npm run scene:preview   # partner's standalone art preview/editor
-npm run placeholders   # regenerates placeholder PNGs; don't run over finished art
-```
+---
 
-`preview` now previews the actual built game; the partner's original preview command is preserved as `scene:preview`. See `ASSETS.md`, `ASSET_PROMPTS.md` and `tools/README.md` for the art contract. UI text, timer, selections and documents stay in React. Current artwork is replaceable prototype art supplied by the partner.
+## Team and credits
 
-## Case authoring
-
-Cases live in `src/cases/tutorial.json` and `src/cases/main.json`; the registry is `src/cases/index.ts`. Start with `CASE_TEMPLATE.md` and the shape in `src/types.ts`.
-
-- `gameDate` uses MM/DD/YYYY and drives the in-world calendar; the streak uses real local calendar dates.
-- Put every searchable clue in visible document fields **and** its `text` index. Extra receipt text may use `body.body`.
-- A search entry unlocks only after a key appears in the brief or a discovered document.
-- `requiredEvidence` is a pool from which any two distinct entries are accepted. These cases intentionally contain exactly two conclusive entries, avoiding weak pairs that happen to mention the suspect.
-- The validator rejects bad types, broken IDs, invalid dates, impossible solutions and less than 80% reachable documents. It reports unused search entries as warnings and finds the true shortest query sequence, including overlapping typo matches.
-- Every document is reachable in both shipped cases. The case tests ensure that searchable text matches what the UI shows.
-
-Walkthroughs and spoiler-heavy content notes are in `docs/CASE_WALKTHROUGHS.md`. We minimally strengthened the teammate's records to establish actual ownership and transaction/domain authorship, rather than treating a registered agent or a matching phone number as sufficient proof. All people, companies and stories are fictional; domains use `.example` and phone numbers use the reserved fictional range. This is entertainment, not financial or legal advice.
-
-## Bureau cash and informant
-
-The safe is the player's wallet; the cabinet is the premium archive. The phone offers a clue from the shortest remaining search path. The first paid call names a clue type and its source document; the second names the exact query. Re-reading an already paid hint and final “pin your evidence” guidance are free. Insufficient funds open the clearly unavailable pass/cash-pack preview; players can keep investigating without paying.
-
-The local wallet key is `cd.wallet`. Fees follow SPEC §8.1: `100*difficulty`, +50% for finishing within the estimated time (otherwise +25% within1.5×), +$50 for no wrong answers. Later clears of the same case pay25%, preserving cents. A persistent run ID makes fee credit and hint receipts idempotent across reloads. Browser-local cash has no monetary value and is not protected against editing browser storage. The planned $500/$1.99 pack cannot be purchased.
-
-## Optional shared leaderboard
-
-1. Create a Supabase project and run `supabase/schema.sql` in its SQL editor.
-2. Copy `.env.example` to `.env.local`.
-3. Supply `VITE_SUPABASE_URL` and **the public anon key**, never a service-role key.
-4. Restart the dev server, or add the same variables to Vercel and redeploy.
-
-The service uses Supabase's REST API with timeouts, bounded validation and RLS. Without credentials or when the service fails, the UI labels scores/counts as local. The interest button stores one interest registration per browser and does not collect an email address or promise notifications. Failed score uploads remain explicitly local even if the community leaderboard can still be read.
-
-**Demo limits:** answers are in the client bundle; rankings are self-reported, not anti-cheat or rate-limited. Do not use them for prizes. Anonymous RLS permits validated public inserts. Stable IDs make retries idempotent, and disk/session merging prevents stale tabs overwriting local scores. Truly simultaneous separate tabs can still post duplicate online scores because there is no server-enforced run fingerprint. Browser storage can be cleared and is not cross-device sync. Live Supabase was not configured during development; offline and service-failure paths are tested.
-
-## Deploy to Vercel
-
-The app is a static Vite build. Import this repository/branch into Vercel, choose **Vite**, and use:
-
-| Setting | Value |
-| --- | --- |
-| Install command | `npm ci` |
-| Build command | `npm run build` |
-| Output directory | `dist` |
-| Node | 22.12+ |
-| Required environment variables | None |
-
-`vercel.json` already contains the framework/build/output settings. Disable deployment protection for the final judging link so it opens without login. Verify in an incognito browser. A production deployment is **not** created automatically by this repository or by running the local preview.
-
-## Project map
-
-- `src/engine/`: pure search, normalization, validation, verdict and scoring functions.
-- `src/store/`: run reducer and attempt protection.
-- `src/lib/`: safe persistence, streaks and optional record service.
-- `src/components/`: replaceable scene, native dialogs, icons, document renderer.
-- `src/screens/`: detective desk and results.
-- `src/App.tsx`: menu, case list, subscription preview and future duel screen.
-- `scripts/validate-cases.ts`: build-time case check.
-- `supabase/schema.sql`: optional public tables and policies.
-
-Browser QA covered both correct endings, wrong answers and three-attempt failure, local score submission, reload/resume, replay, duel-interest and pass previews, and readable mobile documents at 375px. No live payment or online matchmaking is represented as working.
-
-### Verdict review
-
-The stamps judge the **respondent** named on the claim: red **GUILTY** when
-they owe the claimant, green **NOT GUILTY** otherwise. After a wrong answer,
-an explicit review dialog shows remaining attempts, one lost coffee, +60 seconds,
-and the additional 150-point deduction. The clock pauses until that dialog closes.
-The third wrong answer ends the case with **CASE FAILED**. Existing saves with
-APPROVED/DENIED stamps migrate without resetting run identity or paid hints.
-
-## Credits
-
-Music: "Jazz Improvisation (Looped)" by Alex McCulloch / Pro Sensory (CC0) — https://opengameart.org/content/jazz-improvisation-looped
+- **Team GreedX:** Yeskendir Abraimov (captain — product, cases, pixel art) · Sunggat Serikov (engineering).
+- **Music:** “Jazz Improvisation (Looped)” by Alex McCulloch / Pro Sensory (CC0) — https://opengameart.org/content/jazz-improvisation-looped
+- **Fonts:** DM Sans and Silkscreen (SIL Open Font License, via Fontsource).
+- **Data:** FTC Consumer Sentinel Network (March 2025); Naavik (2025); The New York Times Company Q4 2025 results.
