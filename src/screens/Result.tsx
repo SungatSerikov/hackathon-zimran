@@ -9,6 +9,8 @@ import { Icon } from "../components/Icons";
 import { formatTime } from "../components/Scene";
 import { awardCaseFee } from "../engine/wallet";
 import { bureauMoney } from "../components/EconomyPanel";
+import { useI18n } from "../i18n/I18n";
+import { LanguageSwitcher } from "../components/LanguageSwitcher";
 
 export function Result({
   caseData,
@@ -21,6 +23,7 @@ export function Result({
   onExit: () => void;
   onNext: () => void;
 }) {
+  const { t, locale } = useI18n();
   const report = useMemo(() => validateCase(caseData), [caseData]);
   const solved = run.status === "solved";
   const score = solved
@@ -47,7 +50,7 @@ export function Result({
   const [savedSource, setSavedSource] = useState<"online" | "local" | null>(
     null,
   );
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState<"ranking" | "nickname" | "save" | null>(null);
   useEffect(() => {
     let active = true;
     getScores(caseData.id)
@@ -57,9 +60,9 @@ export function Result({
           setSource(r.source);
         }
       })
-      .catch(() =>
-        setMessage("Ranking unavailable. Your case result is still saved."),
-      );
+      .catch(() => {
+        if (active) setMessage("ranking");
+      });
     return () => {
       active = false;
     };
@@ -82,7 +85,7 @@ export function Result({
   async function save() {
     if (saving || saved) return;
     setSaving(true);
-    setMessage("");
+    setMessage(null);
     try {
       const r = await submitScore({
         case_id: caseData.id,
@@ -101,7 +104,9 @@ export function Result({
       setSource(next.source);
     } catch (e) {
       setMessage(
-        e instanceof Error ? e.message : "Could not save the score. Try again.",
+        e instanceof Error && e.message === "Use a 2–20 character nickname and valid game results."
+          ? "nickname"
+          : "save",
       );
     } finally {
       setSaving(false);
@@ -115,80 +120,83 @@ export function Result({
   );
   return (
     <main className="result-page page-enter">
+      <div className="result-utilities">
       <button className="text-button" onClick={onExit}>
         <Icon name="back" size={16} />
-        All case files
+        {t("All case files", "Все дела")}
       </button>
+      <LanguageSwitcher />
+      </div>
       <div className="result-heading">
-        <span className="eyebrow">{caseData.title} / CASE CLOSED</span>
+        <span className="eyebrow">{caseData.title} / {t("CASE CLOSED", "ДЕЛО ЗАКРЫТО")}</span>
         <div className={`result-stamp ${solved ? "solved" : "failed"}`}>
-          {solved ? "CASE SOLVED" : "CASE FAILED"}
+          {solved ? t("CASE SOLVED", "ДЕЛО РАСКРЫТО") : t("CASE FAILED", "ДЕЛО ПРОВАЛЕНО")}
         </div>
         <h1>
           {solved
-            ? "The details added up."
-            : "No attempts remaining."}
+            ? t("The details added up.", "Все детали сошлись.")
+            : t("No attempts remaining.", "Попыток больше нет.")}
         </h1>
         <p>
           {solved
-            ? "Your conclusion is supported by the evidence."
-            : "Your final verdict was incorrect. All three attempts are used. Here is what the records reveal."}
+            ? t("Your conclusion is supported by the evidence.", "Улики подтверждают ваш вывод.")
+            : t("Your final verdict was incorrect. All three attempts are used. Here is what the records reveal.", "Ваш последний вердикт оказался неверным. Все три попытки использованы. Вот что раскрывают документы.")}
         </p>
       </div>
       <div className="result-grid">
         <section className="result-report">
           <div className="score-display">
             <div>
-              <span className="eyebrow">CASE SCORE</span>
+              <span className="eyebrow">{t("CASE SCORE", "ОЧКИ ЗА ДЕЛО")}</span>
               <strong>
-                {score}
-                <small>/ 1,000</small>
+                {score.toLocaleString(locale)}
+                <small>/ {(1000).toLocaleString(locale)}</small>
               </strong>
             </div>
             <Icon name="trophy" size={48} />
           </div>
           <div className="score-details">
             <div>
-              <span>Time, including penalties</span>
+              <span>{t("Time, including penalties", "Время со штрафами")}</span>
               <strong>{formatTime(run.elapsedSeconds)}</strong>
             </div>
             <div>
-              <span>Wrong conclusions</span>
+              <span>{t("Wrong conclusions", "Неверные выводы")}</span>
               <strong>
                 {run.wrongAttempts}{" "}
-                <small>(−{150 * run.wrongAttempts} pts)</small>
+                <small>(−{150 * run.wrongAttempts} {t("pts", "очк.")})</small>
               </strong>
             </div>
             <div>
-              <span>Archive searches</span>
+              <span>{t("Archive searches", "Запросы в архиве")}</span>
               <strong>
                 {run.queries.length}{" "}
-                <small>({report.minimumSearches} minimum)</small>
+                <small>{t(`(${report.minimumSearches} minimum)`, `(минимум: ${report.minimumSearches})`)}</small>
               </strong>
             </div>
             <div>
-              <span>Informant calls</span>
+              <span>{t("Informant calls", "Звонки информатору")}</span>
               <strong>
-                {run.hints.length} <small>(−{run.hints.length * 50} pts)</small>
+                {run.hints.length} <small>(−{run.hints.length * 50} {t("pts", "очк.")})</small>
               </strong>
             </div>
             <div>
-              <span>Extra-search deduction</span>
+              <span>{t("Extra-search deduction", "Штраф за лишние запросы")}</span>
               <strong>
                 −{Math.max(0, run.queries.length - report.minimumSearches) * 5}{" "}
-                pts
+                {t("pts", "очк.")}
               </strong>
             </div>
           </div>
           <div className="fee-receipt">
             <Icon name="lock" size={27} />
             <div>
-              <span className="eyebrow">CASE FEE · ADDED TO YOUR SAFE</span>
+              <span className="eyebrow">{t("CASE FEE · ADDED TO YOUR SAFE", "ГОНОРАР ЗА ДЕЛО · ДОБАВЛЕН В СЕЙФ")}</span>
               <strong>+{bureauMoney(fee)}</strong>
               <small>
                 {solved
-                  ? "Already paid fees are never credited twice. Repeat clears earn 25%."
-                  : "Close the case successfully to earn a fee."}
+                  ? t("Already paid fees are never credited twice. Repeat clears earn 25%.", "Выплаченный гонорар не начисляется дважды. Повторное раскрытие дела приносит 25%.")
+                  : t("Close the case successfully to earn a fee.", "Успешно раскройте дело, чтобы получить гонорар.")}
               </small>
             </div>
             <span className="flying-bill">$</span>
@@ -197,13 +205,13 @@ export function Result({
             <span
               className={`badge ${caseData.solution.verdict === "GUILTY" ? "red" : "green"}`}
             >
-              {caseData.solution.verdict.replaceAll("_", " ")}
+              {caseData.solution.verdict === "GUILTY" ? t("GUILTY", "ВИНОВЕН") : t("NOT GUILTY", "НЕ ВИНОВЕН")}
             </span>
             <h2>{caseData.claim.respondent}</h2>
-            <p><strong>Real culprit:</strong> {culprit?.name}</p>
+            <p><strong>{t("Real culprit:", "Настоящий виновник:")}</strong> {culprit?.name}</p>
             <p className="resolution-method">{method?.text}</p>
             <p>{caseData.solution.explanation}</p>
-            <h3>The evidence that mattered</h3>
+            <h3>{t("The evidence that mattered", "Ключевые доказательства")}</h3>
             {caseData.solution.requiredEvidence.map((id, i) => {
               const d = caseData.documents.find((x) => x.id === id);
               return d ? (
@@ -217,29 +225,28 @@ export function Result({
               ) : null;
             })}
             <details className="solution-route">
-              <summary>Show the shortest archive trail</summary>
+              <summary>{t("Show the shortest archive trail", "Показать кратчайший путь поиска в архиве")}</summary>
               <ol>
                 {report.solutionPath.map((q, i) => (
                   <li key={i}>
-                    Search <strong>{q}</strong>
+                    {t("Search", "Поиск")} <strong>{q}</strong>
                   </li>
                 ))}
               </ol>
             </details>
             <p className="practical-takeaway">
-              <Icon name="star" size={19} />A real-world habit: compare original
-              records, recipients and timestamps before accepting a claim.
+              <Icon name="star" size={19} />{t("A real-world habit: compare original records, recipients and timestamps before accepting a claim.", "Полезная привычка в жизни: проверяйте оригиналы документов, получателей и время событий, прежде чем верить чьим-либо словам.")}
             </p>
           </div>
         </section>
         <aside className="rank-panel">
-          <span className="eyebrow">THE DETECTIVE REGISTER</span>
-          <h2>Case leaderboard</h2>
+          <span className="eyebrow">{t("THE DETECTIVE REGISTER", "РЕЕСТР ДЕТЕКТИВОВ")}</span>
+          <h2>{t("Case leaderboard", "Рейтинг по делу")}</h2>
           <span className="source-label">
             <i className="status-dot" />
             {source === "online"
-              ? "Community · unverified scores"
-              : "Local · this browser only"}
+              ? t("Community · unverified scores", "Общий · результаты не проверены")
+              : t("Local · this browser only", "Локальный · только этот браузер")}
           </span>
           {solved && !saved ? (
             <form
@@ -249,12 +256,12 @@ export function Result({
                 void save();
               }}
             >
-              <label htmlFor="nickname">Sign your case report</label>
+              <label htmlFor="nickname">{t("Sign your case report", "Подпишите отчёт по делу")}</label>
               <input
                 id="nickname"
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
-                placeholder="Your detective name"
+                placeholder={t("Your detective name", "Ваше имя детектива")}
                 minLength={2}
                 maxLength={20}
                 required
@@ -263,7 +270,7 @@ export function Result({
                 className="button"
                 disabled={saving || nickname.trim().length < 2}
               >
-                {saving ? "Saving…" : "Add my score"}
+                {saving ? t("Saving…", "Сохранение…") : t("Add my score", "Добавить результат")}
                 <Icon name="arrow" size={16} />
               </button>
             </form>
@@ -271,13 +278,17 @@ export function Result({
             <p className="notice success">
               <Icon name="check" size={16} />
               {savedSource === "online"
-                ? "Your score was added to the community register."
-                : "Your score is saved on this device. Community upload is unavailable."}
+                ? t("Your score was added to the community register.", "Ваш результат добавлен в общий реестр.")
+                : t("Your score is saved on this device. Community upload is unavailable.", "Результат сохранён на этом устройстве. Загрузка в общий реестр недоступна.")}
             </p>
           ) : null}
           {message && (
             <p role="alert" className="notice">
-              {message}
+              {message === "ranking"
+                ? t("Ranking unavailable. Your case result is still saved.", "Рейтинг недоступен. Результат вашего дела сохранён.")
+                : message === "nickname"
+                  ? t("Use a 2–20 character nickname and valid game results.", "Введите имя длиной от 2 до 20 символов и корректные результаты игры.")
+                  : t("Could not save the score. Try again.", "Не удалось сохранить результат. Попробуйте ещё раз.")}
             </p>
           )}
           {scores.length ? (
@@ -286,7 +297,7 @@ export function Result({
                 <li key={s.id}>
                   <span>{String(i + 1).padStart(2, "0")}</span>
                   <strong>{s.nickname}</strong>
-                  <b>{s.score}</b>
+                  <b>{s.score.toLocaleString(locale)}</b>
                 </li>
               ))}
             </ol>
@@ -294,20 +305,19 @@ export function Result({
             <div className="empty-ranking">
               <Icon name="trophy" size={30} />
               <p>
-                No scores on this device yet.
+                {t("No scores on this device yet.", "На этом устройстве пока нет результатов.")}
                 <br />
-                Start the register.
+                {t("Start the register.", "Станьте первым в реестре.")}
               </p>
             </div>
           )}
           <div className="rank-footnote">
-            Practice makes a sharper detective. Replays are welcome; this demo
-            ranking is not cheat-proof.
+            {t("Practice makes a sharper detective. Replays are welcome; this demo ranking is not cheat-proof.", "Практика делает детектива внимательнее. Играйте снова: рейтинг в демоверсии не защищён от накрутки.")}
           </div>
           <button className="button next-case" onClick={onNext}>
             {caseData.difficulty === 1
-              ? "Open the next case"
-              : "Back to case files"}
+              ? t("Open the next case", "Открыть следующее дело")
+              : t("Back to case files", "Вернуться к делам")}
             <Icon name="arrow" />
           </button>
         </aside>

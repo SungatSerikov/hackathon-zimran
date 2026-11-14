@@ -19,13 +19,15 @@ afterEach(() => {
 });
 
 describe("case validation command", () => {
-  it("validates both shipped playable cases and prints their shortest paths", () => {
+  it("validates both languages of the shipped cases and prints their shortest paths", () => {
     const result = run();
     expect(result.status, result.stderr).toBe(0);
     expect(result.stdout).toContain("tutorial.json");
     expect(result.stdout).toContain("main.json");
-    expect(result.stdout.match(/Minimum: \d+ searches/g)).toHaveLength(2);
-    expect(result.stdout.match(/Path: /g)).toHaveLength(2);
+    expect(result.stdout).toContain(join("ru", "tutorial.json"));
+    expect(result.stdout).toContain(join("ru", "main.json"));
+    expect(result.stdout.match(/Minimum: \d+ searches/g)).toHaveLength(4);
+    expect(result.stdout.match(/Path: /g)).toHaveLength(4);
   });
   it("fails the process for invalid JSON and gives the file path", () => {
     const folder = mkdtempSync(join(tmpdir(), "case-desk-validation-"));

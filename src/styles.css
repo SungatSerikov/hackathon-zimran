@@ -1,4 +1,5 @@
 @import "@fontsource/silkscreen/400.css";
+@import "@fontsource/press-start-2p/cyrillic-400.css";
 @import "@fontsource/dm-sans/400.css";
 @import "@fontsource/dm-sans/500.css";
 @import "@fontsource/dm-sans/700.css";
@@ -17,7 +18,7 @@
   --line: #3a493d;
   --red: #ad5946;
   --green: #8fab84;
-  --pixel: "Silkscreen", monospace;
+  --pixel: "Silkscreen", "Press Start 2P", monospace;
 }
 * {
   box-sizing: border-box;

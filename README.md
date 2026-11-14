@@ -15,7 +15,7 @@ Business Cup 2.0 · Entertainment track · Team **GreedX**
 - **For whom:** US adults 25–45 who love mysteries and puzzles and have 5–15 free minutes.
 - **Why it matters:** short breaks feel wasted, and Americans lost **$12.5B to fraud in 2024** (FTC). The game is fun first and quietly trains the instincts that protect real money.
 - **Business:** free to start; **Detective Pass $4.99/month** for the case archive, weekly cases and unlimited hints. ≈1.7M subscribers = $100M ARR.
-- **Built in 24 hours:** 2 complete cases, a real search engine, a case validator, an in-game economy, **202 automated tests**.
+- **Built in 24 hours:** 2 complete cases, a real search engine, a case validator, an in-game economy, **225 automated tests**.
 
 ---
 
@@ -23,7 +23,7 @@ Business Cup 2.0 · Entertainment track · Team **GreedX**
 
 | Criterion | Weight | Our evidence | Check it |
 | --- | --- | --- | --- |
-| **Does it work?** Product & engineering | 40% | Live web app, both cases playable end-to-end with no login. Core logic is real: fair clue search, a validator that proves every case is solvable, scoring, wallet. 202 tests, typed React + TypeScript. | [Try it in 2 minutes](#try-it-in-2-minutes) · [Engineering](#engineering) · `npm test` |
+| **Does it work?** Product & engineering | 40% | Live web app, both cases playable end-to-end with no login. Core logic is real: fair clue search, a validator that proves every case is solvable, scoring, wallet. 225 tests, typed React + TypeScript. | [Try it in 2 minutes](#try-it-in-2-minutes) · [Engineering](#engineering) · `npm test` |
 | **What do we sell?** Value & retention | 20% | Case fees fill a safe, score + leaderboard per case, daily streak, paid informant hints, new cases on a schedule. | [Why players come back](#why-players-come-back) |
 | **Who do we sell to?** Problem & user | 15% | One user (US mystery/puzzle fans, 25–45) and one pain (wasted downtime), with a real-money angle (everyday scams). | [Problem and user](#problem-and-user) |
 | **Why does it make money?** Business potential | 15% | Freemium subscription, web-first (no app-store fee), $100M ARR math, LTV ≈ 4× CAC (assumptions stated). | [Business model](#business-model) |
@@ -34,6 +34,8 @@ Pass/fail: **B2C** ✅ · **web only** ✅ · **deck + live link + public repo**
 ---
 
 ## Try it in 2 minutes
+
+Use **EN / РУ** in the menu, desk HUD or case results to switch between English and Russian. The interface, both cases, documents, tutorial, hints and verdicts are translated. Your language preference is saved locally; switching keeps the timer, selected answer and evidence.
 
 | # | Do this | You should see |
 | --- | --- | --- |
@@ -152,6 +154,7 @@ flowchart LR
 | `src/engine/verdict.ts`, `score.ts` | 4-part verdict check; `score = max(0, 1000 − seconds − 150·wrong − 5·extraSearches − 50·hints)` |
 | `src/engine/wallet.ts` | Fees `100·difficulty` + speed/clean bonuses, replays 25%, idempotent per run ID |
 | `src/store/`, `src/lib/` | Run reducer and attempt protection; safe storage, streak, records service, audio and music |
+| `src/i18n/`, `src/cases/localized.ts` | Persistent EN/RU interface and case content; bilingual aliases reuse prior searches without an extra charge |
 | `src/components/`, `src/screens/` | Desk scene, records computer, document renderer, dialogs; menu, desk, results |
 | `src/scene/layout.json`, `sprite-meta.json` | Desk hotspots and overlay zones, editable without code |
 
@@ -163,7 +166,7 @@ Requires **Node.js 22.12+**.
 ```bash
 npm ci
 npm run dev        # play locally
-npm test           # 202 tests
+npm test           # 225 tests
 npm run validate   # case schema, reachability, shortest paths
 npm run build      # validate + TypeScript + production build
 npm run preview    # preview the production build
@@ -172,6 +175,7 @@ npm run preview    # preview the production build
 - **No environment variables** are needed to play. Optional shared leaderboard: run `supabase/schema.sql` in Supabase, copy `.env.example` to `.env.local`, set `VITE_SUPABASE_URL` and the **public anon key** (never a service-role key).
 - **Deploy:** import into Vercel (framework Vite, build `npm run build`, output `dist`; `vercel.json` included). Disable deployment protection so the link opens without login.
 - **Art:** replace PNGs in `public/assets/` keeping names and sizes; move hotspots in `src/scene/layout.json`; preview with `npm run scene:preview`. Contract: [`ASSETS.md`](ASSETS.md), prompts: [`ASSET_PROMPTS.md`](ASSET_PROMPTS.md).
+- **Translations:** Russian copies live in `src/cases/ru/`. Keep IDs, numbers and solution relationships identical to the English originals; regenerate document `text` from visible title/body strings. Aliases are merged by search-entry ID. Build validation covers both languages.
 - **New cases:** follow [`CASE_TEMPLATE.md`](CASE_TEMPLATE.md) and `src/types.ts`; `npm run validate` proves the case is solvable. Product spec: [`SPEC.md`](SPEC.md).
 
 </details>
@@ -180,7 +184,8 @@ npm run preview    # preview the production build
 
 ## Quality
 
-- **202 automated tests** (15 files): search normalization and typo tolerance, clue unlocking, validator on valid, broken and unsolvable cases, verdicts, scoring, wallet maths and idempotency, hint paths on both shipped cases, streaks, storage failures, background-music player.
+- **225 automated tests** (18 files): search normalization and typo tolerance, clue unlocking, validator on valid, broken and unsolvable cases, verdicts, scoring, wallet maths and idempotency, hint paths on both shipped cases, streaks, storage failures, background-music player.
+- Localization tests cover bilingual discovery gates, saved hints, equivalent queries and payment identity. Physical keyboard shortcuts also work with a Russian layout.
 - Case tests guarantee every searchable clue is visible in the UI text of a reachable document.
 - Manual browser QA: both endings, wrong answers and the three-strike failure, reload and resume, replay, previews, readable documents at 375 px.
 
@@ -207,5 +212,5 @@ npm run preview    # preview the production build
 
 - **Team GreedX:** Yeskendir Abraimov (captain — product, cases, pixel art) · Sunggat Serikov (engineering).
 - **Music:** “Jazz Improvisation (Looped)” by Alex McCulloch / Pro Sensory (CC0) — https://opengameart.org/content/jazz-improvisation-looped
-- **Fonts:** DM Sans and Silkscreen (SIL Open Font License, via Fontsource).
+- **Fonts:** DM Sans, Silkscreen and Press Start 2P (Cyrillic) (SIL Open Font License, via Fontsource).
 - **Data:** FTC Consumer Sentinel Network (March 2025); Naavik (2025); The New York Times Company Q4 2025 results.

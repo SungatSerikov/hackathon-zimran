@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { validateCase } from "../src/engine/validate";
 
 // Premium JSON cards are catalog placeholders, never playable case inputs.
-const defaults = ["tutorial.json", "main.json"].map((name) =>
+const defaults = ["tutorial.json", "main.json", "ru/tutorial.json", "ru/main.json"].map((name) =>
   fileURLToPath(new URL(`../src/cases/${name}`, import.meta.url)),
 );
 const paths = process.argv.slice(2).length

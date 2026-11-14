@@ -1,7 +1,8 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type RefObject } from "react";
 import type { CaseDocument } from "../types";
-import { docLabels } from "./DocumentView";
+import { useDocumentLabels } from "./DocumentView";
 import { Icon } from "./Icons";
+import { useI18n } from "../i18n/I18n";
 
 export function RecordPicker({ documents, seenIds, value, onChange, triggerRef }: {
   documents: CaseDocument[];
@@ -10,6 +11,8 @@ export function RecordPicker({ documents, seenIds, value, onChange, triggerRef }
   onChange: (id: string) => void;
   triggerRef: RefObject<HTMLButtonElement | null>;
 }) {
+  const { t } = useI18n();
+  const docLabels = useDocumentLabels();
   const id = useId();
   const root = useRef<HTMLDivElement>(null);
   const list = useRef<HTMLDivElement>(null);
@@ -76,7 +79,7 @@ export function RecordPicker({ documents, seenIds, value, onChange, triggerRef }
 
   return <div className="record-picker" ref={root}
     onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false); }}>
-    <span className="record-picker-label" id={`${id}-label`}>Read a record</span>
+    <span className="record-picker-label" id={`${id}-label`}>{t("Read a record", "Выберите документ")}</span>
     <button id="computer-source" ref={triggerRef} type="button" role="combobox"
       className="record-picker-trigger" aria-haspopup="listbox" aria-expanded={open}
       aria-controls={open ? `${id}-list` : undefined}
@@ -84,11 +87,11 @@ export function RecordPicker({ documents, seenIds, value, onChange, triggerRef }
       aria-activedescendant={open ? `${id}-option-${active}` : undefined}
       disabled={!documents.length} onKeyDown={onKeyDown}
       onClick={() => { if (open) setOpen(false); else expand(); }}>
-      <span id={`${id}-value`}>{selected?.title ?? "No records yet"}</span>
+      <span id={`${id}-value`}>{selected?.title ?? t("No records yet", "Документов пока нет")}</span>
       <span className="record-picker-chevron"><Icon name="arrow" size={14} /></span>
     </button>
     {open && <div className="record-picker-menu">
-      <div className="record-picker-heading" aria-hidden="true"><span>CASE FILE</span><span>{documents.length} RECORDS</span></div>
+      <div className="record-picker-heading" aria-hidden="true"><span>{t("CASE FILE", "МАТЕРИАЛЫ ДЕЛА")}</span><span>{t(`${documents.length} RECORDS`, `ДОКУМЕНТОВ: ${documents.length}`)}</span></div>
       <div id={`${id}-list`} ref={list} role="listbox" aria-labelledby={`${id}-label`} className="record-picker-list">
         {documents.map((doc, index) => <div key={doc.id} id={`${id}-option-${index}`} role="option"
           aria-selected={doc.id === selected?.id} className={`record-picker-option ${active === index ? "is-active" : ""}`}
@@ -96,11 +99,11 @@ export function RecordPicker({ documents, seenIds, value, onChange, triggerRef }
           onClick={() => choose(index)}>
           <span className="record-picker-file"><Icon name="file" size={19} /></span>
           <span className="record-picker-copy"><span className="record-picker-meta">{docLabels[doc.type]}
-            {!seenIds.includes(doc.id) && <b>NEW</b>}</span><span>{doc.title}</span></span>
+            {!seenIds.includes(doc.id) && <b>{t("NEW", "НОВЫЙ")}</b>}</span><span>{doc.title}</span></span>
           <span className="record-picker-check">{doc.id === selected?.id && <Icon name="check" size={14} />}</span>
         </div>)}
       </div>
-      <div className="record-picker-footer" aria-hidden="true">↑ ↓ CHOOSE <span>ENTER OPEN · ESC CLOSE</span></div>
+      <div className="record-picker-footer" aria-hidden="true">↑ ↓ {t("CHOOSE", "ВЫБОР")} <span>{t("ENTER OPEN · ESC CLOSE", "ENTER ОТКРЫТЬ · ESC ЗАКРЫТЬ")}</span></div>
     </div>}
   </div>;
 }

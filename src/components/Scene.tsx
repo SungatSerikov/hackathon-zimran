@@ -2,6 +2,7 @@ import { useState, type CSSProperties, type ReactNode } from "react";
 import layout from "../scene/layout.json";
 import spriteMeta from "../scene/sprite-meta.json";
 import { Icon } from "./Icons";
+import { useI18n } from "../i18n/I18n";
 declare const __SCENE_ASSETS__: string[];
 const availableAssets = new Set(__SCENE_ASSETS__);
 export type DeskAction =
@@ -21,7 +22,16 @@ const activeSprites: Partial<Record<DeskAction, string>> = {
   monitor: "scene/monitor_on.png",
   safe: "scene/safe_open.png",
 };
-const calendarMonths = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+const calendarMonths = {
+  en: ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"],
+  ru: ["ЯНВ", "ФЕВ", "МАР", "АПР", "МАЙ", "ИЮН", "ИЮЛ", "АВГ", "СЕН", "ОКТ", "НОЯ", "ДЕК"],
+};
+const objectLabelsRu: Record<string, string> = {
+  clock: "Часы", calendar: "Календарь", board: "Доска улик",
+  monitor: "Компьютер", safe: "Сейф (ваши деньги)", cabinet: "Архив дел",
+  phone: "Позвонить информатору", coffee_1: "Жизнь 1", coffee_2: "Жизнь 2",
+  coffee_3: "Жизнь 3", folder: "Материалы дела", stamps: "Печати вердикта",
+};
 export function Asset({
   src,
   children,
@@ -78,13 +88,19 @@ export function Scene({
   highlight?: string;
   activeObject?: DeskAction;
 }) {
+  const { language, locale, t } = useI18n();
+  const [month, day, year] = date.split("/").map(Number);
+  const calendarDate = new Date(year, month - 1, day);
+  const weekday = Number.isNaN(calendarDate.getTime()) ? "" :
+    calendarDate.toLocaleDateString(locale, { weekday: "long" }).toLocaleUpperCase(locale);
+  const monthLabel = calendarMonths[language][month - 1] ?? "";
   return (
     <div
       className={`scene-shell ${hero ? "scene-hero" : ""} ${showHotspots ? "show-hotspots" : ""}`}
     >
       <div
         className="scene"
-        aria-label={hero ? "A cozy detective office" : "Detective desk"}
+        aria-label={hero ? t("A cozy detective office", "Уютный кабинет детектива") : t("Detective desk", "Стол детектива")}
       >
         <Asset
           src={`/assets/${layout.background}`}
@@ -106,11 +122,12 @@ export function Scene({
         <div className="desk-mat" aria-hidden="true" />
         <div className="desk-pen" />
         <div className="office-plaque">
-          RIVERTON
+          {t("RIVERTON", "РИВЕРТОН")}
           <br />
-          <strong>CONSUMER AFFAIRS</strong>
+          <strong>{t("CONSUMER AFFAIRS", "ЗАЩИТА ПОТРЕБИТЕЛЕЙ")}</strong>
         </div>
         {layout.objects.map((item) => {
+          const label = t(item.label, objectLabelsRu[item.id] ?? item.label);
           const variant = item.id.startsWith("coffee_") && Number(item.id.slice(-1)) > lives
             ? "scene/coffee_empty.png"
             : item.id === activeObject ? activeSprites[activeObject] : undefined;
@@ -133,9 +150,9 @@ export function Scene({
               )}
               {item.id === "calendar" && (
                 <div className="pixel-calendar">
-                  <span>NOV</span>
+                  <span>{monthLabel}</span>
                   <strong>{date.split("/")[1] || "14"}</strong>
-                  <small>SATURDAY</small>
+                  <small>{weekday}</small>
                 </div>
               )}
               {item.id === "board" && (
@@ -146,21 +163,21 @@ export function Scene({
                   <b />
                   <span>
                     {evidence
-                      ? `${evidence} CLUES PINNED`
-                      : "FOLLOW THE DETAILS"}
+                      ? t(`${evidence} CLUES PINNED`, `УЛИК ПРИКРЕПЛЕНО: ${evidence}`)
+                      : t("FOLLOW THE DETAILS", "ИЩИТЕ ДЕТАЛИ")}
                   </span>
                 </div>
               )}
               {item.id === "monitor" && (
                 <div className="pixel-monitor">
                   <div className="monitor-screen">
-                    <span>RCA / ARCHIVE v1.0</span>
+                    <span>{t("RCA / ARCHIVE v1.0", "БЮРО / АРХИВ v1.0")}</span>
                     <strong>
-                      SEARCH
+                      {t("SEARCH", "ПОИСК")}
                       <br />
-                      THE ARCHIVE<span className="cursor">_</span>
+                      {t("THE ARCHIVE", "В АРХИВЕ")}<span className="cursor">_</span>
                     </strong>
-                    <small>One detail changes everything.</small>
+                    <small>{t("One detail changes everything.", "Одна деталь меняет всё.")}</small>
                   </div>
                   <i />
                   <div className="monitor-neck" />
@@ -170,14 +187,14 @@ export function Scene({
               {item.id === "phone" && (
                 <div className="pixel-phone">
                   <Icon name="phone" size={30} />
-                  <span>INFORMANT</span>
+                  <span>{t("INFORMANT", "ИНФОРМАТОР")}</span>
                 </div>
               )}
               {item.id === "cabinet" && (
                 <div className="pixel-cabinet">
                   <i />
                   <i />
-                  <span>CASE ARCHIVE</span>
+                  <span>{t("CASE ARCHIVE", "АРХИВ ДЕЛ")}</span>
                 </div>
               )}
               {item.id === "safe" && (
@@ -202,9 +219,9 @@ export function Scene({
                   <span className="folder-tab" />
                   <div className="folder-sheets" />
                   <div className="folder-cover">
-                    <small>RCA • INVESTIGATIONS</small>
-                    <strong>CASE FILE</strong>
-                    <span>CONFIDENTIAL</span>
+                    <small>{t("RCA • INVESTIGATIONS", "БЮРО • РАССЛЕДОВАНИЯ")}</small>
+                    <strong>{t("CASE FILE", "МАТЕРИАЛЫ ДЕЛА")}</strong>
+                    <span>{t("CONFIDENTIAL", "КОНФИДЕНЦИАЛЬНО")}</span>
                   </div>
                 </div>
               )}
@@ -216,7 +233,7 @@ export function Scene({
                   <b>
                     <span />
                   </b>
-                  <strong>VERDICT</strong>
+                  <strong>{t("VERDICT", "ВЕРДИКТ")}</strong>
                 </div>
               )}
             </>
@@ -230,7 +247,7 @@ export function Scene({
                   width: `${spriteMeta.calendar.page.w / item.w * 100}%`,
                   height: `${spriteMeta.calendar.page.h / item.h * 100}%`,
                 }}>
-                  <span className="calendar-month">{calendarMonths[Number(date.split("/")[0]) - 1]}</span>
+                  <span className="calendar-month">{monthLabel}</span>
                   <span className="calendar-day">{date.split("/")[1]?.replace(/^0/, "")}</span>
                 </span>
               )}
@@ -279,12 +296,12 @@ export function Scene({
               }
               aria-label={
                 item.id === "monitor"
-                  ? "Search the archive"
+                  ? t("Search the archive", "Поиск в архиве")
                   : item.id === "folder"
-                    ? "Open case folder"
+                    ? t("Open case folder", "Открыть материалы дела")
                     : item.id === "stamps"
-                      ? "Make your verdict"
-                      : item.label
+                      ? t("Make your verdict", "Вынести вердикт")
+                      : label
               }
             >
               <Asset
@@ -303,10 +320,10 @@ export function Scene({
                   width: `${spriteMeta.monitor.screen.w / item.w * 100}%`,
                   height: `${spriteMeta.monitor.screen.h / item.h * 100}%`,
                 }}>
-                  RCA / ARCHIVE
+                  {t("RCA / ARCHIVE", "БЮРО / АРХИВ")}
                   <br />
                   <b>
-                    SEARCH RECORDS<span className="cursor">_</span>
+                    {t("SEARCH RECORDS", "ПОИСК ЗАПИСЕЙ")}<span className="cursor">_</span>
                   </b>
                 </span>
               )}
@@ -316,14 +333,14 @@ export function Scene({
                   {Array.from({ length: Math.min(evidence, 4) }, (_, i) => (
                     <i key={i}>
                       <b />
-                      EXHIBIT {String.fromCharCode(65 + i)}
+                      {t("EXHIBIT", "УЛИКА")} {String.fromCharCode(65 + i)}
                     </i>
                   ))}
                 </span>
               )}
               <span className="hotspot-dot" aria-hidden="true" />
               <span className="object-label">
-                {item.label}
+                {label}
                 {item.id === "clock" ? ` · ${formatTime(elapsed)}` : ""}
                 <Icon name="arrow" size={12} />
               </span>

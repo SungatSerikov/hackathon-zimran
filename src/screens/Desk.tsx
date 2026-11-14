@@ -5,7 +5,7 @@ import { loadRun, saveRun, safeRead, safeWrite } from "../lib/storage";
 import { getStreak } from "../lib/streak";
 import { Icon } from "../components/Icons";
 import { Dialog } from "../components/Dialog";
-import { DocumentView, docLabels } from "../components/DocumentView";
+import { DocumentView, useDocumentLabels } from "../components/DocumentView";
 import { RecordsComputer } from "../components/RecordsComputer";
 import { Scene, Asset, formatTime, type DeskAction } from "../components/Scene";
 import { Result } from "./Result";
@@ -13,6 +13,8 @@ import { EconomyPanel, bureauMoney } from "../components/EconomyPanel";
 import { getWallet } from "../engine/wallet";
 import type { GameSound } from "../lib/gameAudio";
 import { FullscreenButton } from "../components/FullscreenButton";
+import { LanguageSwitcher } from "../components/LanguageSwitcher";
+import { useI18n } from "../i18n/I18n";
 import sceneLayout from "../scene/layout.json";
 
 type Panel =
@@ -47,6 +49,8 @@ export function Desk({
   onSound: () => void;
   playSound: (kind: GameSound) => void;
 }) {
+  const { t } = useI18n();
+  const docLabels = useDocumentLabels();
   const [run, dispatch] = useReducer(
     gameReducer,
     caseData,
@@ -101,10 +105,10 @@ export function Desk({
         ? 2
         : 3;
   const guidance = [
-    "Start with the case folder. Read the complaint and look for a company name or reference number.",
-    "Open the computer. Read a record and click a highlighted name or number to search it.",
-    "Open a search result inside the computer. Follow its highlighted details and pin two records that prove what happened.",
-    "Ready to decide? Open Verdict. Choose a stamp, a person, an explanation, and two pinned documents.",
+    t("Start with the case folder. Read the complaint and look for a company name or reference number.", "Начните с папки дела. Прочитайте жалобу и найдите название компании или номер документа."),
+    t("Open the computer. Read a record and click a highlighted name or number to search it.", "Откройте компьютер. Прочитайте запись и нажмите на выделенное имя или номер, чтобы найти сведения о нём."),
+    t("Open a search result inside the computer. Follow its highlighted details and pin two records that prove what happened.", "Откройте результат поиска на компьютере. Изучите выделенные детали и закрепите два документа, которые доказывают, что произошло."),
+    t("Ready to decide? Open Verdict. Choose a stamp, a person, an explanation, and two pinned documents.", "Готовы принять решение? Откройте «Вердикт». Выберите печать, человека, объяснение и два закреплённых документа."),
   ];
   const previousStep = useRef(tutorialStep);
   useEffect(() => {
@@ -168,8 +172,8 @@ export function Desk({
     dispatch({ type: "pin", documentId: id });
     setToast(
       run.pinnedIds.includes(id)
-        ? "Document removed from your board."
-        : "Evidence pinned to your board.",
+        ? t("Document removed from your board.", "Документ убран с доски улик.")
+        : t("Evidence pinned to your board.", "Документ закреплён на доске улик."),
     );
   }
   function action(id: DeskAction) {
@@ -186,11 +190,11 @@ export function Desk({
     if (id === "calendar") setPanel("calendar");
     if (id === "coffee")
       setToast(
-        `${3 - run.wrongAttempts} attempts left. Each incorrect verdict costs a coffee and adds 60 seconds.`,
+        t(`${3 - run.wrongAttempts} attempts left. Each incorrect verdict costs a coffee and adds 60 seconds.`, `Осталось попыток: ${3 - run.wrongAttempts}. Каждый неверный вердикт стоит чашки кофе и добавляет 60 секунд.`),
       );
     if (id === "clock")
       setToast(
-        "Take your time. Accuracy matters. The clock pauses when you return to the case list.",
+        t("Take your time. Accuracy matters. The clock pauses when you return to the case list.", "Не спешите. Точность важнее. Таймер останавливается, когда вы возвращаетесь к списку дел."),
       );
   }
   function search(value: string) {
@@ -219,7 +223,7 @@ export function Desk({
         )
       )
         return;
-      const key = e.key.toLowerCase();
+      const key = e.code.startsWith("Key") ? e.code.slice(3).toLowerCase() : e.key.toLowerCase();
       const actions: Record<string, DeskAction> = {
         f: "folder",
         a: "monitor",
@@ -271,25 +275,25 @@ export function Desk({
         <button
           className="hud-menu"
           onClick={() => setPanel("pause")}
-          aria-label="Pause game"
+          aria-label={t("Pause game", "Приостановить игру")}
         >
           <span aria-hidden="true">Ⅱ</span>
           <kbd>ESC</kbd>
         </button>
         <div className="hud-case">
-          <span>{tutorial ? "TRAINING / 001" : "CASE / 002"}</span>
+          <span>{tutorial ? t("TRAINING / 001", "ОБУЧЕНИЕ / 001") : t("CASE / 002", "ДЕЛО / 002")}</span>
           <h1>{caseData.title}</h1>
         </div>
         <div
           className="hud-clock"
-          aria-label={`Elapsed time ${formatTime(run.elapsedSeconds)}`}
+          aria-label={t(`Elapsed time ${formatTime(run.elapsedSeconds)}`, `Прошло времени: ${formatTime(run.elapsedSeconds)}`)}
         >
           <Icon name="clock" size={16} />
           <strong>{formatTime(run.elapsedSeconds)}</strong>
         </div>
         <div
           className="hud-lives"
-          aria-label={`${3 - run.wrongAttempts} attempts remaining`}
+          aria-label={t(`${3 - run.wrongAttempts} attempts remaining`, `Осталось попыток: ${3 - run.wrongAttempts}`)}
         >
           {[0, 1, 2].map((i) => (
             <Icon
@@ -303,7 +307,7 @@ export function Desk({
         <button
           className="hud-wallet"
           onClick={() => setPanel("wallet")}
-          aria-label={`Bureau cash ${bureauMoney(balance)}`}
+          aria-label={t(`Bureau cash ${bureauMoney(balance)}`, `Деньги бюро: ${bureauMoney(balance)}`)}
         >
           <Icon name="lock" size={14} />
           {bureauMoney(balance)}
@@ -311,13 +315,14 @@ export function Desk({
         <button
           className="hud-sound"
           onClick={onSound}
-          aria-label={soundEnabled ? "Mute sound" : "Enable sound"}
+          aria-label={soundEnabled ? t("Mute sound", "Выключить звук") : t("Enable sound", "Включить звук")}
           aria-pressed={soundEnabled}
         >
           <Icon name="sound" size={18} />
           {!soundEnabled && <i />}
         </button>
         <FullscreenButton />
+        <LanguageSwitcher />
       </header>
       <div className="office-stage">
         <div className="office-backdrop" aria-hidden="true">
@@ -346,21 +351,21 @@ export function Desk({
         {tutorial && guideExpanded ? (
           <div className="field-note" id="tutorial-guidance">
             <div className="field-note-heading">
-              <span>FIELD NOTE {tutorialStep + 1}/4</span>
-              <button onClick={() => toggleGuide(false)} aria-label="Hide tutorial hint"><Icon name="close" size={14} /></button>
+              <span>{t("FIELD NOTE", "ЗАМЕТКА")} {tutorialStep + 1}/4</span>
+              <button onClick={() => toggleGuide(false)} aria-label={t("Hide tutorial hint", "Скрыть подсказку обучения")}><Icon name="close" size={14} /></button>
             </div>
             <p>{guidance[tutorialStep]}</p>
           </div>
         ) : !tutorial ? (
           <span className="room-caption">
-            Your desk. Your investigation.
-            <small>Click an object to examine it.</small>
+            {t("Your desk. Your investigation.", "Ваш стол. Ваше расследование.")}
+            <small>{t("Click an object to examine it.", "Нажмите на предмет, чтобы изучить его.")}</small>
           </span>
         ) : null}
         <div className="desk-assistance">
           {tutorial && <button className="guide-toggle" aria-expanded={guideExpanded}
             aria-controls={guideExpanded ? "tutorial-guidance" : undefined} onClick={() => toggleGuide(!guideExpanded)}>
-            <Icon name="help" size={14} /> Tutorial hint
+            <Icon name="help" size={14} /> {t("Tutorial hint", "Подсказка обучения")}
           </button>}
         <button
           className="hotspot-toggle"
@@ -368,37 +373,37 @@ export function Desk({
           onClick={() => setHotspots((v) => !v)}
         >
           <Icon name="search" size={14} />
-          {hotspots ? "Hide labels" : "Show objects"}
+          {hotspots ? t("Hide labels", "Скрыть подписи") : t("Show objects", "Показать предметы")}
         </button>
         </div>
       </div>
-      <nav className="game-toolbelt" aria-label="Investigation tools">
+      <nav className="game-toolbelt" aria-label={t("Investigation tools", "Инструменты расследования")}>
         <button onClick={openFolder} data-sound="paper">
           <kbd>F</kbd>
           <Icon name="folder" />
-          <span>Folder</span>
+          <span>{t("Folder", "Папка")}</span>
           <b>{documents.length}</b>
         </button>
         <button onClick={() => action("monitor")}>
           <kbd>A</kbd>
           <Icon name="search" />
-          <span>Archive</span>
+          <span>{t("Archive", "Архив")}</span>
         </button>
         <button onClick={() => action("board")}>
           <kbd>E</kbd>
           <Icon name="pin" />
-          <span>Evidence</span>
+          <span>{t("Evidence", "Улики")}</span>
           <b>{pinned.length}</b>
         </button>
         <button onClick={() => action("phone")}>
           <kbd>H</kbd>
           <Icon name="phone" />
-          <span>Informant</span>
+          <span>{t("Informant", "Информатор")}</span>
         </button>
         <button className="tool-verdict" onClick={() => action("stamps")}>
           <kbd>V</kbd>
           <Icon name="stamp" />
-          <span>Verdict</span>
+          <span>{t("Verdict", "Вердикт")}</span>
         </button>
       </nav>
       <div
@@ -406,14 +411,14 @@ export function Desk({
         role={storageFailed ? "status" : undefined}
       >
         {storageFailed
-          ? "Progress is temporary: browser storage unavailable"
-          : "AUTO-SAVED"}
+          ? t("Progress is temporary: browser storage unavailable", "Прогресс временный: хранилище браузера недоступно")
+          : t("AUTO-SAVED", "АВТОСОХРАНЕНИЕ")}
         <span className="status-dot" />
       </div>
       {panel === "briefing" && (
         <Dialog
           title={client.name}
-          label="A CLIENT AT YOUR DESK"
+          label={t("A CLIENT AT YOUR DESK", "КЛИЕНТ В ВАШЕМ БЮРО")}
           onClose={close}
           wide
           tone="briefing-dialog"
@@ -426,7 +431,7 @@ export function Desk({
               >
                 <span>{client.name[0]}</span>
               </Asset>
-              <span>COMPLAINANT / {caseData.gameDate}</span>
+              <span>{t("COMPLAINANT", "ЗАЯВИТЕЛЬ")} / {caseData.gameDate}</span>
             </div>
             <div className="client-dialogue">
               <span className="eyebrow">{caseData.title}</span>
@@ -435,42 +440,42 @@ export function Desk({
               </blockquote>
               <p>{caseData.brief}</p>
               <button className="button" data-sound="paper" onClick={close}>
-                I’ll look into it.
+                {t("I’ll look into it.", "Я разберусь.")}
                 <Icon name="folder" size={18} />
               </button>
-              <small>The case file is on your desk. Open it to begin.</small>
+              <small>{t("The case file is on your desk. Open it to begin.", "Папка дела лежит на столе. Откройте её, чтобы начать.")}</small>
             </div>
           </div>
         </Dialog>
       )}
       {panel === "pause" && (
         <Dialog
-          title="Take a breath, detective."
-          label="SHIFT PAUSED · YOUR CLOCK IS STOPPED"
+          title={t("Take a breath, detective.", "Передохните, детектив.")}
+          label={t("SHIFT PAUSED · YOUR CLOCK IS STOPPED", "ПЕРЕРЫВ · ТАЙМЕР ОСТАНОВЛЕН")}
           onClose={close}
           tone="pause-dialog"
         >
           <div className="pause-options">
             <button className="button" onClick={close}>
-              Resume investigation
+              {t("Resume investigation", "Продолжить расследование")}
               <Icon name="arrow" />
             </button>
             <button onClick={() => setPanel("briefing")}>
-              <Icon name="people" size={18} /> Read the client’s statement
+              <Icon name="people" size={18} /> {t("Read the client’s statement", "Прочитать заявление клиента")}
             </button>
             <button onClick={() => setPanel("help")}>
-              <Icon name="help" size={18} /> How to play
+              <Icon name="help" size={18} /> {t("How to play", "Как играть")}
             </button>
             <button onClick={onSound}>
               <Icon name="sound" size={18} />
-              {soundEnabled ? "Sound: on" : "Sound: off"}
+              {soundEnabled ? t("Sound: on", "Звук: включён") : t("Sound: off", "Звук: выключен")}
             </button>
             <button onClick={onExit}>
-              <Icon name="back" size={18} /> Save & return to case files
+              <Icon name="back" size={18} /> {t("Save & return to case files", "Сохранить и вернуться к делам")}
             </button>
           </div>
           <p className="fine-print">
-            Your evidence and progress stay on this device.
+            {t("Your evidence and progress stay on this device.", "Ваши улики и прогресс сохраняются на этом устройстве.")}
           </p>
         </Dialog>
       )}
@@ -494,16 +499,16 @@ export function Desk({
       )}
       {panel === "folder" && (
         <Dialog
-          title="Case folder"
+          title={t("Case folder", "Папка дела")}
           tone="folder-dialog"
-          label={`${documents.length} RECORDS ON FILE`}
+          label={t(`${documents.length} RECORDS ON FILE`, `ДОКУМЕНТОВ В ДЕЛЕ: ${documents.length}`)}
           wide
           onClose={close}
         >
           <div className="folder-layout">
             <aside className="folder-sidebar">
               <p className="case-brief">{caseData.brief}</p>
-              <span className="eyebrow">DOCUMENTS</span>
+              <span className="eyebrow">{t("DOCUMENTS", "ДОКУМЕНТЫ")}</span>
               <div className="document-list">
                 {documents.map((d) => (
                   <button
@@ -522,7 +527,7 @@ export function Desk({
                     {run.pinnedIds.includes(d.id) ? (
                       <Icon name="pin" size={14} />
                     ) : !run.seenIds.includes(d.id) ? (
-                      <i className="new-dot" title="Unread" />
+                      <i className="new-dot" title={t("Unread", "Не прочитано")} />
                     ) : null}
                   </button>
                 ))}
@@ -532,7 +537,7 @@ export function Desk({
                 onClick={() => setPanel("search")}
               >
                 <Icon name="search" size={15} />
-                Find more in the archive
+                {t("Find more in the archive", "Найти больше в архиве")}
               </button>
             </aside>
             <div className="document-view">
@@ -566,15 +571,14 @@ export function Desk({
       )}
       {panel === "board" && (
         <Dialog
-          title="Your evidence board"
+          title={t("Your evidence board", "Ваша доска улик")}
           tone="board-dialog"
-          label={`${pinned.length} PINNED RECORDS`}
+          label={t(`${pinned.length} PINNED RECORDS`, `ЗАКРЕПЛЕНО ДОКУМЕНТОВ: ${pinned.length}`)}
           wide
           onClose={close}
         >
           <p className="panel-intro">
-            Connect the details. You will need two documents to support your
-            final verdict.
+            {t("Connect the details. You will need two documents to support your final verdict.", "Сопоставьте детали. Для окончательного вердикта вам понадобятся два подтверждающих документа.")}
           </p>
           {pinned.length ? (
             <div className="evidence-grid">
@@ -586,12 +590,12 @@ export function Desk({
                 >
                   <span className="evidence-pin" />
                   <span className="eyebrow">
-                    EXHIBIT {String.fromCharCode(65 + i)}
+                    {t("EXHIBIT", "УЛИКА")} {String.fromCharCode(65 + i)}
                   </span>
                   <h3>{d.title}</h3>
                   <p>{d.text.slice(0, 140)}…</p>
                   <span className="text-button">
-                    Examine record <Icon name="arrow" size={15} />
+                    {t("Examine record", "Изучить документ")} <Icon name="arrow" size={15} />
                   </span>
                 </button>
               ))}
@@ -599,12 +603,12 @@ export function Desk({
           ) : (
             <div className="empty-state">
               <Icon name="pin" size={40} />
-              <h3>Every case starts with a loose thread.</h3>
+              <h3>{t("Every case starts with a loose thread.", "Каждое дело начинается с зацепки.")}</h3>
               <p>
-                Open a document and choose “Pin as evidence” to keep it here.
+                {t("Open a document and choose “Pin as evidence” to keep it here.", "Откройте документ и выберите «Закрепить как улику», чтобы добавить его сюда.")}
               </p>
               <button className="button" onClick={openFolder}>
-                Open case folder
+                {t("Open case folder", "Открыть папку дела")}
               </button>
             </div>
           )}
@@ -613,10 +617,10 @@ export function Desk({
               className="button secondary"
               onClick={() => setPanel("search")}
             >
-              Search the archive
+              {t("Search the archive", "Искать в архиве")}
             </button>
             <button className="button" onClick={() => setPanel("verdict")}>
-              Make a verdict
+              {t("Make a verdict", "Вынести вердикт")}
               <Icon name="stamp" />
             </button>
           </div>
@@ -624,34 +628,33 @@ export function Desk({
       )}
       {panel === "verdict" && (
         <Dialog
-          title="Make your verdict"
+          title={t("Make your verdict", "Вынесите вердикт")}
           tone="verdict-dialog"
-          label="FINAL REVIEW · SUPPORT YOUR CONCLUSION"
+          label={t("FINAL REVIEW · SUPPORT YOUR CONCLUSION", "ИТОГОВАЯ ПРОВЕРКА · ПОДТВЕРДИТЕ ВЫВОД")}
           wide
           onClose={close}
         >
           {run.wrongAttempts > 0 && (
             <div className="verdict-error-banner" role="status">
-              <strong>Your previous verdict was incorrect.</strong>
+              <strong>{t("Your previous verdict was incorrect.", "Ваш предыдущий вердикт был неверным.")}</strong>
               <span>
-                {3 - run.wrongAttempts} {run.wrongAttempts === 2 ? "attempt" : "attempts"} remaining.
-                Recheck your conclusion before submitting again.
+                {t(`${3 - run.wrongAttempts} ${run.wrongAttempts === 2 ? "attempt" : "attempts"} remaining. Recheck your conclusion before submitting again.`, `Осталось попыток: ${3 - run.wrongAttempts}. Проверьте свой вывод перед повторной отправкой.`)}
               </span>
             </div>
           )}
           <div className="claim-paper">
-            <span className="eyebrow">RIVERTON CONSUMER AFFAIRS · CLAIM #{caseData.claim.number}</span>
+            <span className="eyebrow">{t("RIVERTON CONSUMER AFFAIRS · CLAIM", "БЮРО ЗАЩИТЫ ПОТРЕБИТЕЛЕЙ РИВЕРТОНА · ЖАЛОБА")} #{caseData.claim.number}</span>
             <dl className="claim-details">
-              <div><dt>Claimant</dt><dd>{client.name}</dd></div>
-              <div><dt>Respondent</dt><dd>{caseData.claim.respondent}</dd></div>
-              <div><dt>Request</dt><dd>{caseData.claim.request}</dd></div>
+              <div><dt>{t("Claimant", "Заявитель")}</dt><dd>{client.name}</dd></div>
+              <div><dt>{t("Respondent", "Ответчик")}</dt><dd>{caseData.claim.respondent}</dd></div>
+              <div><dt>{t("Request", "Требование")}</dt><dd>{caseData.claim.request}</dd></div>
               {caseData.claim.amount !== undefined && (
-                <div><dt>Amount</dt><dd>{bureauMoney(caseData.claim.amount)}</dd></div>
+                <div><dt>{t("Amount", "Сумма")}</dt><dd>{bureauMoney(caseData.claim.amount)}</dd></div>
               )}
             </dl>
             <blockquote>“{caseData.claim.statement}”</blockquote>
             <p className="stamp-instruction">
-              Stamp the respondent: GUILTY if they owe the claimant, NOT GUILTY if they don’t.
+              {t("Stamp the respondent: GUILTY if they owe the claimant, NOT GUILTY if they don’t.", "Поставьте печать для ответчика: «ВИНОВЕН», если он должен заявителю, или «НЕ ВИНОВЕН», если нет.")}
             </p>
             <div className="verdict-stamps">
               {(["GUILTY", "NOT_GUILTY"] as const).map((v) => (
@@ -661,11 +664,11 @@ export function Desk({
                   onClick={() => setVerdict(v)}
                   aria-pressed={verdict === v}
                 >
-                  {v.replaceAll("_", " ")}
+                  {v === "GUILTY" ? t("GUILTY", "ВИНОВЕН") : t("NOT GUILTY", "НЕ ВИНОВЕН")}
                   <small>
                     {v === "GUILTY"
-                      ? "Respondent owes the claimant"
-                      : "Respondent is not responsible"}
+                      ? t("Respondent owes the claimant", "Ответчик должен заявителю")
+                      : t("Respondent is not responsible", "Ответчик не несёт ответственности")}
                   </small>
                 </button>
               ))}
@@ -673,7 +676,7 @@ export function Desk({
           </div>
           <fieldset className="verdict-section">
             <legend>
-              <span>01</span> Who is responsible?
+              <span>01</span> {t("Who is responsible?", "Кто несёт ответственность?")}
             </legend>
             <div className="character-options">
               {caseData.characters.map((c, i) => (
@@ -706,7 +709,7 @@ export function Desk({
           </fieldset>
           <fieldset className="verdict-section">
             <legend>
-              <span>02</span> What actually happened?
+              <span>02</span> {t("What actually happened?", "Что произошло на самом деле?")}
             </legend>
             <div className="method-options">
               {caseData.solution.methods.map((m) => (
@@ -724,14 +727,14 @@ export function Desk({
           </fieldset>
           <fieldset className="verdict-section">
             <legend>
-              <span>03</span> Select exactly two supporting documents{" "}
+              <span>03</span> {t("Select exactly two supporting documents", "Выберите ровно два подтверждающих документа")}{" "}
               <small>{evidence.length}/2</small>
             </legend>
             {pinned.length < 2 && (
               <p className="notice">
-                Pin at least two documents from your folder first.{" "}
+                {t("Pin at least two documents from your folder first.", "Сначала закрепите хотя бы два документа из папки дела.")}{" "}
                 <button className="text-button" onClick={openFolder}>
-                  Open folder →
+                  {t("Open folder →", "Открыть папку →")}
                 </button>
               </p>
             )}
@@ -761,21 +764,20 @@ export function Desk({
           </fieldset>
           {sameAsLast && (
             <p className="notice">
-              You already submitted this conclusion. Reconsider the evidence
-              before trying again.
+              {t("You already submitted this conclusion. Reconsider the evidence before trying again.", "Вы уже отправляли такой вывод. Пересмотрите улики перед новой попыткой.")}
             </p>
           )}
           {confirming ? (
             <div className="confirm-verdict">
               <p>
-                <strong>Submit this conclusion?</strong> A wrong answer costs
-                one attempt, adds 60 seconds, and deducts 150 additional points.
+                <strong>{t("Submit this conclusion?", "Отправить этот вывод?")}</strong>{" "}
+                {t("A wrong answer costs one attempt, adds 60 seconds, and deducts 150 additional points.", "Неверный ответ отнимает одну попытку, добавляет 60 секунд и дополнительно снимает 150 очков.")}
               </p>
               <button
                 className="button secondary"
                 onClick={() => setConfirming(false)}
               >
-                Keep investigating
+                {t("Keep investigating", "Продолжить расследование")}
               </button>
               <button
                 className="button"
@@ -786,21 +788,21 @@ export function Desk({
                   dispatch({ type: "accuse", caseData, accusation });
                 }}
               >
-                Confirm verdict
+                {t("Confirm verdict", "Подтвердить вердикт")}
                 <Icon name="stamp" />
               </button>
             </div>
           ) : (
             <div className="panel-actions">
               <span className="muted">
-                {3 - run.wrongAttempts} attempts remaining
+                {t(`${3 - run.wrongAttempts} attempts remaining`, `Осталось попыток: ${3 - run.wrongAttempts}`)}
               </span>
               <button
                 className="button"
                 disabled={!ready || !!sameAsLast || submitLock}
                 onClick={() => setConfirming(true)}
               >
-                Submit verdict
+                {t("Submit verdict", "Отправить вердикт")}
                 <Icon name="arrow" />
               </button>
             </div>
@@ -809,78 +811,74 @@ export function Desk({
       )}
       {panel === "verdict-feedback" && (
         <Dialog
-          title="Verdict incorrect"
-          label="BUREAU REVIEW · CONCLUSION REJECTED"
+          title={t("Verdict incorrect", "Неверный вердикт")}
+          label={t("BUREAU REVIEW · CONCLUSION REJECTED", "ПРОВЕРКА БЮРО · ВЫВОД ОТКЛОНЁН")}
           tone="verdict-feedback-dialog"
           onClose={close}
         >
           <div className="verdict-feedback" role="alert">
-            <div className="rejected-stamp" aria-hidden="true">INCORRECT</div>
+            <div className="rejected-stamp" aria-hidden="true">{t("INCORRECT", "НЕВЕРНО")}</div>
             <p>
-              The evidence does not support your conclusion.
-              Recheck the respondent, the person responsible, the explanation,
-              and your two supporting documents.
+              {t("The evidence does not support your conclusion. Recheck the respondent, the person responsible, the explanation, and your two supporting documents.", "Улики не подтверждают ваш вывод. Ещё раз проверьте вердикт для ответчика, ответственного человека, объяснение и два подтверждающих документа.")}
             </p>
             <strong className="attempts-remaining">
-              {3 - run.wrongAttempts} {run.wrongAttempts === 2 ? "attempt" : "attempts"} remaining
+              {t(`${3 - run.wrongAttempts} ${run.wrongAttempts === 2 ? "attempt" : "attempts"} remaining`, `Осталось попыток: ${3 - run.wrongAttempts}`)}
             </strong>
             <dl className="verdict-penalties">
-              <div><dt>Attempt used</dt><dd>−1 coffee</dd></div>
-              <div><dt>Time penalty</dt><dd>+60 seconds</dd></div>
-              <div><dt>Additional score penalty</dt><dd>−150 points</dd></div>
+              <div><dt>{t("Attempt used", "Потрачена попытка")}</dt><dd>{t("−1 coffee", "−1 чашка кофе")}</dd></div>
+              <div><dt>{t("Time penalty", "Штраф по времени")}</dt><dd>{t("+60 seconds", "+60 секунд")}</dd></div>
+              <div><dt>{t("Additional score penalty", "Дополнительный штраф")}</dt><dd>{t("−150 points", "−150 очков")}</dd></div>
             </dl>
           </div>
-          <p className="feedback-pause-note">Clock paused while you read this notice.</p>
+          <p className="feedback-pause-note">{t("Clock paused while you read this notice.", "Пока вы читаете это уведомление, таймер остановлен.")}</p>
           <div className="feedback-actions">
             <button className="button" onClick={() => setPanel("verdict")}>
-              Review my verdict
+              {t("Review my verdict", "Пересмотреть вердикт")}
             </button>
             <button className="button secondary" onClick={close}>
-              Back to investigation
+              {t("Back to investigation", "Вернуться к расследованию")}
             </button>
           </div>
         </Dialog>
       )}
       {panel === "calendar" && (
-        <Dialog title="Office calendar" onClose={close}>
+        <Dialog title={t("Office calendar", "Календарь бюро")} onClose={close}>
           <div className="calendar-display">
-            <span>DATE IN THIS CASE</span>
+            <span>{t("DATE IN THIS CASE", "ДАТА В ЭТОМ ДЕЛЕ")}</span>
             <strong>
               {caseData.gameDate || caseData.worldDate || "11/14/2026"}
             </strong>
             <p>
-              Dates in the records belong to this fictional timeline. Compare
-              the invoice, payment and message dates carefully.
+              {t("Dates in the records belong to this fictional timeline. Compare the invoice, payment and message dates carefully.", "Даты в документах относятся к вымышленным событиям дела. Внимательно сравнивайте даты счетов, платежей и сообщений.")}
             </p>
             <p className="notice">
-              Your current play streak: {getStreak()} day(s).
+              {t(`Your current play streak: ${getStreak()} day(s).`, `Дней игры подряд: ${getStreak()}.`)}
             </p>
           </div>
         </Dialog>
       )}
       {panel === "help" && (
-        <Dialog title="A good detective follows the details." onClose={close}>
+        <Dialog title={t("A good detective follows the details.", "Хороший детектив замечает детали.")} onClose={close}>
           <ol className="how-to-list">
             <li>
-              <strong>Read the file.</strong> Your client has a story. The
-              documents have another.
+              <strong>{t("Read the file.", "Прочитайте дело.")}</strong>{" "}
+              {t("Your client has a story. The documents have another.", "У клиента своя версия. У документов — своя.")}
             </li>
             <li>
-              <strong>Follow a clue.</strong> Open the computer and click a highlighted name, company or
-              reference in your record. You can also type it into the search bar.
+              <strong>{t("Follow a clue.", "Идите по следу.")}</strong>{" "}
+              {t("Open the computer and click a highlighted name, company or reference in your record. You can also type it into the search bar.", "Откройте компьютер и нажмите на выделенное имя, название компании или номер в документе. Их также можно ввести в строку поиска.")}
             </li>
             <li>
-              <strong>Build your case.</strong> Pin records that support or
-              contradict the story.
+              <strong>{t("Build your case.", "Соберите доказательства.")}</strong>{" "}
+              {t("Pin records that support or contradict the story.", "Закрепляйте документы, которые подтверждают или опровергают версию событий.")}
             </li>
             <li>
-              <strong>Make a verdict.</strong> Stamp the respondent GUILTY or
-              NOT GUILTY, then choose who, how and two pieces of proof.
+              <strong>{t("Make a verdict.", "Вынесите вердикт.")}</strong>{" "}
+              {t("Stamp the respondent GUILTY or NOT GUILTY, then choose who, how and two pieces of proof.", "Поставьте ответчику печать «ВИНОВЕН» или «НЕ ВИНОВЕН», затем выберите виновного, объяснение и два доказательства.")}
             </li>
           </ol>
           <p className="notice">
-            Three coffees, three attempts. Wrong conclusions cost 60 seconds and
-            150 additional points. Leaving the desk pauses the timer.
+            {t("Three coffees, three attempts. Wrong conclusions cost 60 seconds and 150 additional points. Leaving the desk pauses the timer.", "Три чашки кофе — три попытки. Неверный вывод добавляет 60 секунд и дополнительно снимает 150 очков. Когда вы покидаете стол, таймер останавливается.")}
           </p>
         </Dialog>
       )}

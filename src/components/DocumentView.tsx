@@ -1,4 +1,5 @@
-import type { CaseDocument } from "../types";
+import type { CaseDocument, DocumentType } from "../types";
+import { useI18n } from "../i18n/I18n";
 import { Icon } from "./Icons";
 import { ClueText } from "./ClueText";
 import type { DocumentClue } from "../engine/clues";
@@ -12,6 +13,19 @@ export const docLabels: Record<string, string> = {
   note: "Case note",
   record: "Official record",
 };
+export function useDocumentLabels(): Record<DocumentType, string> {
+  const { t } = useI18n();
+  return {
+    receipt: t("Invoice", "Счёт"),
+    contract: t("Agreement", "Договор"),
+    chat: t("Conversation", "Переписка"),
+    email: t("Email", "Письмо"),
+    ad: t("Public listing", "Объявление"),
+    bank_statement: t("Bank record", "Банковская выписка"),
+    note: t("Case note", "Заметка по делу"),
+    record: t("Official record", "Официальный документ"),
+  };
+}
 const money = (v: number) =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
     v,
@@ -29,6 +43,8 @@ export function DocumentView({
   clues?: DocumentClue[];
   onSearch?: (query: string) => void;
 }) {
+  const { t } = useI18n();
+  const labels = useDocumentLabels();
   const b = doc.body;
   const text = (value: string | undefined) => value && onSearch
     ? <ClueText text={value} clues={clues} onSearch={onSearch} />
@@ -36,7 +52,7 @@ export function DocumentView({
   return (
     <article className={`paper paper-${doc.type}`}>
       <div className="paper-top">
-        <span className="eyebrow">{docLabels[doc.type]} · EVIDENCE COPY</span>
+        <span className="eyebrow">{labels[doc.type]} · {t("EVIDENCE COPY", "КОПИЯ ДЛЯ ДЕЛА")}</span>
         <Icon name="file" />
       </div>
       <h3>{text(doc.title)}</h3>
@@ -45,11 +61,11 @@ export function DocumentView({
           <h4>{text(b.vendor)}</h4>
           <dl className="paper-meta">
             <div>
-              <dt>Invoice</dt>
+              <dt>{t("Invoice", "Счёт")}</dt>
               <dd>{text(b.number)}</dd>
             </div>
             <div>
-              <dt>Date</dt>
+              <dt>{t("Date", "Дата")}</dt>
               <dd>{text(b.date)}</dd>
             </div>
           </dl>
@@ -61,11 +77,11 @@ export function DocumentView({
               </div>
             ))}
             <div className="receipt-total">
-              <span>Total</span>
+              <span>{t("Total", "Итого")}</span>
               <strong>{money(b.total || 0)}</strong>
             </div>
           </div>
-          <p className="paper-footnote">Payment: {text(b.paymentMethod)}</p>
+          <p className="paper-footnote">{t("Payment", "Оплата")}: {text(b.paymentMethod)}</p>
           {b.body && <p className="document-prose">{text(b.body)}</p>}
         </>
       )}
@@ -101,19 +117,19 @@ export function DocumentView({
         <>
           <dl className="paper-meta">
             <div>
-              <dt>From</dt>
+              <dt>{t("From", "От")}</dt>
               <dd>{text(b.from)}</dd>
             </div>
             <div>
-              <dt>To</dt>
+              <dt>{t("To", "Кому")}</dt>
               <dd>{text(b.to)}</dd>
             </div>
             <div>
-              <dt>Date</dt>
+              <dt>{t("Date", "Дата")}</dt>
               <dd>{text(b.date)}</dd>
             </div>
             <div>
-              <dt>Subject</dt>
+              <dt>{t("Subject", "Тема")}</dt>
               <dd>{text(b.subject)}</dd>
             </div>
           </dl>
@@ -124,7 +140,7 @@ export function DocumentView({
         <div className="ad-copy">
           <h4>{text(b.headline)}</h4>
           <p>{text(b.body)}</p>
-          {b.phone && <p>Phone: {text(b.phone)}</p>}
+          {b.phone && <p>{t("Phone", "Телефон")}: {text(b.phone)}</p>}
           {b.address && <p>{text(b.address)}</p>}
         </div>
       )}
@@ -135,9 +151,9 @@ export function DocumentView({
             <table className="statement">
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>Description</th>
-                  <th>Amount</th>
+                  <th>{t("Date", "Дата")}</th>
+                  <th>{t("Description", "Описание")}</th>
+                  <th>{t("Amount", "Сумма")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -161,16 +177,16 @@ export function DocumentView({
       )}
       <footer className="paper-footer">
         <span>
-          RIVERTON CONSUMER AFFAIRS
+          {t("RIVERTON CONSUMER AFFAIRS", "ЗАЩИТА ПОТРЕБИТЕЛЕЙ РИВЕРТОНА")}
           <br />
-          For investigative use only
+          {t("For investigative use only", "Только для расследования")}
         </span>
         <button
           className={`button small ${pinned ? "pinned" : ""}`}
           onClick={onPin}
         >
           <Icon name="pin" size={16} />
-          {pinned ? "Pinned · remove" : "Pin as evidence"}
+          {pinned ? t("Pinned · remove", "Закреплено · убрать") : t("Pin as evidence", "Закрепить улику")}
         </button>
       </footer>
     </article>

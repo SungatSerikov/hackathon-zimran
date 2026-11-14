@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, type ReactNode } from "react";
 import { Icon } from "./Icons";
+import { useI18n } from "../i18n/I18n";
 
 export function Dialog({
   title,
@@ -16,6 +17,7 @@ export function Dialog({
   wide?: boolean;
   tone?: string;
 }) {
+  const { t } = useI18n();
   const ref = useRef<HTMLDialogElement>(null);
   const heading = useId();
   const close = useRef(onClose);
@@ -54,14 +56,14 @@ export function Dialog({
       <header className="dialog-bar">
         <div>
           <span className="eyebrow">
-            {label || "CASE DESK · BUREAU TERMINAL"}
+            {label || t("CASE DESK · BUREAU TERMINAL", "CASE DESK · ТЕРМИНАЛ БЮРО")}
           </span>
           <h2 id={heading}>{title}</h2>
         </div>
         <button
           className="icon-button"
           onClick={onClose}
-          aria-label="Close window"
+          aria-label={t("Close window", "Закрыть окно")}
         >
           <Icon name="close" />
         </button>
