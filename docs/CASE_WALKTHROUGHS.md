@@ -12,7 +12,7 @@ Author and QA spoilers for the teammate-authored cases. People, businesses, tran
 | Step | Exact archive query | Visible source | Opens |
 | --- | --- | --- | --- |
 | 1, onboarding | `FixRight Plumbing` | Initial invoice and its explicit search instructions | `d_ad` |
-| 2 | `Harlow Creek Savings` | Initial bank statement’s title | `d_bank_letter` |
+| 2 | `Riverton Savings` | Initial bank statement’s title | `d_bank_letter` |
 | 3 | `FXR Services LLC` | Second merchant on the initial bank statement | `d_registry` |
 
 **Answer:** GUILTY → Tina Ruiz (`c_tina`) → “FixRight’s billing clerk charged Linda’s card a second time through her own company” (`m3`). Pin and submit **`d_registry` + `d_bank_letter`**.
@@ -58,6 +58,6 @@ Additional optional searches: `ParcelGo Store #212` or `Ray Ortiz` opens `d_parc
 - The game requires exactly two distinct evidence documents. The teammate’s broad evidence arrays originally allowed weak pairs; each case now names only its two decisive records, while all other documents remain available as supporting clues.
 - The main case’s **3-query optimal path** is below the original 4–6 search target. This is a documented pacing deviation, accepted to preserve the teammate’s freely branching search graph. The normal walkthrough has 4 substantive queries and 2 corroboration queries.
 - Supplemental receipt facts previously existed only in flat search text. They now appear in visible `body.body`, and every document’s flat `text` is regenerated from its title and body.
-- Domains are fictional; the phone range is reserved 555-01xx. The unrelated real fuel brand was replaced by Harlow Fuel. Chat timestamps include the year.
+- Domains are fictional; the phone range is reserved 555-01xx. The unrelated real fuel brand was replaced by Riverton Fuel. Chat timestamps include the year.
 - `src/cases/cases.test.ts` verifies both playable routes, complete reachability, minimum search counts, body/search-text consistency, rejection of unsupported pairs, and visibility of the support-email domain without unlocking unseen companies.
 - Run `npm run validate`, `npm test`, and `npm run build` for the final checks.

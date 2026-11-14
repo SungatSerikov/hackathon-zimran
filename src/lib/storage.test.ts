@@ -2,6 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { CaseData } from "../types";
 import { createRun } from "../store/game";
 import { clearRun, loadRun, safeRead, safeWrite, saveRun } from "./storage";
+import { getCase } from "../cases";
+import { searchCase } from "../engine/search";
 
 const caseData: CaseData = {
   id: "persistence-test",
@@ -102,6 +104,34 @@ describe("safe storage", () => {
 });
 
 describe("saved runs", () => {
+  it("updates the old city in saved leads without losing progress or breaking search", () => {
+    const tutorial = getCase("tutorial-double-charge")!;
+    const run = {
+      ...createRun(tutorial),
+      elapsedSeconds: 42,
+      seenIds: ["d_invoice", "d_bank"],
+      pinnedIds: ["d_bank"],
+      queries: [{ query: "HARLOW CREEK SAVINGS", documentIds: [], newCount: 0 }],
+      hints: [{
+        stepKey: JSON.stringify([tutorial.id, "s_bank"]),
+        level: 2 as const,
+        message: "Search: Harlow Creek Savings",
+        query: "Harlow Creek Savings",
+        free: false,
+      }],
+    };
+    saveRun(run);
+    const restored = loadRun(tutorial)!;
+    expect(restored).toEqual({
+      ...run,
+      queries: [{ query: "RIVERTON SAVINGS", documentIds: [], newCount: 0 }],
+      hints: [{ ...run.hints[0], message: "Search: Riverton Savings", query: "Riverton Savings" }],
+    });
+    expect(searchCase(tutorial, restored.openedIds, restored.hints[0].query!).documentIds)
+      .toEqual(["d_bank_letter"]);
+    expect(loadRun(tutorial)).toEqual(restored);
+  });
+
   it("migrates a solved legacy save before its result can award a fee", () => {
     saveRun(createRun(caseData));
     const key = [...memory.keys()][0];

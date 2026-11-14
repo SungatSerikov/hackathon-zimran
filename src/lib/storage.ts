@@ -105,6 +105,14 @@ function legacyRunId(value: Record<string, unknown>): string {
   return `legacy-${(first >>> 0).toString(16).padStart(8, "0")}${(second >>> 0).toString(16).padStart(8, "0")}`;
 }
 
+// Early builds used a different city. Keep saved leads usable with current case
+// content while preserving run IDs, hint receipts, evidence, and elapsed time.
+function currentPlaceName(text: string): string {
+  return text.replace(/\bHarlow(?:\s+Creek)?\b/gi, match =>
+    match === match.toUpperCase() ? "RIVERTON" : "Riverton",
+  );
+}
+
 function readHints(value: unknown): HintOffer[] {
   if (!Array.isArray(value)) return [];
   const hints: HintOffer[] = [];
@@ -119,9 +127,9 @@ function readHints(value: unknown): HintOffer[] {
     hints.push({
       stepKey: hint.stepKey,
       level: hint.level,
-      message: hint.message,
+      message: currentPlaceName(hint.message),
       free: false,
-      ...(hint.query !== undefined ? { query: hint.query } : {}),
+      ...(hint.query !== undefined ? { query: currentPlaceName(hint.query) } : {}),
     });
   }
   return hints;
@@ -179,7 +187,7 @@ export function loadRun(caseData: CaseData): GameRun | null {
       const documentIds = knownIds(entry.documentIds, opened);
       return [
         {
-          query: entry.query.trim(),
+          query: currentPlaceName(entry.query.trim()),
           documentIds,
           newCount: Math.min(documentIds.length, Math.floor(entry.newCount)),
         },

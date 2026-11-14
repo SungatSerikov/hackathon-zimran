@@ -68,9 +68,9 @@
         ],
         "total": 312,
         "paymentMethod": "Mastercard ending 3318",
-        "body": "Ship to Marcus Bell, 51 Elm St, Apt 2A, Harlow Creek. Delivered 09/24/2026. Returns accepted within 30 days of delivery. Questions? help@northwindoutfitters.example"
+        "body": "Ship to Marcus Bell, 51 Elm St, Apt 2A, Riverton. Delivered 09/24/2026. Returns accepted within 30 days of delivery. Questions? help@northwindoutfitters.example"
       },
-      "text": "Order #NW-58213 — Northwind Outfitters\nNorthwind Outfitters\nNW-58213\n09/20/2026\nRidgeline insulated jacket, M, charcoal\n$298.00\nShipping\n$14.00\n$312.00\nMastercard ending 3318\nShip to Marcus Bell, 51 Elm St, Apt 2A, Harlow Creek. Delivered 09/24/2026. Returns accepted within 30 days of delivery. Questions? help@northwindoutfitters.example"
+      "text": "Order #NW-58213 — Northwind Outfitters\nNorthwind Outfitters\nNW-58213\n09/20/2026\nRidgeline insulated jacket, M, charcoal\n$298.00\nShipping\n$14.00\n$312.00\nMastercard ending 3318\nShip to Marcus Bell, 51 Elm St, Apt 2A, Riverton. Delivered 09/24/2026. Returns accepted within 30 days of delivery. Questions? help@northwindoutfitters.example"
     },
     {
       "id": "d_label_email",
@@ -82,9 +82,9 @@
         "to": "Marcus Bell",
         "date": "09/30/2026",
         "subject": "Your Northwind return label (Order NW-58213)",
-        "body": "Hi Marcus, thanks for chatting with us! Your return is approved. A $4.99 label fee was charged to your card. Ship the item to: NW Returns Dept, 880 Industrial Way, Unit 12, Harlow Creek. Carrier: ParcelGo. Tracking: PG-77310452. Your refund will be issued within 5 days of delivery."
+        "body": "Hi Marcus, thanks for chatting with us! Your return is approved. A $4.99 label fee was charged to your card. Ship the item to: NW Returns Dept, 880 Industrial Way, Unit 12, Riverton. Carrier: ParcelGo. Tracking: PG-77310452. Your refund will be issued within 5 days of delivery."
       },
-      "text": "Your Northwind return label\nNorthwind Returns Support <support@northwind-returnshelp.example>\nMarcus Bell\n09/30/2026\nYour Northwind return label (Order NW-58213)\nHi Marcus, thanks for chatting with us! Your return is approved. A $4.99 label fee was charged to your card. Ship the item to: NW Returns Dept, 880 Industrial Way, Unit 12, Harlow Creek. Carrier: ParcelGo. Tracking: PG-77310452. Your refund will be issued within 5 days of delivery."
+      "text": "Your Northwind return label\nNorthwind Returns Support <support@northwind-returnshelp.example>\nMarcus Bell\n09/30/2026\nYour Northwind return label (Order NW-58213)\nHi Marcus, thanks for chatting with us! Your return is approved. A $4.99 label fee was charged to your card. Ship the item to: NW Returns Dept, 880 Industrial Way, Unit 12, Riverton. Carrier: ParcelGo. Tracking: PG-77310452. Your refund will be issued within 5 days of delivery."
     },
     {
       "id": "d_store_reply",
@@ -147,9 +147,9 @@
       "initial": false,
       "body": {
         "heading": "ParcelGo shipment PG-77310452",
-        "body": "10/02/2026 10:14 AM — Dropped off at ParcelGo Store #212, Harlow Creek (clerk: Ray Ortiz). 10/02/2026 6:30 PM — In transit. 10/03/2026 11:52 AM — Delivered to 880 Industrial Way, Unit 12, Harlow Creek. Signed by: K. DENTON."
+        "body": "10/02/2026 10:14 AM — Dropped off at ParcelGo Store #212, Riverton (clerk: Ray Ortiz). 10/02/2026 6:30 PM — In transit. 10/03/2026 11:52 AM — Delivered to 880 Industrial Way, Unit 12, Riverton. Signed by: K. DENTON."
       },
-      "text": "ParcelGo tracking — PG-77310452\nParcelGo shipment PG-77310452\n10/02/2026 10:14 AM — Dropped off at ParcelGo Store #212, Harlow Creek (clerk: Ray Ortiz). 10/02/2026 6:30 PM — In transit. 10/03/2026 11:52 AM — Delivered to 880 Industrial Way, Unit 12, Harlow Creek. Signed by: K. DENTON."
+      "text": "ParcelGo tracking — PG-77310452\nParcelGo shipment PG-77310452\n10/02/2026 10:14 AM — Dropped off at ParcelGo Store #212, Riverton (clerk: Ray Ortiz). 10/02/2026 6:30 PM — In transit. 10/03/2026 11:52 AM — Delivered to 880 Industrial Way, Unit 12, Riverton. Signed by: K. DENTON."
     },
     {
       "id": "d_parcelgo_note",
@@ -165,14 +165,14 @@
     {
       "id": "d_unit_listing",
       "type": "ad",
-      "title": "Harlow Creek Commercial Rentals — 880 Industrial Way",
+      "title": "Riverton Commercial Rentals — 880 Industrial Way",
       "initial": false,
       "body": {
         "headline": "880 Industrial Way — small warehouse units",
         "body": "Units 1–20, 400 sq ft, roll-up doors. Currently leased: Unit 7 — Lakeside Cabinets. Unit 12 — QuickShip Returns LLC (since 09/2026). Unit 15 — B&B Auto Parts.",
-        "address": "880 Industrial Way, Harlow Creek"
+        "address": "880 Industrial Way, Riverton"
       },
-      "text": "Harlow Creek Commercial Rentals — 880 Industrial Way\n880 Industrial Way — small warehouse units\nUnits 1–20, 400 sq ft, roll-up doors. Currently leased: Unit 7 — Lakeside Cabinets. Unit 12 — QuickShip Returns LLC (since 09/2026). Unit 15 — B&B Auto Parts.\n880 Industrial Way, Harlow Creek"
+      "text": "Riverton Commercial Rentals — 880 Industrial Way\n880 Industrial Way — small warehouse units\nUnits 1–20, 400 sq ft, roll-up doors. Currently leased: Unit 7 — Lakeside Cabinets. Unit 12 — QuickShip Returns LLC (since 09/2026). Unit 15 — B&B Auto Parts.\n880 Industrial Way, Riverton"
     },
     {
       "id": "d_registry",
@@ -181,9 +181,9 @@
       "initial": false,
       "body": {
         "heading": "Ohio Business Registry (fictional) — Entity record",
-        "body": "Name: QuickShip Returns LLC. Status: Active. Formed: 09/08/2026. Organizer, sole member, and managing owner: Kyle Denton. Mailing and operating address: 880 Industrial Way, Unit 12, Harlow Creek. Phone: (937) 555-0142. Ownership and operating address verified from the signed company filing."
+        "body": "Name: QuickShip Returns LLC. Status: Active. Formed: 09/08/2026. Organizer, sole member, and managing owner: Kyle Denton. Mailing and operating address: 880 Industrial Way, Unit 12, Riverton. Phone: (937) 555-0142. Ownership and operating address verified from the signed company filing."
       },
-      "text": "State Business Registry — QuickShip Returns LLC\nOhio Business Registry (fictional) — Entity record\nName: QuickShip Returns LLC. Status: Active. Formed: 09/08/2026. Organizer, sole member, and managing owner: Kyle Denton. Mailing and operating address: 880 Industrial Way, Unit 12, Harlow Creek. Phone: (937) 555-0142. Ownership and operating address verified from the signed company filing."
+      "text": "State Business Registry — QuickShip Returns LLC\nOhio Business Registry (fictional) — Entity record\nName: QuickShip Returns LLC. Status: Active. Formed: 09/08/2026. Organizer, sole member, and managing owner: Kyle Denton. Mailing and operating address: 880 Industrial Way, Unit 12, Riverton. Phone: (937) 555-0142. Ownership and operating address verified from the signed company filing."
     },
     {
       "id": "d_whois",
@@ -258,13 +258,13 @@
     {
       "id": "d_court",
       "type": "record",
-      "title": "Harlow Creek Small Claims — party search: Denton",
+      "title": "Riverton Small Claims — party search: Denton",
       "initial": false,
       "body": {
         "heading": "Small Claims Court index — party: DENTON, KYLE",
         "body": "Case SC-2025-0419 — Plaintiff: R. Huang v. Denton, Kyle (d/b/a ParcelPro Refunds). Claim: items returned to fake retailer address, $540. Judgment for plaintiff. Case SC-2026-0077 — Plaintiff: L. Ford v. Denton, Kyle. Claim: same. Pending."
       },
-      "text": "Harlow Creek Small Claims — party search: Denton\nSmall Claims Court index — party: DENTON, KYLE\nCase SC-2025-0419 — Plaintiff: R. Huang v. Denton, Kyle (d/b/a ParcelPro Refunds). Claim: items returned to fake retailer address, $540. Judgment for plaintiff. Case SC-2026-0077 — Plaintiff: L. Ford v. Denton, Kyle. Claim: same. Pending."
+      "text": "Riverton Small Claims — party search: Denton\nSmall Claims Court index — party: DENTON, KYLE\nCase SC-2025-0419 — Plaintiff: R. Huang v. Denton, Kyle (d/b/a ParcelPro Refunds). Claim: items returned to fake retailer address, $540. Judgment for plaintiff. Case SC-2026-0077 — Plaintiff: L. Ford v. Denton, Kyle. Claim: same. Pending."
     }
   ],
   "searchIndex": [

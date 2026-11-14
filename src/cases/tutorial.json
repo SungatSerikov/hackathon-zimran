@@ -56,14 +56,14 @@
         ],
         "total": 480,
         "paymentMethod": "Visa ending 2291 — PAID IN FULL",
-        "body": "Customer: Linda Park, 27 Maple Ct, Harlow Creek. Thank you for choosing FixRight Plumbing!\n\nSTART HERE: Type FixRight Plumbing into the computer archive to find the company record. Then follow names and merchant names from the records. The bank statement is from Harlow Creek Savings; compare what that bank says with the business record for the second merchant. Pin the two documents that prove who made the extra charge, then choose your stamp, the responsible person, the method, and those two pinned clues."
+        "body": "Customer: Linda Park, 27 Maple Ct, Riverton. Thank you for choosing FixRight Plumbing!\n\nSTART HERE: Type FixRight Plumbing into the computer archive to find the company record. Then follow names and merchant names from the records. The bank statement is from Riverton Savings; compare what that bank says with the business record for the second merchant. Pin the two documents that prove who made the extra charge, then choose your stamp, the responsible person, the method, and those two pinned clues."
       },
-      "text": "Invoice #4471 — FixRight Plumbing\nFixRight Plumbing\n4471\n10/03/2026\nWater heater thermostat replacement\n$310.00\nLabor (2 hrs)\n$170.00\n$480.00\nVisa ending 2291 — PAID IN FULL\nCustomer: Linda Park, 27 Maple Ct, Harlow Creek. Thank you for choosing FixRight Plumbing!\n\nSTART HERE: Type FixRight Plumbing into the computer archive to find the company record. Then follow names and merchant names from the records. The bank statement is from Harlow Creek Savings; compare what that bank says with the business record for the second merchant. Pin the two documents that prove who made the extra charge, then choose your stamp, the responsible person, the method, and those two pinned clues."
+      "text": "Invoice #4471 — FixRight Plumbing\nFixRight Plumbing\n4471\n10/03/2026\nWater heater thermostat replacement\n$310.00\nLabor (2 hrs)\n$170.00\n$480.00\nVisa ending 2291 — PAID IN FULL\nCustomer: Linda Park, 27 Maple Ct, Riverton. Thank you for choosing FixRight Plumbing!\n\nSTART HERE: Type FixRight Plumbing into the computer archive to find the company record. Then follow names and merchant names from the records. The bank statement is from Riverton Savings; compare what that bank says with the business record for the second merchant. Pin the two documents that prove who made the extra charge, then choose your stamp, the responsible person, the method, and those two pinned clues."
     },
     {
       "id": "d_bank",
       "type": "bank_statement",
-      "title": "Harlow Creek Savings — Card statement (Oct)",
+      "title": "Riverton Savings — Card statement (Oct)",
       "initial": true,
       "body": {
         "owner": "Linda Park — Visa ending 2291",
@@ -80,7 +80,7 @@
           },
           {
             "date": "10/04/2026",
-            "description": "HARLOW FUEL #882",
+            "description": "RIVERTON FUEL #882",
             "amount": -41.5
           },
           {
@@ -95,7 +95,7 @@
           }
         ]
       },
-      "text": "Harlow Creek Savings — Card statement (Oct)\nLinda Park — Visa ending 2291\n10/01/2026\nGREENLEAF GROCERY\n$-64.18\n10/03/2026\nFIXRIGHT PLUMBING\n$-480.00\n10/04/2026\nHARLOW FUEL #882\n$-41.50\n10/05/2026\nFXR SERVICES LLC\n$-480.00\n10/07/2026\nSTREAMFLIX MONTHLY\n$-15.99"
+      "text": "Riverton Savings — Card statement (Oct)\nLinda Park — Visa ending 2291\n10/01/2026\nGREENLEAF GROCERY\n$-64.18\n10/03/2026\nFIXRIGHT PLUMBING\n$-480.00\n10/04/2026\nRIVERTON FUEL #882\n$-41.50\n10/05/2026\nFXR SERVICES LLC\n$-480.00\n10/07/2026\nSTREAMFLIX MONTHLY\n$-15.99"
     },
     {
       "id": "d_dale_email",
@@ -114,29 +114,29 @@
     {
       "id": "d_ad",
       "type": "ad",
-      "title": "FixRight Plumbing — Harlow Creek Yellow Pages",
+      "title": "FixRight Plumbing — Riverton Yellow Pages",
       "initial": false,
       "body": {
         "headline": "FixRight Plumbing — Family owned since 2009",
         "body": "Leaks, heaters, drains. Meet the team: Dale Hughes (owner, master plumber) and Tina Ruiz (billing & scheduling). Billing questions? Ask for Tina.",
         "phone": "(937) 555-0117",
-        "address": "410 Mill St, Harlow Creek"
+        "address": "410 Mill St, Riverton"
       },
-      "text": "FixRight Plumbing — Harlow Creek Yellow Pages\nFixRight Plumbing — Family owned since 2009\nLeaks, heaters, drains. Meet the team: Dale Hughes (owner, master plumber) and Tina Ruiz (billing & scheduling). Billing questions? Ask for Tina.\n(937) 555-0117\n410 Mill St, Harlow Creek"
+      "text": "FixRight Plumbing — Riverton Yellow Pages\nFixRight Plumbing — Family owned since 2009\nLeaks, heaters, drains. Meet the team: Dale Hughes (owner, master plumber) and Tina Ruiz (billing & scheduling). Billing questions? Ask for Tina.\n(937) 555-0117\n410 Mill St, Riverton"
     },
     {
       "id": "d_bank_letter",
       "type": "email",
-      "title": "Harlow Creek Savings — Dispute reply",
+      "title": "Riverton Savings — Dispute reply",
       "initial": false,
       "body": {
-        "from": "Harlow Creek Savings, Card Disputes",
+        "from": "Riverton Savings, Card Disputes",
         "to": "Linda Park",
         "date": "10/11/2026",
         "subject": "Your question about two $480 charges",
         "body": "We reviewed both transactions. They are NOT a duplicate processing error. They came from two different merchant accounts: FIXRIGHT PLUMBING (10/03) and FXR SERVICES LLC (10/05). Both were keyed in manually with your full card number. If you did not authorize the second one, you may file a fraud claim.\n\nProcessor verification for the 10/05/2026 transaction: the authenticated submitting user was Tina Ruiz, billing clerk at FixRight Plumbing. She manually submitted Linda’s stored card details through the FXR SERVICES LLC merchant account. The submission reused FixRight invoice #4471; there was no new repair invoice or additional customer authorization. The original $480 charge settled and was not reversed. The second $480 also settled to FXR SERVICES LLC and was not refunded."
       },
-      "text": "Harlow Creek Savings — Dispute reply\nHarlow Creek Savings, Card Disputes\nLinda Park\n10/11/2026\nYour question about two $480 charges\nWe reviewed both transactions. They are NOT a duplicate processing error. They came from two different merchant accounts: FIXRIGHT PLUMBING (10/03) and FXR SERVICES LLC (10/05). Both were keyed in manually with your full card number. If you did not authorize the second one, you may file a fraud claim.\n\nProcessor verification for the 10/05/2026 transaction: the authenticated submitting user was Tina Ruiz, billing clerk at FixRight Plumbing. She manually submitted Linda’s stored card details through the FXR SERVICES LLC merchant account. The submission reused FixRight invoice #4471; there was no new repair invoice or additional customer authorization. The original $480 charge settled and was not reversed. The second $480 also settled to FXR SERVICES LLC and was not refunded."
+      "text": "Riverton Savings — Dispute reply\nRiverton Savings, Card Disputes\nLinda Park\n10/11/2026\nYour question about two $480 charges\nWe reviewed both transactions. They are NOT a duplicate processing error. They came from two different merchant accounts: FIXRIGHT PLUMBING (10/03) and FXR SERVICES LLC (10/05). Both were keyed in manually with your full card number. If you did not authorize the second one, you may file a fraud claim.\n\nProcessor verification for the 10/05/2026 transaction: the authenticated submitting user was Tina Ruiz, billing clerk at FixRight Plumbing. She manually submitted Linda’s stored card details through the FXR SERVICES LLC merchant account. The submission reused FixRight invoice #4471; there was no new repair invoice or additional customer authorization. The original $480 charge settled and was not reversed. The second $480 also settled to FXR SERVICES LLC and was not refunded."
     },
     {
       "id": "d_registry",
@@ -145,9 +145,9 @@
       "initial": false,
       "body": {
         "heading": "Ohio Business Registry (fictional) — Entity record",
-        "body": "Name: FXR Services LLC. Status: Active. Formed: 08/14/2026. Sole member and owner: Tina Ruiz. Registered agent: Tina Ruiz. Address: 14 Birch Ln, Harlow Creek. Business purpose: billing services. Ownership information confirmed against the signed entity filing; registered-agent status alone would not establish ownership."
+        "body": "Name: FXR Services LLC. Status: Active. Formed: 08/14/2026. Sole member and owner: Tina Ruiz. Registered agent: Tina Ruiz. Address: 14 Birch Ln, Riverton. Business purpose: billing services. Ownership information confirmed against the signed entity filing; registered-agent status alone would not establish ownership."
       },
-      "text": "State Business Registry — FXR Services LLC\nOhio Business Registry (fictional) — Entity record\nName: FXR Services LLC. Status: Active. Formed: 08/14/2026. Sole member and owner: Tina Ruiz. Registered agent: Tina Ruiz. Address: 14 Birch Ln, Harlow Creek. Business purpose: billing services. Ownership information confirmed against the signed entity filing; registered-agent status alone would not establish ownership."
+      "text": "State Business Registry — FXR Services LLC\nOhio Business Registry (fictional) — Entity record\nName: FXR Services LLC. Status: Active. Formed: 08/14/2026. Sole member and owner: Tina Ruiz. Registered agent: Tina Ruiz. Address: 14 Birch Ln, Riverton. Business purpose: billing services. Ownership information confirmed against the signed entity filing; registered-agent status alone would not establish ownership."
     }
   ],
   "searchIndex": [
@@ -165,7 +165,7 @@
     {
       "id": "s_bank",
       "keys": [
-        "Harlow Creek Savings"
+        "Riverton Savings"
       ],
       "kind": "company",
       "reveals": [

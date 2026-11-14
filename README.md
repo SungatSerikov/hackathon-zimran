@@ -2,6 +2,8 @@
 
 A browser detective game for Business Cup 2.0. Read a complaint, follow clues through a fictional records archive, pin evidence, and decide what really happened. English interface; no account required.
 
+All cases take place in **Riverton**, the fictional city used throughout the menu, bureau, documents, and archive. Use this name for new case content and assets.
+
 ## Run locally
 
 Use **Node.js 22.12+** and npm.

@@ -16,7 +16,7 @@ const walkthroughs = [
   {
     id: "tutorial-double-charge",
     minimumSearches: 2,
-    queries: ["FixRight Plumbing", "Harlow Creek Savings", "FXR Services LLC"],
+    queries: ["FixRight Plumbing", "Riverton Savings", "FXR Services LLC"],
     evidence: ["d_registry", "d_bank_letter"],
     unsupportedPair: ["d_ad", "d_bank"],
   },
