@@ -38,14 +38,14 @@ export const hex = (s) => [parseInt(s.slice(1, 3), 16), parseInt(s.slice(3, 5), 
 // Приглушённая «чистая офисная» палитра (32 цвета, лимит 32): тёплые светло-серые, беж, мягкий уголь,
 // орех, серебро/белая техника, приглушённый зелёный акцент. Контуры — тёмные тонированные (ink/edge/rimDk), не чёрные.
 export const P = Object.fromEntries(Object.entries({
-  ink: '#2b2a30', wall: '#cfc9be', desk: '#7a5640', deskDk: '#664634', deskLt: '#8e664c',
+  ink: '#26323a', wall: '#cfc9be', desk: '#7a5640', deskDk: '#664634', deskLt: '#8e664c',
   edge: '#4a3a32', beigeDk: '#b4ab9a', screenOn: '#6fb59a',
   paper: '#ece6d6', paperDk: '#d0c9b6', folder: '#c9a766',  white: '#f5f3ee',
   red: '#b5584c', green: '#5f8a6a', cork: '#b08f68', corkDk: '#957650', steel: '#a3a9ae', steelDk: '#7d848a',
   mug: '#e4e1d8', coffee: '#4a3228', gold: '#c9a850', blue: '#6a88a8',
   // добавлено для tools/draw-sprites.mjs (blue*/red* — корешки папок)
   blueDk: '#4e6a88', blueLt: '#8fa8c2', redDk: '#8a4038', redLt: '#cc7466',
-  rimDk: '#45464d', greenDk: '#46684f', greenLt: '#86ab8e', coffeeLt: '#6e4a38', mugDk: '#bcb9b0', glint: '#ffffff',
+  rimDk: '#45464d', greenDk: '#46684f', greenLt: '#86ab8e', folderLt: '#dcc28c', mugDk: '#bcb9b0', glint: '#ffffff',
 }).map(([k, v]) => [k, hex(v)]));
 export const CLEAR = [0, 0, 0, 0];
 

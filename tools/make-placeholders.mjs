@@ -11,6 +11,8 @@ const FORCE = process.argv.includes('--force');
 const PROTECTED = new Set([
   'scene/clock.png', 'scene/calendar.png', 'scene/coffee.png', 'scene/coffee_empty.png',
   'scene/safe.png', 'scene/safe_open.png', 'scene/phone.png', 'scene/phone_ring.png', 'scene/cabinet.png', 'scene/bg.png',
+  'scene/monitor.png', 'scene/monitor_on.png', 'scene/folder.png', 'scene/folder_open.png', 'scene/board.png', 'scene/stamps.png',
+  'ui/stamp_guilty.png', 'ui/stamp_not_guilty.png', 'ui/claim_form.png',
 ]);
 
 const make = (w, h, fn, outline = true) => { const c = new Canvas(w, h); fn(c, w, h); if (outline) c.outline(); return c; };
@@ -20,7 +22,7 @@ const monitor = (on) => (w, h) => make(w, h, (c) => {
   c.rect(0, 0, w, h - 22, P.paperDk);
   c.rect(w - 14, h - 32, 6, 3, P.green); // led
   c.rect(10, 8, w - 20, h - 42, P.ink);
-  c.rect(12, 10, w - 24, h - 46, on ? P.screenOn : P.ink);
+  c.rect(12, 10, w - 24, h - 46, on ? P.screenOn : P.rimDk);
   if (on) for (let y = 16; y < h - 38; y += 8) c.rect(18, y, w - 50 - (y % 16) * 2, 2, P.ink);
   c.rect(w / 2 - 20, h - 24, 40, 8, P.beigeDk); // шея
   c.rect(w / 2 - 36, h - 16, 72, 16, P.paperDk); // подставка
@@ -76,12 +78,6 @@ const stamps = (w, h) => make(w, h, (c) => {
   }
   c.rect(0, h - 10, w, 10, P.steel);
 });
-const stampImg = (col, n) => (w, h) => make(w, h, (c) => {
-  c.rect(0, 0, w, h, col);
-  c.rect(4, 4, w - 8, h - 8, CLEAR);
-  const bw = Math.floor((w - 20) / n);
-  for (let i = 0; i < n; i++) c.rect(10 + i * bw, 14, bw - 3, h - 28, col);
-}, false);
 const paper = (w, h) => {
   const c = new Canvas(w, h);
   c.rect(0, 0, w, h, P.paper);
@@ -150,8 +146,6 @@ const files = [
   ['scene/coffee.png', () => coffee(false)(24, 28)],
   ['scene/coffee_empty.png', () => coffee(true)(24, 28)],
   ['scene/stamps.png', () => stamps(110, 55)],
-  ['ui/stamp_approved.png', () => stampImg(P.green, 8)(96, 40)],
-  ['ui/stamp_denied.png', () => stampImg(P.red, 6)(96, 40)],
   ['ui/paper.png', () => paper(64, 64)],
   ['scene/safe.png', () => safe(false)(70, 60)],
   ['scene/safe_open.png', () => safe(true)(70, 60)],
