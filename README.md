@@ -27,7 +27,8 @@ npm run preview   # preview the production build locally
 - Viewport-sized pixel-art office, title menu, dossier selection and client arrivals. The office remains visible on mobile, with a touch-friendly toolbelt at 375px.
 - Physical-object interfaces: paper folder, CRT archive, corkboard, stamped verdict, safe and informant phone. Optional procedural sound effects and reduced-motion support.
 - Search using clues from discovered records; exact normalized matches and one-character typo tolerance for longer keys. Hidden guesses do not unlock evidence.
-- Eight document types, unread markers, search history, pin/unpin, evidence board.
+- A records computer with a document reader beside search results. Click highlighted names/references in the visible record or type a query; open returned records without leaving the computer. Narrow screens use document/results tabs.
+- Eight document types, unread markers, pin/unpin and an evidence board. Reopening unchanged search results is free; searches are checked again when new clues unlock more records.
 - GUILTY/NOT_GUILTY stamp + responsible person + explanation + **two pinned supporting documents**.
 - Three attempts. Each wrong conclusion adds 60 seconds and removes one coffee. Repeating the identical conclusion does not burn another attempt accidentally.
 - Stopwatch, score breakdown, solution explanation, fresh attempts, best scores, progress saved per browser, daily play streak.

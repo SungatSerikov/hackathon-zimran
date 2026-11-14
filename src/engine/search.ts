@@ -7,13 +7,13 @@ const escapeRegex = (value: string) =>
   value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 /** A clue must occur as a complete name/token, never as “Ann” inside “annual”. */
-export function clueOccurs(
+export function findClueMatches(
   text: string,
   key: string,
   kind: SearchKind,
-): boolean {
+): { start: number; end: number }[] {
   const needle = normalize(key, kind);
-  if (!needle) return false;
+  if (!needle) return [];
   // Preserve source boundaries while ignoring the same punctuation as normalize.
   // This keeps a domain discoverable after “support@” and avoids concatenating
   // unrelated numbers or treating short keys as parts of longer words.
@@ -30,6 +30,7 @@ export function clueOccurs(
     "gu",
   );
   const lowered = text.toLowerCase();
+  const matches: { start: number; end: number }[] = [];
   for (const match of lowered.matchAll(expression)) {
     const start = match.index;
     const end = start + match[0].length;
@@ -40,9 +41,16 @@ export function clueOccurs(
         /^[\s().+\-]*\d/.test(lowered.slice(end)))
     )
       continue;
-    return true;
+    matches.push({
+      start: kind === "phone" && lowered[start - 1] === "(" ? start - 1 : start,
+      end,
+    });
   }
-  return false;
+  return matches;
+}
+
+export function clueOccurs(text: string, key: string, kind: SearchKind): boolean {
+  return findClueMatches(text, key, kind).length > 0;
 }
 
 export function isEntryAvailable(

@@ -6,6 +6,7 @@ import { getStreak } from "../lib/streak";
 import { Icon } from "../components/Icons";
 import { Dialog } from "../components/Dialog";
 import { DocumentView, docLabels } from "../components/DocumentView";
+import { RecordsComputer } from "../components/RecordsComputer";
 import { Scene, Asset, formatTime, type DeskAction } from "../components/Scene";
 import { Result } from "./Result";
 import { EconomyPanel, bureauMoney } from "../components/EconomyPanel";
@@ -69,7 +70,6 @@ export function Desk({
     caseData.documents.find((d) => d.initial)?.id || "",
   );
   const [query, setQuery] = useState("");
-  const [searchFeedback, setSearchFeedback] = useState("");
   const [toast, setToast] = useState("");
   const [storageFailed, setStorageFailed] = useState(false);
   const [verdict, setVerdict] = useState<Verdict | null>(null);
@@ -97,8 +97,8 @@ export function Desk({
         : 3;
   const guidance = [
     "Start with the case folder. Read the complaint and look for a company name or reference number.",
-    "Open the archive monitor. Type a clue you have read — the company name is a good first search.",
-    "Follow reference numbers in the records you find. Open useful documents and pin two that prove what happened.",
+    "Open the computer. Read a record and click a highlighted name or number to search it.",
+    "Open a search result inside the computer. Follow its highlighted details and pin two records that prove what happened.",
     "Ready to decide? Open Verdict. Choose a stamp, a person, an explanation, and two pinned documents.",
   ];
   useEffect(() => {
@@ -179,13 +179,12 @@ export function Desk({
         "Take your time. Accuracy matters. The clock pauses when you return to the case list.",
       );
   }
-  function search() {
-    const clean = query.trim();
+  function search(value: string) {
+    const clean = value.trim();
     if (!clean) return;
     dispatch({ type: "search", caseData, query: clean });
     playSound("record");
-    setSearchFeedback(clean);
-    setQuery("");
+    setQuery(clean);
   }
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -225,7 +224,6 @@ export function Desk({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   });
-  const latest = run.queries.at(-1);
   const ready = !!verdict && !!culprit && !!method && evidence.length === 2;
   const accusation = useMemo(
     () =>
@@ -517,109 +515,21 @@ export function Desk({
         </Dialog>
       )}
       {panel === "search" && (
-        <Dialog
-          title="Municipal records archive"
-          label="RCA / SECURE TERMINAL / 01"
-          wide
-          tone="terminal-dialog"
+        <RecordsComputer
+          caseData={caseData}
+          run={run}
+          selectedId={selected}
+          query={query}
+          onQuery={setQuery}
+          onSearch={search}
+          onSelect={(id) => {
+            setSelected(id);
+            dispatch({ type: "read", documentId: id });
+          }}
+          onRead={(id) => dispatch({ type: "read", documentId: id })}
+          onPin={pin}
           onClose={close}
-        >
-          <div className="terminal-intro">
-            <span className="status-dot" />
-            ARCHIVE CONNECTED{" "}
-            <span>Search only the clues you have discovered.</span>
-          </div>
-          <form
-            className="search-form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              search();
-            }}
-          >
-            <span aria-hidden="true">&gt;_</span>
-            <input
-              aria-label="Search archive"
-              autoFocus
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Company, name, reference number…"
-              maxLength={120}
-            />
-            <button className="button" type="submit" disabled={!query.trim()}>
-              Search
-              <Icon name="search" size={18} />
-            </button>
-          </form>
-          <p className="terminal-help">
-            Enter a specific name or number from your documents. Spaces and
-            punctuation are okay.
-          </p>
-          {searchFeedback && latest && (
-            <div className="search-results" aria-live="polite">
-              <span className="eyebrow">RESULTS FOR “{latest.query}”</span>
-              {latest.documentIds.length ? (
-                <>
-                  <p>
-                    {latest.newCount
-                      ? `${latest.newCount} new record${latest.newCount === 1 ? "" : "s"} added to your folder.`
-                      : "These records are already in your folder."}
-                  </p>
-                  {latest.documentIds.map((id) => {
-                    const d = caseData.documents.find((d) => d.id === id);
-                    return d ? (
-                      <button
-                        className="search-record"
-                        key={id}
-                        onClick={() => openDoc(d)}
-                      >
-                        <Icon name="file" />
-                        <span>
-                          {d.title}
-                          <small>{docLabels[d.type]}</small>
-                        </span>
-                        <Icon name="arrow" />
-                      </button>
-                    ) : null;
-                  })}
-                </>
-              ) : (
-                <div className="empty-search">
-                  <Icon name="search" size={34} />
-                  <h3>No records found.</h3>
-                  <p>
-                    Try a name or reference written in a document you have
-                    already found. Each new record can lead to the next.
-                  </p>
-                  <button className="text-button" onClick={openFolder}>
-                    Review your case folder →
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-          <div className="query-history">
-            <span className="eyebrow">
-              RECENT QUERIES · {run.queries.length}
-            </span>
-            <div>
-              {run.queries
-                .slice(-8)
-                .reverse()
-                .map((q, i) => (
-                  <button
-                    key={`${i}-${q.query}`}
-                    onClick={() => setQuery(q.query)}
-                  >
-                    {q.query}
-                    <small>{q.documentIds.length}</small>
-                  </button>
-                ))}
-              {!run.queries.length && (
-                <p>Your search history will appear here.</p>
-              )}
-            </div>
-          </div>
-        </Dialog>
+        />
       )}
       {panel === "board" && (
         <Dialog
@@ -923,8 +833,8 @@ export function Desk({
               documents have another.
             </li>
             <li>
-              <strong>Follow a clue.</strong> Search a name, company or
-              reference from a record you have found.
+              <strong>Follow a clue.</strong> Open the computer and click a highlighted name, company or
+              reference in your record. You can also type it into the search bar.
             </li>
             <li>
               <strong>Build your case.</strong> Pin records that support or
