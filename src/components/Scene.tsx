@@ -279,7 +279,12 @@ export function Scene({
                 <span className="safe-cash-label">${balance.toFixed(0)}</span>
               )}
               {item.id === "monitor" && (
-                <span className="monitor-live-label">
+                <span className="monitor-live-label" style={{
+                  left: `${spriteMeta.monitor.screen.x / item.w * 100}%`,
+                  top: `${spriteMeta.monitor.screen.y / item.h * 100}%`,
+                  width: `${spriteMeta.monitor.screen.w / item.w * 100}%`,
+                  height: `${spriteMeta.monitor.screen.h / item.h * 100}%`,
+                }}>
                   RCA / ARCHIVE
                   <br />
                   <b>

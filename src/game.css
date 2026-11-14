@@ -1661,6 +1661,11 @@ body,
   inset: 0;
   pointer-events: none;
 }
+.monitor-live-label {
+  padding: 3%;
+  overflow: hidden;
+  line-height: 2;
+}
 .clock-live-hands i {
   position: absolute;
   background: #454447;
