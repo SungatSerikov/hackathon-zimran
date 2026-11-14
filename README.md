@@ -28,7 +28,7 @@ npm run preview   # preview the production build locally
 - Physical-object interfaces: paper folder, CRT archive, corkboard, stamped verdict, safe and informant phone. Optional procedural sound effects and reduced-motion support.
 - Search using clues from discovered records; exact normalized matches and one-character typo tolerance for longer keys. Hidden guesses do not unlock evidence.
 - Eight document types, unread markers, search history, pin/unpin, evidence board.
-- APPROVED/DENIED stamp + responsible person + explanation + **two pinned supporting documents**.
+- GUILTY/NOT_GUILTY stamp + responsible person + explanation + **two pinned supporting documents**.
 - Three attempts. Each wrong conclusion adds 60 seconds and removes one coffee. Repeating the identical conclusion does not burn another attempt accidentally.
 - Stopwatch, score breakdown, solution explanation, fresh attempts, best scores, progress saved per browser, daily play streak.
 - A bureau safe starting at $100, case fees with speed/accuracy bonuses, 25% replay fees, and paid two-level informant hints ($40 and 50 points per call).
@@ -116,3 +116,12 @@ The app is a static Vite build. Import this repository/branch into Vercel, choos
 - `supabase/schema.sql`: optional public tables and policies.
 
 Browser QA covered both correct endings, wrong answers and three-attempt failure, local score submission, reload/resume, replay, duel-interest and pass previews, and readable mobile documents at 375px. No live payment or online matchmaking is represented as working.
+
+### Verdict review
+
+The stamps judge the **respondent** named on the claim: red **GUILTY** when
+they owe the claimant, green **NOT GUILTY** otherwise. After a wrong answer,
+an explicit review dialog shows remaining attempts, one lost coffee, +60 seconds,
+and the additional 150-point deduction. The clock pauses until that dialog closes.
+The third wrong answer ends the case with **CASE FAILED**. Existing saves with
+APPROVED/DENIED stamps migrate without resetting run identity or paid hints.

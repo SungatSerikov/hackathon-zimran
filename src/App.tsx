@@ -135,7 +135,7 @@ export default function App() {
               board, then compare the stories.
             </li>
             <li>
-              <strong>Make your call.</strong> Approve or deny the complaint.
+              <strong>Make your call.</strong> Stamp the respondent GUILTY or NOT GUILTY.
               Name the culprit, explain how, and support it with two records.
             </li>
           </ol>

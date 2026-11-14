@@ -174,7 +174,7 @@ function schemaErrors(input: unknown): string[] {
   };
 
   const data = object(input, "case");
-  ["id", "title", "brief", "claim"].forEach((field) =>
+  ["id", "title", "brief"].forEach((field) =>
     string(data[field], field),
   );
   if (
@@ -191,6 +191,17 @@ function schemaErrors(input: unknown): string[] {
     if (data[field] !== undefined) calendarDate(data[field], field);
   }
 
+  const claim = object(data.claim, "claim");
+  ["number", "claimant", "respondent", "request", "statement"].forEach((field) =>
+    string(claim[field], `claim.${field}`),
+  );
+  if (
+    claim.amount !== undefined &&
+    number(claim.amount, "claim.amount") &&
+    claim.amount < 0
+  )
+    errors.push("claim.amount: must be non-negative.");
+
   const characterIds = new Set<string>();
   array(data.characters, "characters", 1).forEach((inputCharacter, i) => {
     const path = `characters[${i}]`;
@@ -200,6 +211,8 @@ function schemaErrors(input: unknown): string[] {
       string(character[field], `${path}.${field}`),
     );
   });
+  if (typeof claim.claimant === "string")
+    references([claim.claimant], "claim.claimant", characterIds);
   const documentIds = new Set<string>();
   array(data.documents, "documents", 2).forEach((inputDocument, i) => {
     const path = `documents[${i}]`;
@@ -229,7 +242,7 @@ function schemaErrors(input: unknown): string[] {
       errors.push(`${path}.reveals: duplicate document ids.`);
   });
   const solution = object(data.solution, "solution");
-  enumeration(solution.verdict, "solution.verdict", ["APPROVED", "DENIED"]);
+  enumeration(solution.verdict, "solution.verdict", ["GUILTY", "NOT_GUILTY"]);
   if (string(solution.culprit, "solution.culprit"))
     references([solution.culprit], "solution.culprit", characterIds);
   const methodIds = new Set<string>();

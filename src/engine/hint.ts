@@ -43,7 +43,7 @@ export function getNextHint(
       stepKey: JSON.stringify([caseData.id, "verdict"]),
       level: 0,
       message:
-        "You have enough. Pin two supporting documents and stamp the claim.",
+        "You have enough. Pin two supporting documents and stamp the respondent.",
       free: true,
     };
   }

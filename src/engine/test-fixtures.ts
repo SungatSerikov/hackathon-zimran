@@ -20,7 +20,7 @@ export const makeCase = (): CaseData => ({
   estMinutes: 5,
   premium: false,
   brief: "Investigate Arbor Repairs.",
-  claim: "I paid twice.",
+  claim: { number: "001", claimant: "client", respondent: "Arbor Repairs", request: "Refund", amount: 100, statement: "I paid twice." },
   characters: [
     { id: "client", name: "Amy Gray", role: "Client", portrait: "amy.webp" },
     { id: "owner", name: "Sam Hall", role: "Owner", portrait: "sam.webp" },
@@ -42,7 +42,7 @@ export const makeCase = (): CaseData => ({
     { id: "order", keys: ["AB901"], kind: "order", reveals: ["invoice"] },
   ],
   solution: {
-    verdict: "APPROVED",
+    verdict: "GUILTY",
     culprit: "owner",
     methods: [
       { id: "duplicate", text: "Charged twice." },

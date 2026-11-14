@@ -160,7 +160,7 @@ export function gameReducer(state: GameRun, action: GameAction): GameRun {
       if (
         caseData.id !== state.caseId ||
         !accusation ||
-        !["APPROVED", "DENIED"].includes(accusation.verdict) ||
+        !["GUILTY", "NOT_GUILTY"].includes(accusation.verdict) ||
         !caseData.characters.some(
           (character) => character.id === accusation.culprit,
         ) ||

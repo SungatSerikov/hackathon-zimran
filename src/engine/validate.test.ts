@@ -129,7 +129,7 @@ describe("validateCase", () => {
     [
       "claim",
       (data: ReturnType<typeof makeCase>) => {
-        data.claim = " ";
+        data.claim.statement = " ";
       },
     ],
     [
@@ -228,6 +228,32 @@ describe("validateCase", () => {
         body: "Payment recorded in full.",
       },
     };
+    expect(validateCase(data).valid).toBe(true);
+  });
+});
+
+describe("structured complaint", () => {
+  it.each(["number", "respondent", "request", "statement"] as const)(
+    "rejects blank claim.%s",
+    (field) => {
+      const data = makeCase();
+      data.claim[field] = " ";
+      expect(validateCase(data).errors.join(" ")).toContain(`claim.${field}`);
+    },
+  );
+  it("requires a known claimant", () => {
+    const data = makeCase();
+    data.claim.claimant = "missing-person";
+    expect(validateCase(data).errors.join(" ")).toContain("claim.claimant");
+  });
+  it.each([-10, NaN, Infinity])("rejects invalid claim amount %s", (amount) => {
+    const data = makeCase();
+    data.claim.amount = amount;
+    expect(validateCase(data).errors.join(" ")).toContain("claim.amount");
+  });
+  it("allows an omitted amount", () => {
+    const data = makeCase();
+    delete data.claim.amount;
     expect(validateCase(data).valid).toBe(true);
   });
 });

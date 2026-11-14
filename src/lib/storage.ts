@@ -60,9 +60,16 @@ function readAccusation(
   caseData: CaseData,
   opened: Set<string>,
 ): Accusation | null {
+  if (!object(value)) return null;
+  // Older saves stamped the complaint; the new stamps judge the respondent.
+  const verdict =
+    value.verdict === "APPROVED"
+      ? "GUILTY"
+      : value.verdict === "DENIED"
+        ? "NOT_GUILTY"
+        : value.verdict;
   if (
-    !object(value) ||
-    (value.verdict !== "APPROVED" && value.verdict !== "DENIED") ||
+    (verdict !== "GUILTY" && verdict !== "NOT_GUILTY") ||
     typeof value.culprit !== "string" ||
     !caseData.characters.some((character) => character.id === value.culprit) ||
     typeof value.method !== "string" ||
@@ -74,7 +81,7 @@ function readAccusation(
   )
     return null;
   return {
-    verdict: value.verdict,
+    verdict,
     culprit: value.culprit,
     method: value.method,
     evidence: [...value.evidence] as string[],
@@ -200,7 +207,13 @@ export function loadRun(caseData: CaseData): GameRun | null {
   )
     return null;
   // Commit migration before the result screen can award this run's fee.
-  if (value.runId === undefined || value.hints === undefined) saveRun(run);
+  if (
+    value.runId === undefined ||
+    value.hints === undefined ||
+    (object(value.lastAccusation) &&
+      value.lastAccusation.verdict !== run.lastAccusation?.verdict)
+  )
+    saveRun(run);
   return run;
 }
 

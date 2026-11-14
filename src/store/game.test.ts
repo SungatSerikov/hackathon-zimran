@@ -9,7 +9,7 @@ const caseData: CaseData = {
   estMinutes: 5,
   premium: false,
   brief: "Contact Alpha.",
-  claim: "Refund me.",
+  claim: { number: "001", claimant: "client", respondent: "Arbor Repairs", request: "Refund", amount: 100, statement: "Refund me." },
   characters: [
     { id: "client", name: "Client", role: "Claimant", portrait: "" },
     { id: "vendor", name: "Vendor", role: "Vendor", portrait: "" },
@@ -45,7 +45,7 @@ const caseData: CaseData = {
     { id: "order", kind: "order", keys: ["7788"], reveals: ["bank"] },
   ],
   solution: {
-    verdict: "APPROVED",
+    verdict: "GUILTY",
     culprit: "vendor",
     methods: [
       { id: "double", text: "Double charged" },
@@ -58,7 +58,7 @@ const caseData: CaseData = {
   },
 };
 const correct: Accusation = {
-  verdict: "APPROVED",
+  verdict: "GUILTY",
   culprit: "vendor",
   method: "double",
   evidence: ["invoice", "bank"],
@@ -215,7 +215,7 @@ describe("game reducer", () => {
   it("charges three different wrong answers and freezes the failed run", () => {
     let run = readyRun();
     run = gameReducer(run, { type: "tick", seconds: 10 });
-    run = accuse(run, { ...correct, verdict: "DENIED" });
+    run = accuse(run, { ...correct, verdict: "NOT_GUILTY" });
     expect(run).toMatchObject({
       wrongAttempts: 1,
       elapsedSeconds: 70,
@@ -238,7 +238,7 @@ describe("game reducer", () => {
   });
 
   it("does not charge a duplicate accusation twice even when evidence order changes", () => {
-    const wrong = { ...correct, verdict: "DENIED" as const };
+    const wrong = { ...correct, verdict: "NOT_GUILTY" as const };
     const run = accuse(readyRun(), wrong);
     expect(accuse(run, wrong)).toBe(run);
     expect(accuse(run, { ...wrong, evidence: ["bank", "invoice"] })).toBe(run);

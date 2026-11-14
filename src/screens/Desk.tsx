@@ -19,6 +19,7 @@ type Panel =
   | "search"
   | "board"
   | "verdict"
+  | "verdict-feedback"
   | "calendar"
   | "help"
   | "wallet"
@@ -55,13 +56,14 @@ export function Desk({
   );
   const [hotspots, setHotspots] = useState(false);
   const client =
-    caseData.characters.find((c) => c.role.toLowerCase() === "client") ||
+    caseData.characters.find((c) => c.id === caseData.claim.claimant) ||
     caseData.characters[0];
   const paused =
     externallyPaused ||
     panel === "pause" ||
     panel === "briefing" ||
-    panel === "help";
+    panel === "help" ||
+    panel === "verdict-feedback";
   const [balance, setBalance] = useState(() => getWallet().balance);
   const [selected, setSelected] = useState(
     caseData.documents.find((d) => d.initial)?.id || "",
@@ -122,14 +124,14 @@ export function Desk({
   }, [toast]);
   useEffect(() => {
     if (run.wrongAttempts > prevWrong.current) {
-      setToast(
-        "The records do not support that conclusion. One coffee lost. +60 seconds.",
-      );
+      // Native dialogs sit above every page toast. Show the outcome in its
+      // own modal so it remains visible until the player acknowledges it.
+      if (run.status === "playing") setPanel("verdict-feedback");
       setConfirming(false);
       setSubmitLock(true);
     }
     prevWrong.current = run.wrongAttempts;
-  }, [run.wrongAttempts]);
+  }, [run.wrongAttempts, run.status]);
   useEffect(() => {
     setConfirming(false);
     setSubmitLock(false);
@@ -228,7 +230,7 @@ export function Desk({
   const accusation = useMemo(
     () =>
       ({
-        verdict: verdict || "APPROVED",
+        verdict: verdict || "GUILTY",
         culprit,
         method,
         evidence,
@@ -398,7 +400,7 @@ export function Desk({
             <div className="client-dialogue">
               <span className="eyebrow">{caseData.title}</span>
               <blockquote>
-                “{caseData.claim.replace(/ — [^.]+$/, "")}”
+                “{caseData.claim.statement}”
               </blockquote>
               <p>{caseData.brief}</p>
               <button className="button" data-sound="paper" onClick={close}>
@@ -685,22 +687,42 @@ export function Desk({
           wide
           onClose={close}
         >
+          {run.wrongAttempts > 0 && (
+            <div className="verdict-error-banner" role="status">
+              <strong>Your previous verdict was incorrect.</strong>
+              <span>
+                {3 - run.wrongAttempts} {run.wrongAttempts === 2 ? "attempt" : "attempts"} remaining.
+                Recheck your conclusion before submitting again.
+              </span>
+            </div>
+          )}
           <div className="claim-paper">
-            <span className="eyebrow">CLIENT’S REQUEST</span>
-            <blockquote>“{caseData.claim}”</blockquote>
+            <span className="eyebrow">RIVERTON CONSUMER AFFAIRS · CLAIM #{caseData.claim.number}</span>
+            <dl className="claim-details">
+              <div><dt>Claimant</dt><dd>{client.name}</dd></div>
+              <div><dt>Respondent</dt><dd>{caseData.claim.respondent}</dd></div>
+              <div><dt>Request</dt><dd>{caseData.claim.request}</dd></div>
+              {caseData.claim.amount !== undefined && (
+                <div><dt>Amount</dt><dd>{bureauMoney(caseData.claim.amount)}</dd></div>
+              )}
+            </dl>
+            <blockquote>“{caseData.claim.statement}”</blockquote>
+            <p className="stamp-instruction">
+              Stamp the respondent: GUILTY if they owe the claimant, NOT GUILTY if they don’t.
+            </p>
             <div className="verdict-stamps">
-              {(["APPROVED", "DENIED"] as const).map((v) => (
+              {(["GUILTY", "NOT_GUILTY"] as const).map((v) => (
                 <button
                   className={`stamp-choice ${v.toLowerCase()} ${verdict === v ? "chosen" : ""}`}
                   key={v}
                   onClick={() => setVerdict(v)}
                   aria-pressed={verdict === v}
                 >
-                  {v}
+                  {v.replaceAll("_", " ")}
                   <small>
-                    {v === "APPROVED"
-                      ? "The complaint is valid"
-                      : "The complaint is not valid"}
+                    {v === "GUILTY"
+                      ? "Respondent owes the claimant"
+                      : "Respondent is not responsible"}
                   </small>
                 </button>
               ))}
@@ -804,7 +826,7 @@ export function Desk({
             <div className="confirm-verdict">
               <p>
                 <strong>Submit this conclusion?</strong> A wrong answer costs
-                one attempt and adds 60 seconds.
+                one attempt, adds 60 seconds, and deducts 150 additional points.
               </p>
               <button
                 className="button secondary"
@@ -842,6 +864,40 @@ export function Desk({
           )}
         </Dialog>
       )}
+      {panel === "verdict-feedback" && (
+        <Dialog
+          title="Verdict incorrect"
+          label="BUREAU REVIEW · CONCLUSION REJECTED"
+          tone="verdict-feedback-dialog"
+          onClose={close}
+        >
+          <div className="verdict-feedback" role="alert">
+            <div className="rejected-stamp" aria-hidden="true">INCORRECT</div>
+            <p>
+              The evidence does not support your conclusion.
+              Recheck the respondent, the person responsible, the explanation,
+              and your two supporting documents.
+            </p>
+            <strong className="attempts-remaining">
+              {3 - run.wrongAttempts} {run.wrongAttempts === 2 ? "attempt" : "attempts"} remaining
+            </strong>
+            <dl className="verdict-penalties">
+              <div><dt>Attempt used</dt><dd>−1 coffee</dd></div>
+              <div><dt>Time penalty</dt><dd>+60 seconds</dd></div>
+              <div><dt>Additional score penalty</dt><dd>−150 points</dd></div>
+            </dl>
+          </div>
+          <p className="feedback-pause-note">Clock paused while you read this notice.</p>
+          <div className="feedback-actions">
+            <button className="button" onClick={() => setPanel("verdict")}>
+              Review my verdict
+            </button>
+            <button className="button secondary" onClick={close}>
+              Back to investigation
+            </button>
+          </div>
+        </Dialog>
+      )}
       {panel === "calendar" && (
         <Dialog title="Office calendar" onClose={close}>
           <div className="calendar-display">
@@ -875,8 +931,8 @@ export function Desk({
               contradict the story.
             </li>
             <li>
-              <strong>Make a verdict.</strong> Approve or deny the complaint,
-              then choose who, how and two pieces of proof.
+              <strong>Make a verdict.</strong> Stamp the respondent GUILTY or
+              NOT GUILTY, then choose who, how and two pieces of proof.
             </li>
           </ol>
           <p className="notice">

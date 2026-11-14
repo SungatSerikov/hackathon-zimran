@@ -122,17 +122,17 @@ export function Result({
       <div className="result-heading">
         <span className="eyebrow">{caseData.title} / CASE CLOSED</span>
         <div className={`result-stamp ${solved ? "solved" : "failed"}`}>
-          {solved ? "CASE SOLVED" : "CASE REVIEWED"}
+          {solved ? "CASE SOLVED" : "CASE FAILED"}
         </div>
         <h1>
           {solved
             ? "The details added up."
-            : "Every case teaches you something."}
+            : "No attempts remaining."}
         </h1>
         <p>
           {solved
             ? "Your conclusion is supported by the evidence."
-            : "Your three attempts are used. Here is what the records reveal."}
+            : "Your final verdict was incorrect. All three attempts are used. Here is what the records reveal."}
         </p>
       </div>
       <div className="result-grid">
@@ -195,11 +195,12 @@ export function Result({
           </div>
           <div className="case-resolution">
             <span
-              className={`badge ${caseData.solution.verdict === "APPROVED" ? "green" : "red"}`}
+              className={`badge ${caseData.solution.verdict === "GUILTY" ? "red" : "green"}`}
             >
-              {caseData.solution.verdict}
+              {caseData.solution.verdict.replaceAll("_", " ")}
             </span>
-            <h2>{culprit?.name}</h2>
+            <h2>{caseData.claim.respondent}</h2>
+            <p><strong>Real culprit:</strong> {culprit?.name}</p>
             <p className="resolution-method">{method?.text}</p>
             <p>{caseData.solution.explanation}</p>
             <h3>The evidence that mattered</h3>

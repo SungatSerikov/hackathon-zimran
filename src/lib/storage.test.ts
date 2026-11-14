@@ -10,7 +10,7 @@ const caseData: CaseData = {
   estMinutes: 5,
   premium: false,
   brief: "Alpha",
-  claim: "Refund",
+  claim: { number: "001", claimant: "vendor", respondent: "Arbor Repairs", request: "Refund", amount: 100, statement: "Refund" },
   characters: [{ id: "vendor", name: "Vendor", role: "Vendor", portrait: "" }],
   documents: [
     {
@@ -42,7 +42,7 @@ const caseData: CaseData = {
     { id: "alpha", keys: ["Alpha"], kind: "company", reveals: ["one", "two"] },
   ],
   solution: {
-    verdict: "APPROVED",
+    verdict: "GUILTY",
     culprit: "vendor",
     methods: [
       { id: "double", text: "Double" },
@@ -112,7 +112,7 @@ describe("saved runs", () => {
     old.pinnedIds = ["one", "two"];
     old.status = "solved";
     old.lastAccusation = {
-      verdict: "APPROVED",
+      verdict: "GUILTY",
       culprit: "vendor",
       method: "double",
       evidence: ["one", "two"],
@@ -244,7 +244,7 @@ describe("saved runs", () => {
       pinnedIds: ["one", "two"],
       status: "solved" as const,
       lastAccusation: {
-        verdict: "APPROVED" as const,
+        verdict: "GUILTY" as const,
         culprit: "vendor",
         method: "double",
         evidence: ["one", "two"],
@@ -259,5 +259,57 @@ describe("saved runs", () => {
       lastAccusation: { ...solved.lastAccusation, evidence: ["one", "one"] },
     });
     expect(loadRun(caseData)).toBeNull();
+  });
+});
+
+describe("legacy verdict migration", () => {
+  it.each([["APPROVED", "GUILTY"], ["DENIED", "NOT_GUILTY"]] as const)(
+    "preserves a completed %s run as %s without a new award identity",
+    (legacy, current) => {
+      const migratedCase = {
+        ...caseData,
+        solution: { ...caseData.solution, verdict: current },
+      };
+      const run = {
+        ...createRun(migratedCase),
+        runId: "already-paid-run",
+        openedIds: ["initial", "one", "two"],
+        pinnedIds: ["one", "two"],
+        elapsedSeconds: 125,
+        status: "solved",
+        lastAccusation: {
+          verdict: legacy, culprit: "vendor", method: "double",
+          evidence: ["one", "two"],
+        },
+      };
+      const key = `case-desk:run:v1:${migratedCase.id}`;
+      memory.set(key, JSON.stringify(run));
+      expect(loadRun(migratedCase)).toMatchObject({
+        runId: "already-paid-run", status: "solved", elapsedSeconds: 125,
+        pinnedIds: ["one", "two"], lastAccusation: { verdict: current },
+      });
+      expect(JSON.parse(memory.get(key)!)).toMatchObject({
+        runId: "already-paid-run", lastAccusation: { verdict: current },
+      });
+    },
+  );
+  it("migrates an incorrect verdict and keeps the used attempt and penalty", () => {
+    const key = `case-desk:run:v1:${caseData.id}`;
+    memory.set(key, JSON.stringify({
+      ...createRun(caseData),
+      runId: "ongoing-run",
+      openedIds: ["initial", "one", "two"],
+      pinnedIds: ["one", "two"],
+      wrongAttempts: 1,
+      elapsedSeconds: 95,
+      lastAccusation: {
+        verdict: "DENIED", culprit: "vendor", method: "double",
+        evidence: ["one", "two"],
+      },
+    }));
+    expect(loadRun(caseData)).toMatchObject({
+      runId: "ongoing-run", status: "playing", wrongAttempts: 1,
+      elapsedSeconds: 95, lastAccusation: { verdict: "NOT_GUILTY" },
+    });
   });
 });

@@ -15,7 +15,7 @@ Author and QA spoilers for the teammate-authored cases. People, businesses, tran
 | 2 | `Harlow Creek Savings` | Initial bank statement’s title | `d_bank_letter` |
 | 3 | `FXR Services LLC` | Second merchant on the initial bank statement | `d_registry` |
 
-**Answer:** APPROVED → Tina Ruiz (`c_tina`) → “FixRight’s billing clerk charged Linda’s card a second time through her own company” (`m3`). Pin and submit **`d_registry` + `d_bank_letter`**.
+**Answer:** GUILTY → Tina Ruiz (`c_tina`) → “FixRight’s billing clerk charged Linda’s card a second time through her own company” (`m3`). Pin and submit **`d_registry` + `d_bank_letter`**.
 
 The bank’s processor verification identifies Tina as the authenticated actor who manually submitted the second settled $480 charge, reused the original invoice, and had no additional authorization. The registry confirms her company ownership from the signed filing. Being a registered agent or simply having access to card details would not establish ownership or who actually charged the card; the strengthened records expressly close those gaps.
 
@@ -41,7 +41,7 @@ The invoice’s supplemental visible text teaches searching a company, following
 
 The shortest route omits the optional tracking and corroboration searches: **880 Industrial Way → QuickShip Returns LLC → northwind-returnshelp.example**. The domain lookup can be searched earlier; the first two must retain their order.
 
-**Answer:** DENIED → Kyle Denton (`c_kyle`) → “A fake ‘Northwind support’ site sent Marcus a label to the scammer’s own warehouse” (`m3`). Pin and submit **`d_registry` + `d_whois`**.
+**Answer:** NOT_GUILTY → Kyle Denton (`c_kyle`) → “A fake ‘Northwind support’ site sent Marcus a label to the scammer’s own warehouse” (`m3`). Pin and submit **`d_registry` + `d_whois`**.
 
 The company filing proves Kyle owns QuickShip and operates at the destination address. The domain record’s dated, verified dispute supplement identifies Kyle as the domain administrator and fee beneficiary, ties his support account to Marcus’s exact order and tracking number, and confirms he impersonated Northwind without authorization. Neither a shared telephone number nor a business organizer’s name alone would establish the complete scheme. The claim against **Northwind** is denied because that retailer did not authorize or receive the return; Marcus is still a victim of Kyle’s separate deception.
 

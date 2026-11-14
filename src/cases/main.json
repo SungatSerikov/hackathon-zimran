@@ -5,8 +5,15 @@
   "estMinutes": 12,
   "premium": false,
   "gameDate": "10/22/2026",
-  "brief": "Marcus Bell returned a $312 jacket to Northwind Outfitters. Three weeks later — no refund, and the store says it never got the package. Marcus wants the bureau to force Northwind to pay. Find out where the jacket went before you stamp his claim.",
-  "claim": "Northwind Outfitters refuses to refund $312 for a jacket I returned on October 2. I followed their support's instructions exactly. Make them pay. — Marcus Bell",
+  "brief": "Marcus Bell returned a $312 jacket to Northwind Outfitters. Three weeks later — no refund, and the store says it never got the package. Marcus wants the bureau to force Northwind to pay. Find out where the jacket went before you stamp the respondent.",
+  "claim": {
+    "number": "0412",
+    "claimant": "c_marcus",
+    "respondent": "Northwind Outfitters",
+    "request": "Refund for a returned jacket",
+    "amount": 312,
+    "statement": "Northwind Outfitters refuses to refund $312 for a jacket I returned on October 2. I followed their support's instructions exactly. Make them pay."
+  },
   "characters": [
     {
       "id": "c_marcus",
@@ -99,7 +106,10 @@
       "title": "Texts: Marcus & his sister Dana",
       "initial": true,
       "body": {
-        "participants": ["Marcus Bell", "Dana Bell"],
+        "participants": [
+          "Marcus Bell",
+          "Dana Bell"
+        ],
         "messages": [
           {
             "from": "Marcus Bell",
@@ -226,7 +236,10 @@
       "title": "Elm Street Neighbors forum",
       "initial": false,
       "body": {
-        "participants": ["Gloria Mendez", "Tom Reyes"],
+        "participants": [
+          "Gloria Mendez",
+          "Tom Reyes"
+        ],
         "messages": [
           {
             "from": "Gloria Mendez",
@@ -257,61 +270,108 @@
   "searchIndex": [
     {
       "id": "s_tracking",
-      "keys": ["PG-77310452"],
+      "keys": [
+        "PG-77310452"
+      ],
       "kind": "order",
-      "reveals": ["d_tracking"]
+      "reveals": [
+        "d_tracking"
+      ]
     },
     {
       "id": "s_store212",
-      "keys": ["ParcelGo Store #212", "Store #212", "Ray Ortiz"],
+      "keys": [
+        "ParcelGo Store #212",
+        "Store #212",
+        "Ray Ortiz"
+      ],
       "kind": "company",
-      "reveals": ["d_parcelgo_note"]
+      "reveals": [
+        "d_parcelgo_note"
+      ]
     },
     {
       "id": "s_address",
-      "keys": ["880 Industrial Way"],
+      "keys": [
+        "880 Industrial Way"
+      ],
       "kind": "address",
-      "reveals": ["d_unit_listing"]
+      "reveals": [
+        "d_unit_listing"
+      ]
     },
     {
       "id": "s_quickship",
-      "keys": ["QuickShip Returns LLC", "QuickShip Returns", "QuickShip"],
+      "keys": [
+        "QuickShip Returns LLC",
+        "QuickShip Returns",
+        "QuickShip"
+      ],
       "kind": "company",
-      "reveals": ["d_registry"]
+      "reveals": [
+        "d_registry"
+      ]
     },
     {
       "id": "s_domain",
-      "keys": ["northwind-returnshelp.example", "northwind-returnshelp"],
+      "keys": [
+        "northwind-returnshelp.example",
+        "northwind-returnshelp"
+      ],
       "kind": "other",
-      "reveals": ["d_whois"]
+      "reveals": [
+        "d_whois"
+      ]
     },
     {
       "id": "s_phone",
-      "keys": ["(937) 555-0142", "937-555-0142", "9375550142"],
+      "keys": [
+        "(937) 555-0142",
+        "937-555-0142",
+        "9375550142"
+      ],
       "kind": "phone",
-      "reveals": ["d_scam_ad"]
+      "reveals": [
+        "d_scam_ad"
+      ]
     },
     {
       "id": "s_northwind",
-      "keys": ["Northwind Outfitters", "northwindoutfitters.example"],
+      "keys": [
+        "Northwind Outfitters",
+        "northwindoutfitters.example"
+      ],
       "kind": "company",
-      "reveals": ["d_northwind_help", "d_reviews"]
+      "reveals": [
+        "d_northwind_help",
+        "d_reviews"
+      ]
     },
     {
       "id": "s_gloria",
-      "keys": ["Gloria Mendez"],
+      "keys": [
+        "Gloria Mendez"
+      ],
       "kind": "name",
-      "reveals": ["d_forum"]
+      "reveals": [
+        "d_forum"
+      ]
     },
     {
       "id": "s_kyle",
-      "keys": ["Kyle Denton", "K. Denton", "Denton"],
+      "keys": [
+        "Kyle Denton",
+        "K. Denton",
+        "Denton"
+      ],
       "kind": "name",
-      "reveals": ["d_court"]
+      "reveals": [
+        "d_court"
+      ]
     }
   ],
   "solution": {
-    "verdict": "DENIED",
+    "verdict": "NOT_GUILTY",
     "culprit": "c_kyle",
     "methods": [
       {
@@ -332,7 +392,10 @@
       }
     ],
     "correctMethod": "m3",
-    "requiredEvidence": ["d_registry", "d_whois"],
-    "explanation": "The claim demanding a refund from Northwind is DENIED: the retailer never received or authorized this return, although Marcus was a victim of a separate scam. The domain dispute record identifies Kyle Denton as the administrator who sent the fake Northwind label, and the company filing proves that Kyle owns QuickShip Returns LLC at the destination address. ParcelGo independently confirms delivery there, signed by K. DENTON, so neither a hallway theft nor a lost parcel explains this shipment. The official help page shows that real Northwind labels are free and go to Fairview; Kyle’s lookalike site charged $4.99 and sent the jacket to his own warehouse. Marcus can still contact the real Northwind support before 10/24/2026 and report the impersonation."
+    "requiredEvidence": [
+      "d_registry",
+      "d_whois"
+    ],
+    "explanation": "Northwind Outfitters is NOT GUILTY: the retailer never received or authorized this return, although Marcus was a victim of a separate scam. The domain dispute record identifies Kyle Denton as the administrator who sent the fake Northwind label, and the company filing proves that Kyle owns QuickShip Returns LLC at the destination address. ParcelGo independently confirms delivery there, signed by K. DENTON, so neither a hallway theft nor a lost parcel explains this shipment. The official help page shows that real Northwind labels are free and go to Fairview; Kyle’s lookalike site charged $4.99 and sent the jacket to his own warehouse. Marcus can still contact the real Northwind support before 10/24/2026 and report the impersonation."
   }
 }

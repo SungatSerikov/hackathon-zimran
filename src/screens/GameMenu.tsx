@@ -106,7 +106,7 @@ export function CaseFiles({
           const run = loadRun(c);
           const client =
             c.characters.find(
-              (person) => person.role.toLowerCase() === "client",
+              (person) => person.id === c.claim.claimant,
             ) || c.characters[0];
           const best = safeRead<unknown>(`case-desk:best:${c.id}`, 0);
           return (

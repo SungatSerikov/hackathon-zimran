@@ -4,7 +4,7 @@ import { evaluateVerdict } from "./verdict";
 import { makeCase } from "./test-fixtures";
 
 const accusation: Accusation = {
-  verdict: "APPROVED",
+  verdict: "GUILTY",
   culprit: "owner",
   method: "duplicate",
   evidence: ["payment", "invoice"],
@@ -15,7 +15,7 @@ describe("evaluateVerdict", () => {
     expect(evaluateVerdict(makeCase(), accusation)).toBe(true);
   });
   it.each([
-    { verdict: "DENIED" },
+    { verdict: "NOT_GUILTY" },
     { culprit: "client" },
     { method: "bank" },
     { evidence: ["payment", "payment"] },

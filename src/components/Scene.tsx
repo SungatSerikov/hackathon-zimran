@@ -1,5 +1,6 @@
 import { useState, type CSSProperties, type ReactNode } from "react";
 import layout from "../scene/layout.json";
+import spriteMeta from "../scene/sprite-meta.json";
 import { Icon } from "./Icons";
 declare const __SCENE_ASSETS__: string[];
 const availableAssets = new Set(__SCENE_ASSETS__);
@@ -90,11 +91,9 @@ export function Scene({
           <div className="desk-surface" />
           <div className="desk-front" />
         </Asset>
-        <div className="scene-lamp">
-          <i />
-          <b />
-          <span />
-        </div>
+        {!availableAssets.has(`/assets/${layout.background}`) && (
+          <div className="scene-lamp"><i /><b /><span /></div>
+        )}
         <div className="desk-mat" />
         <div className="desk-pen" />
         <div className="office-plaque">
@@ -209,6 +208,31 @@ export function Scene({
               )}
             </>
           );
+          const liveDetails = (
+            <>
+              {item.id === "calendar" && (
+                <span className="calendar-live-date" style={{
+                  left: `${spriteMeta.calendar.page.x / item.w * 100}%`,
+                  top: `${spriteMeta.calendar.page.y / item.h * 100}%`,
+                  width: `${spriteMeta.calendar.page.w / item.w * 100}%`,
+                  height: `${spriteMeta.calendar.page.h / item.h * 100}%`,
+                }}>{date.split("/")[1]}</span>
+              )}
+              {item.id === "clock" && availableAssets.has("/assets/scene/clock.png") && (
+                <span className="clock-live-hands" aria-hidden="true">
+                  {[{ length: 0.65, angle: -90 + elapsed / 120 },
+                    { length: 1, angle: -90 + elapsed / 10 }].map((hand, i) => (
+                    <i key={i} style={{
+                      left: `${spriteMeta.clock.cx / item.w * 100}%`,
+                      top: `${spriteMeta.clock.cy / item.h * 100}%`,
+                      width: `${spriteMeta.clock.handMax * hand.length / item.w * 100}%`,
+                      transform: `rotate(${hand.angle}deg)`,
+                    }} />
+                  ))}
+                </span>
+              )}
+            </>
+          );
           if (hero)
             return (
               <div
@@ -221,6 +245,7 @@ export function Scene({
                 >
                   {fallback}
                 </Asset>
+                {liveDetails}
               </div>
             );
           return (
@@ -262,9 +287,7 @@ export function Scene({
                   </b>
                 </span>
               )}
-              {item.id === "calendar" && (
-                <span className="calendar-live-date">{date.split("/")[1]}</span>
-              )}
+              {liveDetails}
               {item.id === "board" && evidence > 0 && (
                 <span className="board-live-notes" aria-hidden="true">
                   {Array.from({ length: Math.min(evidence, 4) }, (_, i) => (

@@ -1503,3 +1503,195 @@ body,
     font-size: 10px;
   }
 }
+
+/* Verdict paper and feedback share an explicit, high-contrast palette. */
+.verdict-dialog .confirm-verdict,
+.verdict-dialog .notice {
+  color: #352c1f;
+  background: #f4e3bf;
+  border-color: #806948;
+}
+.verdict-dialog .confirm-verdict p {
+  font-size: 15px;
+}
+.verdict-dialog .button.secondary,
+.verdict-feedback-dialog .button.secondary {
+  color: #352c1f;
+  background: #f4e3bf;
+  border-color: #806948;
+}
+.verdict-dialog .button.secondary:not(:disabled):hover,
+.verdict-feedback-dialog .button.secondary:not(:disabled):hover {
+  background: #fff0ce;
+}
+.verdict-dialog .notice .text-button {
+  color: #4a3a20;
+  text-decoration: underline;
+}
+.verdict-dialog .claim-paper,
+.verdict-dialog .claim-paper .eyebrow,
+.verdict-dialog .muted,
+.verdict-dialog .character-options small {
+  color: #51432e;
+}
+.claim-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 24px;
+  margin: 18px 0;
+}
+.claim-details dt {
+  font-size: 12px;
+}
+.claim-details dd {
+  margin: 3px 0 0;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.stamp-instruction {
+  margin: 0 0 22px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.verdict-dialog .stamp-choice {
+  opacity: 1;
+  background: #f4e3bf;
+}
+.verdict-dialog .stamp-choice.guilty {
+  color: #912e26;
+}
+.verdict-dialog .stamp-choice.not_guilty {
+  color: #285337;
+  transform: rotate(3deg);
+}
+.verdict-dialog .stamp-choice.chosen {
+  background: #fff3cf;
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+.verdict-dialog .stamp-choice small {
+  font-size: 11px;
+}
+.verdict-error-banner {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 20px;
+  padding: 14px 18px;
+  border: 2px solid #8e382e;
+  border-left-width: 7px;
+  background: #f9e5d4;
+  color: #64241e;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.verdict-feedback-dialog {
+  background: #f4e3bf;
+  color: #352c1f;
+  border: 4px solid #8e382e;
+}
+.verdict-feedback-dialog .dialog-bar {
+  background: #672a25;
+}
+.verdict-feedback-dialog .dialog-bar h2,
+.verdict-feedback-dialog .dialog-bar .eyebrow,
+.verdict-feedback-dialog .icon-button {
+  color: #fff0d2;
+}
+.verdict-feedback {
+  text-align: center;
+}
+.rejected-stamp {
+  width: fit-content;
+  margin: 4px auto 20px;
+  padding: 12px 18px;
+  border: 4px double #912e26;
+  color: #912e26;
+  font: clamp(20px, 4vw, 28px)/1.2 var(--pixel);
+  transform: rotate(-3deg);
+}
+.verdict-feedback > p {
+  font-size: 15px;
+  line-height: 1.7;
+}
+.attempts-remaining {
+  display: block;
+  margin: 20px 0 14px;
+  font-size: 22px;
+  color: #64241e;
+}
+.verdict-penalties {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid #ad946f;
+  background: #ead5ad;
+  margin: 0;
+}
+.verdict-penalties > div {
+  padding: 12px 6px;
+}
+.verdict-penalties dt {
+  font-size: 12px;
+  line-height: 1.5;
+}
+.verdict-penalties dd {
+  margin: 5px 0 0;
+  font-weight: 700;
+  color: #64241e;
+}
+.feedback-pause-note {
+  text-align: center;
+  color: #51432e;
+  font-size: 12px;
+  margin: 18px 0;
+}
+.feedback-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+.calendar-live-date {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  line-height: 1;
+}
+.clock-live-hands {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.clock-live-hands i {
+  position: absolute;
+  background: #454447;
+  height: 1.5em;
+  transform-origin: left center;
+}
+@media (max-width: 540px) {
+  .claim-details {
+    grid-template-columns: 1fr;
+  }
+  .verdict-dialog .verdict-stamps {
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+  .verdict-dialog .stamp-choice {
+    font-size: 18px;
+  }
+  .feedback-actions > button {
+    width: 100%;
+  }
+  .verdict-penalties {
+    grid-template-columns: 1fr;
+    text-align: left;
+  }
+  .verdict-penalties > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 12px;
+  }
+  .verdict-penalties dd {
+    margin: 0;
+  }
+}

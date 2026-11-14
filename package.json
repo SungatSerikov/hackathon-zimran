@@ -11,7 +11,8 @@
     "test:watch": "vitest",
     "validate": "node --import tsx scripts/validate-cases.ts",
     "placeholders": "node tools/make-placeholders.mjs",
-    "scene:preview": "node tools/scene-preview/serve.mjs"
+    "scene:preview": "node tools/scene-preview/serve.mjs",
+    "sprites": "node tools/draw-sprites.mjs"
   },
   "dependencies": {
     "@fontsource/dm-sans": "^5.3.0",

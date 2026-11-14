@@ -16,7 +16,15 @@ export type SearchKind =
   | "email"
   | "plate"
   | "other";
-export type Verdict = "APPROVED" | "DENIED";
+export type Verdict = "GUILTY" | "NOT_GUILTY";
+export interface Claim {
+  number: string;
+  claimant: string;
+  respondent: string;
+  request: string;
+  amount?: number;
+  statement: string;
+}
 export interface DocumentBody {
   vendor?: string;
   number?: string;
@@ -66,7 +74,7 @@ export interface CaseData {
   estMinutes: number;
   premium: boolean;
   brief: string;
-  claim: string;
+  claim: Claim;
   worldDate?: string;
   gameDate?: string;
   characters: Character[];

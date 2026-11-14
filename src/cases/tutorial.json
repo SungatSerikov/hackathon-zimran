@@ -5,8 +5,15 @@
   "estMinutes": 5,
   "premium": false,
   "gameDate": "10/12/2026",
-  "brief": "Linda Park says she paid FixRight Plumbing twice for one water heater repair. The owner says they only charged her once. Read the file, then use the computer to search any company, name, address or number you spot in the documents. Decide: APPROVE her claim or DENY it.",
-  "claim": "I am asking for a refund of $480. I was charged twice for the water heater repair performed by FixRight Plumbing on 10/03/2026. — Linda Park",
+  "brief": "Linda Park says she paid FixRight Plumbing twice for one water heater repair. The owner says they only charged her once. Read the file, then use the computer to search any company, name, address or number you spot in the documents. Then stamp the respondent: GUILTY if FixRight owes Linda the money, NOT GUILTY if they don't.",
+  "claim": {
+    "number": "0407",
+    "claimant": "c_linda",
+    "respondent": "FixRight Plumbing",
+    "request": "Refund of a double charge",
+    "amount": 480,
+    "statement": "I paid FixRight Plumbing twice for the same repair on October 3. I want my $480 back."
+  },
   "characters": [
     {
       "id": "c_linda",
@@ -146,31 +153,50 @@
   "searchIndex": [
     {
       "id": "s_fixright",
-      "keys": ["FixRight Plumbing", "FixRight"],
+      "keys": [
+        "FixRight Plumbing",
+        "FixRight"
+      ],
       "kind": "company",
-      "reveals": ["d_ad"]
+      "reveals": [
+        "d_ad"
+      ]
     },
     {
       "id": "s_bank",
-      "keys": ["Harlow Creek Savings"],
+      "keys": [
+        "Harlow Creek Savings"
+      ],
       "kind": "company",
-      "reveals": ["d_bank_letter"]
+      "reveals": [
+        "d_bank_letter"
+      ]
     },
     {
       "id": "s_fxr",
-      "keys": ["FXR Services LLC", "FXR Services", "FXR"],
+      "keys": [
+        "FXR Services LLC",
+        "FXR Services",
+        "FXR"
+      ],
       "kind": "company",
-      "reveals": ["d_registry"]
+      "reveals": [
+        "d_registry"
+      ]
     },
     {
       "id": "s_tina",
-      "keys": ["Tina Ruiz"],
+      "keys": [
+        "Tina Ruiz"
+      ],
       "kind": "name",
-      "reveals": ["d_ad"]
+      "reveals": [
+        "d_ad"
+      ]
     }
   ],
   "solution": {
-    "verdict": "APPROVED",
+    "verdict": "GUILTY",
     "culprit": "c_tina",
     "methods": [
       {
@@ -187,7 +213,10 @@
       }
     ],
     "correctMethod": "m3",
-    "requiredEvidence": ["d_registry", "d_bank_letter"],
-    "explanation": "Linda’s claim for the extra $480 is APPROVED. The bank’s processor verification identifies Tina Ruiz as the person who submitted a second settled charge through FXR SERVICES LLC, reusing the paid repair invoice without additional authorization. The registry’s signed ownership filing confirms that Tina owns that company; being a registered agent alone would not prove this. FixRight’s ad independently confirms her billing role, while the bank report rules out Dale’s duplicate-processing theory. Lesson: compare merchant names and verify who actually submitted an unexplained charge."
+    "requiredEvidence": [
+      "d_registry",
+      "d_bank_letter"
+    ],
+    "explanation": "FixRight Plumbing is GUILTY in this fictional bureau case: its billing clerk charged Linda an extra $480 without authorization. The bank’s processor verification identifies Tina Ruiz as the person who submitted a second settled charge through FXR SERVICES LLC, reusing the paid repair invoice without additional authorization. The registry’s signed ownership filing confirms that Tina owns that company; being a registered agent alone would not prove this. FixRight’s ad independently confirms her billing role, while the bank report rules out Dale’s duplicate-processing theory. Lesson: compare merchant names and verify who actually submitted an unexplained charge."
   }
 }
