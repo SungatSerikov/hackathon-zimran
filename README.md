@@ -3,7 +3,7 @@
 **A pixel detective game where everyday paperwork hides the crime.**
 Business Cup 2.0 · Entertainment track · Team **GreedX**
 
-- ▶ **Play:** `LIVE_URL` — any modern browser, no sign-up, no install, no payment
+- ▶ **Play:** **https://case-desk-gamma.vercel.app** — any modern browser, no sign-up, no install, no payment
 - 📊 **Pitch deck:** 10-slide PDF in the submission
 - 💻 **Code:** https://github.com/SungatSerikov/hackathon-zimran
 

@@ -14,3 +14,7 @@ test-results/
 !.env.example
 
 .claude/
+
+.vercel
+.env*
+!.env.example
