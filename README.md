@@ -7,7 +7,11 @@ Business Cup 2.0 · Entertainment track · Team **GreedX**
 - 📊 **Pitch deck:** 10-slide PDF in the submission
 - 💻 **Code:** https://github.com/SungatSerikov/hackathon-zimran
 
-![Case Desk — the detective desk](docs/screenshots/immersive-desk.png)
+![Case Desk — the detective desk](docs/qa/fullscreen-desk.jpg)
+
+| Records computer | Verdict review | Русская версия |
+| --- | --- | --- |
+| ![Records computer: search a name, company or reference and open the records it unlocks](docs/qa/records-computer.jpg) | ![Verdict review after a wrong conclusion: −1 coffee, +60 seconds, −150 points](docs/qa/verdict-feedback.jpg) | ![The same case in Russian](docs/qa/russian-localization.jpg) |
 
 ## TL;DR
 
@@ -15,7 +19,7 @@ Business Cup 2.0 · Entertainment track · Team **GreedX**
 - **For whom:** US adults 25–45 who love mysteries and puzzles and have 5–15 free minutes.
 - **Why it matters:** short breaks feel wasted, and Americans lost **$12.5B to fraud in 2024** (FTC). The game is fun first and quietly trains the instincts that protect real money.
 - **Business:** free to start; **Detective Pass $4.99/month** for the case archive, weekly cases and unlimited hints. ≈1.7M subscribers = $100M ARR.
-- **Built in 24 hours:** 2 complete cases, a real search engine, a case validator, an in-game economy, **225 automated tests**.
+- **Built in 24 hours:** 2 complete cases, a real search engine, a case validator, an in-game economy, full **English / Russian** localization, **225 automated tests**.
 
 ---
 
@@ -81,7 +85,9 @@ Every prop on the desk is a working tool.
 
 A correct verdict needs **all four parts** — the stamp, the responsible person, the method (out of 3–4 plausible versions) and **two pinned supporting documents** — so guessing does not win.
 
-**Shipped content:** *The Double Charge* (tutorial · 6 documents · 3 characters) and *The Missing Refund* (14 documents · 5 characters · false leads). Desktop and phones (375 px+), keyboard shortcuts (**F A E H V**, **Esc**), fullscreen, reduced motion.
+**Shipped content:** *The Double Charge* (tutorial · 6 documents · 3 characters) and *The Missing Refund* (14 documents · 5 characters · false leads), each in **English and Russian** — switch with **EN / РУ** at any moment without losing the timer, answers or evidence. Desktop and phones (375 px+), keyboard shortcuts (**F A E H V**, **Esc**, also on a Russian layout), fullscreen, reduced motion, optional background jazz.
+
+**One case, start to finish:** the client’s claim → read the folder → look up the details you notice in the records computer (each hit opens a new record) → pin two proofs to the cork board → stamp the respondent and name who really did it → results screen with the explanation, score breakdown and the fee paid into your safe. A wrong verdict opens a review notice (−1 coffee, +60 s, −150 points); three wrong verdicts close the case as failed.
 
 ---
 
