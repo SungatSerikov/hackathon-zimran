@@ -502,20 +502,37 @@ body,
 }
 .office-stage {
   position: absolute;
-  inset: 58px 0 108px;
+  inset: 0;
+  padding: 58px 0 64px;
   display: grid;
   place-items: center;
   overflow: hidden;
 }
+.office-backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  image-rendering: pixelated;
+}
+.office-backdrop img {
+  object-fit: cover;
+}
 .office-stage .scene-shell {
-  width: min(100vw, calc((100dvh - 166px) * 16 / 9));
+  width: min(100vw, calc((100dvh - 122px) * 16 / 9));
   max-width: none;
   border: 0;
   background: transparent;
-  box-shadow: 0 12px 60px #08080ab0;
+  box-shadow: none;
 }
 .office-stage .scene {
-  border: 2px solid #443d35;
+  border: 0;
+  overflow: visible;
+}
+.office-stage .scene-background {
+  visibility: hidden;
+}
+.office-stage .scene-vignette {
+  display: none;
 }
 .scene-vignette {
   box-shadow: inset 0 0 30em #1e142744;
@@ -649,26 +666,78 @@ body,
   border: 1px solid #82745233;
 }
 .field-note {
-  max-width: 560px;
+  pointer-events: auto;
+  max-width: 480px;
   padding: 10px 14px;
   border-left: 2px solid #ae8a4d;
   background: #17171de8;
 }
-.field-note > span {
-  font: 6px var(--pixel);
-  color: #c4a26c;
+.field-note-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font: 7px var(--pixel);
+  color: #e1c18a;
 }
+.field-note-heading button {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  color: #f4dfb9;
+}
+.desk-assistance {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+  pointer-events: auto;
+}
+.guide-toggle, .desk-assistance .hotspot-toggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 11px;
+  background: #17171de8;
+  border: 1px solid #b29d6e80;
+  color: #efddb8;
+  font: 12px "DM Sans", sans-serif;
+}
+.guide-toggle[aria-expanded="true"] {
+  background: #574830;
+}
+.fullscreen-control { position: relative; }
+.fullscreen-button {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid #a38c6059;
+  background: #15151cbf;
+  color: #e8d3a5;
+}
+.fullscreen-button:hover { background: #51432e; }
+.fullscreen-button:disabled { opacity: .4; cursor: not-allowed; }
+.fullscreen-error {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(260px, 75vw);
+  padding: 12px;
+  background: #272229;
+  border: 1px solid #d0a06f;
+  font: 14px/1.45 "DM Sans", sans-serif;
+  color: #fff0d7;
+  z-index: 30;
+}
+.menu-display-controls { display: flex; align-items: center; gap: 10px; }
+.fullscreen-button:focus-visible, .guide-toggle:focus-visible,
+.field-note-heading button:focus-visible { outline: 2px solid #ffe0a3; outline-offset: 3px; }
 .field-note p {
   font-size: 12px;
   line-height: 1.55;
-  color: #b8ad98;
+  color: #e4d7be;
   margin-top: 4px;
-}
-.investigation:has(.field-note) .office-stage {
-  bottom: 160px;
-}
-.investigation:has(.field-note) .office-stage .scene-shell {
-  width: min(100vw, calc((100dvh - 218px) * 16 / 9));
 }
 .game-toolbelt {
   position: absolute;
@@ -1210,7 +1279,7 @@ body,
     height: 83px;
     padding: 10px 14px;
     display: grid;
-    grid-template-columns: 30px 1fr auto auto;
+    grid-template-columns: 30px 1fr auto auto auto;
     gap: 7px 11px;
   }
   .hud-menu {
@@ -1250,18 +1319,18 @@ body,
   }
   .hud-wallet {
     grid-row: 2;
-    grid-column: 4;
+    grid-column: 4 / 6;
     font-size: 8px;
   }
   .hud-wallet svg {
     display: none;
   }
-  .office-stage,
-  .investigation:has(.field-note) .office-stage {
-    inset: 100px 0 200px;
+  .game-hud .fullscreen-control { grid-column: 5; grid-row: 1; }
+  .game-hud .fullscreen-button { width: 30px; height: 30px; }
+  .office-stage {
+    padding: 90px 0 100px;
   }
-  .office-stage .scene-shell,
-  .investigation:has(.field-note) .office-stage .scene-shell {
+  .office-stage .scene-shell {
     display: block;
     width: 100%;
     max-width: none;
@@ -1415,11 +1484,10 @@ body,
     height: 48px;
   }
   .office-stage {
-    top: 48px;
-    bottom: 83px;
+    padding: 48px 0 64px;
   }
   .office-stage .scene-shell {
-    width: min(100vw, calc((100dvh - 131px) * 16 / 9));
+    width: min(100vw, calc((100dvh - 112px) * 16 / 9));
   }
   .room-caption,
   .hotspot-toggle {

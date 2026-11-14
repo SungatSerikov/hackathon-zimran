@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import type { Accusation, CaseData, CaseDocument, Verdict } from "../types";
 import { gameReducer, createRun } from "../store/game";
-import { loadRun, saveRun } from "../lib/storage";
+import { loadRun, saveRun, safeRead, safeWrite } from "../lib/storage";
 import { getStreak } from "../lib/streak";
 import { Icon } from "../components/Icons";
 import { Dialog } from "../components/Dialog";
@@ -12,6 +12,8 @@ import { Result } from "./Result";
 import { EconomyPanel, bureauMoney } from "../components/EconomyPanel";
 import { getWallet } from "../engine/wallet";
 import type { GameSound } from "../lib/gameAudio";
+import { FullscreenButton } from "../components/FullscreenButton";
+import sceneLayout from "../scene/layout.json";
 
 type Panel =
   | "briefing"
@@ -56,6 +58,9 @@ export function Desk({
       : null,
   );
   const [hotspots, setHotspots] = useState(false);
+  const [guideExpanded, setGuideExpanded] = useState(() =>
+    !run.seenIds.length && !run.queries.length && safeRead<boolean>("case-desk:show-guide", true) !== false,
+  );
   const client =
     caseData.characters.find((c) => c.id === caseData.claim.claimant) ||
     caseData.characters[0];
@@ -101,6 +106,15 @@ export function Desk({
     "Open a search result inside the computer. Follow its highlighted details and pin two records that prove what happened.",
     "Ready to decide? Open Verdict. Choose a stamp, a person, an explanation, and two pinned documents.",
   ];
+  const previousStep = useRef(tutorialStep);
+  useEffect(() => {
+    if (previousStep.current !== tutorialStep) setGuideExpanded(false);
+    previousStep.current = tutorialStep;
+  }, [tutorialStep]);
+  function toggleGuide(expanded: boolean) {
+    setGuideExpanded(expanded);
+    safeWrite("case-desk:show-guide", expanded);
+  }
   useEffect(() => {
     setStorageFailed(!saveRun(run));
   }, [run]);
@@ -214,6 +228,8 @@ export function Desk({
         h: "phone",
       };
       if (key === "escape") {
+        // The browser owns Escape while fullscreen is active.
+        if (document.fullscreenElement) return;
         e.preventDefault();
         setPanel("pause");
       } else if (actions[key]) {
@@ -301,8 +317,12 @@ export function Desk({
           <Icon name="sound" size={18} />
           {!soundEnabled && <i />}
         </button>
+        <FullscreenButton />
       </header>
       <div className="office-stage">
+        <div className="office-backdrop" aria-hidden="true">
+          <Asset src={`/assets/${sceneLayout.background}`} />
+        </div>
         <Scene
           onAction={action}
           elapsed={run.elapsedSeconds}
@@ -312,24 +332,32 @@ export function Desk({
           date={caseData.gameDate || caseData.worldDate}
           showHotspots={hotspots}
           highlight={
-            tutorial
+            tutorial && guideExpanded
               ? ["folder", "monitor", "folder", "stamps"][tutorialStep]
               : undefined
           }
         />
       </div>
       <div className="desk-instructions">
-        {tutorial ? (
-          <div className="field-note">
-            <span>FIELD NOTE {tutorialStep + 1}/4</span>
+        {tutorial && guideExpanded ? (
+          <div className="field-note" id="tutorial-guidance">
+            <div className="field-note-heading">
+              <span>FIELD NOTE {tutorialStep + 1}/4</span>
+              <button onClick={() => toggleGuide(false)} aria-label="Hide tutorial hint"><Icon name="close" size={14} /></button>
+            </div>
             <p>{guidance[tutorialStep]}</p>
           </div>
-        ) : (
+        ) : !tutorial ? (
           <span className="room-caption">
             Your desk. Your investigation.
             <small>Click an object to examine it.</small>
           </span>
-        )}
+        ) : null}
+        <div className="desk-assistance">
+          {tutorial && <button className="guide-toggle" aria-expanded={guideExpanded}
+            aria-controls={guideExpanded ? "tutorial-guidance" : undefined} onClick={() => toggleGuide(!guideExpanded)}>
+            <Icon name="help" size={14} /> Tutorial hint
+          </button>}
         <button
           className="hotspot-toggle"
           aria-pressed={hotspots}
@@ -338,6 +366,7 @@ export function Desk({
           <Icon name="search" size={14} />
           {hotspots ? "Hide labels" : "Show objects"}
         </button>
+        </div>
       </div>
       <nav className="game-toolbelt" aria-label="Investigation tools">
         <button onClick={openFolder} data-sound="paper">

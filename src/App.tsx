@@ -4,6 +4,7 @@ import { Desk } from "./screens/Desk";
 import { TitleScreen, CaseFiles } from "./screens/GameMenu";
 import { Scene } from "./components/Scene";
 import { Icon } from "./components/Icons";
+import { FullscreenButton } from "./components/FullscreenButton";
 import { Dialog } from "./components/Dialog";
 import { loadRun, clearRun, safeRead, safeWrite } from "./lib/storage";
 import { getWaitlist, joinWaitlist } from "./lib/records";
@@ -69,7 +70,7 @@ export default function App() {
             <span>
               <i className="status-dot" /> RIVERTON CONSUMER AFFAIRS
             </span>
-            <button
+            <div className="menu-display-controls"><button
               className="sound-switch"
               onClick={sound.toggle}
               aria-pressed={sound.enabled}
@@ -77,6 +78,7 @@ export default function App() {
               <Icon name="sound" size={16} />
               {sound.enabled ? "SOUND ON" : "SOUND OFF"}
             </button>
+            <FullscreenButton /></div>
           </div>
         </>
       )}

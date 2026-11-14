@@ -24,7 +24,7 @@ npm run preview   # preview the production build locally
 
 - **The Double Charge:** guided tutorial, 6 documents, 3 characters.
 - **The Missing Refund:** a complete investigation, 14 documents, 5 characters.
-- Viewport-sized pixel-art office, title menu, dossier selection and client arrivals. The office remains visible on mobile, with a touch-friendly toolbelt at 375px.
+- A pixel-art office with a background that fills the window, title menu, dossier selection and client arrivals. The office remains visible on mobile, with a touch-friendly toolbelt at 375px.
 - Physical-object interfaces: paper folder, CRT archive, corkboard, stamped verdict, safe and informant phone. Optional procedural sound effects and reduced-motion support.
 - Search using clues from discovered records; exact normalized matches and one-character typo tolerance for longer keys. Hidden guesses do not unlock evidence.
 - A records computer with a document reader beside search results. Click highlighted names/references in the visible record or type a query; open returned records without leaving the computer. Narrow screens use document/results tabs.
@@ -40,7 +40,7 @@ The current repository specification takes precedence over the earlier one-attem
 
 ## Game controls
 
-Click the objects in the office or use the bottom toolbelt. **F** opens the folder, **A** the archive, **E** the evidence board, **H** the informant and **V** the verdict. Shortcuts are disabled while a dialog or input is active. **Escape** closes an object window; at the desk it opens Pause. “Show objects” marks clickable props. Audio starts off and can be enabled from the title screen or the speaker button; the preference is saved locally. Native browser fullscreen is not required.
+Click the objects in the office or use the bottom toolbelt. **F** opens the folder, **A** the archive, **E** the evidence board, **H** the informant and **V** the verdict. Shortcuts are disabled while a dialog or input is active. **Escape** closes an object window; at the desk it opens Pause. “Show objects” marks clickable props. Tutorial hints have a close button and a “Tutorial hint” toggle; they collapse after advancing a step and stay collapsed when resuming an investigation. Hiding them no longer changes the size of the office. Audio starts off and can be enabled from the title screen or the speaker button; the preference is saved locally. The ⛶ button in the menu and desk enters browser fullscreen; click it again or press Escape to exit. A rejected fullscreen request leaves the game playable in the window.
 
 Scores follow `max(0, 1000 - elapsedSeconds - 150*wrongAttempts - 5*extraSearches - 50*paidHints)`. `elapsedSeconds` includes the additional 60 seconds per wrong attempt. Failed cases score zero. The exact shortest path is calculated by the same search rules used by the game: 2 searches for the tutorial and 3 for the main case. A natural main-case walkthrough is 4 searches; we preserved the partner's accessible clue graph instead of inserting artificial steps.
 

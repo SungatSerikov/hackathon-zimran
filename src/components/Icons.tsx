@@ -1,6 +1,8 @@
 import type { CSSProperties } from "react";
 
 const paths: Record<string, string> = {
+  fullscreen: "M2 2h7v3H5v4H2V2zm13 0h7v7h-3V5h-4V2zM2 15h3v4h4v3H2v-7zm17 0h3v7h-7v-3h4v-4z",
+  "fullscreen-exit": "M6 2h3v7H2V6h4V2zm9 0h3v4h4v3h-7V2zM2 15h7v7H6v-4H2v-3zm13 0h7v3h-4v4h-3v-7z",
   phone: "M3 2h6v6H6v4l6 6h4v-3h6v6h-7L3 9V2z",
   folder: "M2 5h7l2 3h11v13H2V5zm2 5v9h16v-9H4z",
   search:
