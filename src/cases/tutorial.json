@@ -5,8 +5,15 @@
   "estMinutes": 5,
   "premium": false,
   "gameDate": "10/12/2026",
-  "brief": "Linda Park says she paid FixRight Plumbing twice for one water heater repair. The owner says they only charged her once. Read the file, then use the computer to search any company, name, address or number you spot in the documents. Decide: APPROVE her claim or DENY it.",
-  "claim": "I am asking for a refund of $480. I paid FixRight Plumbing twice for the same repair on October 3. — Linda Park",
+  "brief": "Linda Park says she paid FixRight Plumbing twice for one water heater repair. The owner says they only charged her once. Read the file, then use the computer to search any company, name, address or number you spot in the documents. Then stamp the respondent: GUILTY if FixRight owes Linda the money, NOT GUILTY if they don't.",
+  "claim": {
+    "number": "0407",
+    "claimant": "c_linda",
+    "respondent": "FixRight Plumbing",
+    "request": "Refund of a double charge",
+    "amount": 480,
+    "statement": "I paid FixRight Plumbing twice for the same repair on October 3. I want my $480 back."
+  },
   "characters": [
     { "id": "c_linda", "name": "Linda Park", "role": "Client, homeowner", "portrait": "linda_park.png" },
     { "id": "c_dale", "name": "Dale Hughes", "role": "Owner, FixRight Plumbing", "portrait": "dale_hughes.png" },
@@ -108,7 +115,7 @@
     { "id": "s_tina", "keys": ["Tina Ruiz"], "kind": "name", "reveals": ["d_ad"] }
   ],
   "solution": {
-    "verdict": "APPROVED",
+    "verdict": "GUILTY",
     "culprit": "c_tina",
     "methods": [
       { "id": "m1", "text": "The bank processed the same payment twice by mistake." },
@@ -117,6 +124,6 @@
     ],
     "correctMethod": "m3",
     "requiredEvidence": ["d_registry", "d_ad", "d_bank", "d_bank_letter"],
-    "explanation": "Linda really was charged twice, so her claim is APPROVED. The bank confirmed the second $480 was not a duplicate — it came from a different merchant, FXR Services LLC. The state registry shows FXR Services LLC belongs to Tina Ruiz, and the FixRight ad shows Tina handles FixRight's billing — she had Linda's card number. Dale's 'bank error' theory was wrong. Lesson: when a charge looks doubled, check the merchant name on each line."
+    "explanation": "FixRight Plumbing is GUILTY: Linda really was charged twice, and the second charge came from inside the company. The bank confirmed the second $480 was not a duplicate — it came from a different merchant, FXR Services LLC. The state registry shows FXR Services LLC belongs to Tina Ruiz, and the FixRight ad shows Tina handles FixRight's billing — she had Linda's card number. Dale's 'bank error' theory was wrong. Lesson: when a charge looks doubled, check the merchant name on each line."
   }
 }

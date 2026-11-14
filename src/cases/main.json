@@ -5,8 +5,15 @@
   "estMinutes": 12,
   "premium": false,
   "gameDate": "10/22/2026",
-  "brief": "Marcus Bell returned a $312 jacket to Northwind Outfitters. Three weeks later — no refund, and the store says it never got the package. Marcus wants the bureau to force Northwind to pay. Find out where the jacket went before you stamp his claim.",
-  "claim": "Northwind Outfitters refuses to refund $312 for a jacket I returned on October 2. I followed their support's instructions exactly. Make them pay. — Marcus Bell",
+  "brief": "Marcus Bell returned a $312 jacket to Northwind Outfitters. Three weeks later — no refund, and the store says it never got the package. Marcus wants the bureau to force Northwind to pay. Find out where the jacket went before you stamp the respondent.",
+  "claim": {
+    "number": "0412",
+    "claimant": "c_marcus",
+    "respondent": "Northwind Outfitters",
+    "request": "Refund for a returned jacket",
+    "amount": 312,
+    "statement": "Northwind Outfitters refuses to refund $312 for a jacket I returned on October 2. I followed their support's instructions exactly. Make them pay."
+  },
   "characters": [
     { "id": "c_marcus", "name": "Marcus Bell", "role": "Client", "portrait": "marcus_bell.png" },
     { "id": "c_priya", "name": "Priya Shah", "role": "Customer Care, Northwind Outfitters", "portrait": "priya_shah.png" },
@@ -206,7 +213,7 @@
     { "id": "s_kyle", "keys": ["Kyle Denton", "K. Denton", "Denton"], "kind": "name", "reveals": ["d_court"] }
   ],
   "solution": {
-    "verdict": "DENIED",
+    "verdict": "NOT_GUILTY",
     "culprit": "c_kyle",
     "methods": [
       { "id": "m1", "text": "Northwind received the jacket and is stalling the refund." },
@@ -216,6 +223,6 @@
     ],
     "correctMethod": "m3",
     "requiredEvidence": ["d_tracking", "d_registry", "d_whois", "d_unit_listing", "d_northwind_help", "d_scam_ad"],
-    "explanation": "Northwind never received the jacket, so the claim against them is DENIED. Marcus found 'support' through a sponsored ad and got a label from northwind-returnshelp.com — a lookalike domain created 09/12/2026, while real Northwind labels are free and go to Fairview, OH. ParcelGo tracking shows the box was delivered to 880 Industrial Way, Unit 12, signed by K. DENTON. That unit is leased to QuickShip Returns LLC, organized by Kyle Denton, whose phone matches the fake domain. The neighbor theory fails (the hallway thief was arrested in August, and Marcus shipped the box himself), and ParcelGo delivered it. Lesson: start returns from the store's own website, and never pay for a 'support' label. Marcus should still contact Northwind before 10/24 — and report Denton."
+    "explanation": "Northwind Outfitters is NOT GUILTY: the store never received the jacket. The real culprit is Kyle Denton. Marcus found 'support' through a sponsored ad and got a label from northwind-returnshelp.com — a lookalike domain created 09/12/2026, while real Northwind labels are free and go to Fairview, OH. ParcelGo tracking shows the box was delivered to 880 Industrial Way, Unit 12, signed by K. DENTON. That unit is leased to QuickShip Returns LLC, organized by Kyle Denton, whose phone matches the fake domain. The neighbor theory fails (the hallway thief was arrested in August, and Marcus shipped the box himself), and ParcelGo delivered it. Lesson: start returns from the store's own website, and never pay for a 'support' label. Marcus should still contact Northwind before 10/24 — and report Denton."
   }
 }
