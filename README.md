@@ -126,3 +126,7 @@ an explicit review dialog shows remaining attempts, one lost coffee, +60 seconds
 and the additional 150-point deduction. The clock pauses until that dialog closes.
 The third wrong answer ends the case with **CASE FAILED**. Existing saves with
 APPROVED/DENIED stamps migrate without resetting run identity or paid hints.
+
+## Credits
+
+Music: "Jazz Improvisation (Looped)" by Alex McCulloch / Pro Sensory (CC0) — https://opengameart.org/content/jazz-improvisation-looped

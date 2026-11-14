@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { safeRead, safeWrite } from "./storage";
+import { createMusicPlayer, type MusicPlayer } from "./musicPlayer";
+
+const MUSIC_URL = "/assets/music/jazz_improv_looped.mp3";
 
 export type GameSound = "click" | "paper" | "pin" | "stamp" | "record";
 
@@ -9,6 +12,8 @@ export function useGameAudio() {
     () => safeRead<unknown>("case-desk:sound", false) === true,
   );
   const context = useRef<AudioContext | null>(null);
+  const music = useRef<MusicPlayer | null>(null);
+  const getMusic = () => (music.current ??= createMusicPlayer(MUSIC_URL));
   const play = useCallback(
     (kind: GameSound = "click", force = false) => {
       if ((!enabled && !force) || typeof AudioContext === "undefined") return;
@@ -53,10 +58,24 @@ export function useGameAudio() {
     },
     [],
   );
+  useEffect(() => {
+    const player = getMusic();
+    player.attach();
+    // Sound restored as "on" has no user gesture yet: start on the first one.
+    if (safeRead<unknown>("case-desk:sound", false) === true) {
+      player.setEnabled(true, true);
+    }
+    return () => {
+      player.dispose();
+      music.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   function toggle() {
     const next = !enabled;
     setEnabled(next);
     safeWrite("case-desk:sound", next);
+    getMusic().setEnabled(next);
     if (next) play("record", true);
   }
   return { enabled, toggle, play };
