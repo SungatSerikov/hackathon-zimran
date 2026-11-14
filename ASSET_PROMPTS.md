@@ -20,13 +20,13 @@ no text, no letters, no logos, no watermark
 | Файл | Промпт (после STYLE) | Итоговый размер |
 |---|---|---|
 | `scene/bg.png` | `front view of an empty walnut wood office desk against a light warm grey wall, subtle wall panelling and skirting board, a wide window with soft daylight and a city skyline, desk top occupies the bottom 60% of the image, empty spaces for objects, wide 16:9 composition` | 480×270 |
-| `ui/menu_bg.png` | тот же промпт, + `dimmed, slightly darker and bluer tint` | 480×270 |
+| `ui/menu_bg.png` | тот же промпт, + `evening dusk, cool blue shadows, warm desk lamp light pool on the left, calm dark empty center for menu buttons` (сейчас рисуется скриптом `tools/draw-menu.mjs` из спрайтов сцены) | 480×270 |
 
 ## Предметы стола
 
 | Файл | Промпт (после STYLE + single object) | Размер | Состояния |
 |---|---|---|---|
-| `scene/monitor.png` | `chunky off-white 1990s CRT computer monitor with keyboard in front, soft shading, dark charcoal-teal screen, small power LED, front view` | ~150×120 | off: экран тёмный; on: мягкое сине-зелёное свечение (`monitor_on.png`) |
+| `scene/monitor.png` | `retro 1990s beige CRT computer monitor seen slightly from above with a bulky tapered back housing and vents, soft inner bevel, slightly convex dark glass with a curved reflection, blank badge plate, knobs, power button and LED, tilt-swivel stand, detailed beige keyboard with keycaps and a darker spacebar in front, muted warm palette, front view` | ~150×120 | off: тёмное стекло; on: сине-зелёное свечение с заголовком окна (`monitor_on.png`) |
 | `scene/folder.png` | `manila case folder lying on a desk seen from slightly above, tab, steel paper clip, blank label patch, a few sheet edges sticking out, muted colors` | ~140×80 | closed / open (`folder_open.png`: раскрытая, две пустые страницы) |
 | `scene/clock.png` | `round wall clock with simple face, dark wooden rim, no hands` | ~36×36 | стрелки рисует код |
 | `scene/calendar.png` | `tear-off wall calendar, muted green header strip with metal rings, torn paper remnants, blank off-white page` | ~44×52 | число рисует код |
@@ -46,16 +46,19 @@ no text, no letters, no logos, no watermark
 | `ui/claim_form.png` | `complaint form on off-white paper, green header strip with a small shield emblem, three empty ruled rows, no text` | ~200×120 |
 | `ui/paper.png` | `seamless tileable texture of slightly yellowed office paper, subtle grain` | 64×64 |
 | `ui/sticker_new.png` | `small yellow sticky note, slightly curled corner` | 16×16 |
-| `ui/logo.png` | `game logo plaque, brass nameplate style, empty for text` (текст логотипа добавить вручную пиксельным шрифтом) | ~200×60 |
+| `ui/logo.png` | `engraved brass nameplate with screws and bevelled edge, blocky pixel lettering "CASE DESK", muted gold palette, transparent corners` (сейчас рисуется скриптом `tools/draw-menu.mjs`, текст — константа `LOGO_TEXT`) | 200×60 |
 
 > Генераторы плохо пишут слова. Для штампов надёжнее: сгенерировать пустую рамку штампа, а слова GUILTY / NOT GUILTY набрать шрифтом `Silkscreen` в Pixelorama.
 
 ## Портреты персонажей (48×48)
 
 Префикс для всех портретов, после STYLE:
+> **Статус: все 8 портретов нарисованы** скриптом `tools/draw-portraits.mjs` (`npm run portraits`), промпты ниже нужны только если захочется заменить их ручным/сгенерированным артом в той же серии.
+
 ```
-character portrait, head and shoulders, front facing, plain flat background #2B2B3A,
-consistent portrait series style, expressive face, 48x48 sprite feel
+clean modern muted pixel art character portrait, head and shoulders, front facing, flat plain slate-grey
+background #7d848a, dark tinted outline (no pure black), soft 2-3 step shading, light from top-right,
+neutral realistic expression, no villain look, consistent portrait series, same head size and eye line, 48x48 sprite
 ```
 
 ### Учебное дело — The Double Charge
@@ -76,7 +79,7 @@ consistent portrait series style, expressive face, 48x48 sprite feel
 | `portraits/kyle_denton.png` | Kyle Denton, владелец QuickShip | `white man in his mid 30s, slicked hair, cheap blazer over t-shirt, overly friendly salesman smile` |
 | `portraits/ray_ortiz.png` | Ray Ortiz, клерк ParcelGo | `Latino man in his 40s, brown delivery-store uniform polo, name tag, friendly tired face` |
 
-Подсказка для единого стиля: генерируй все портреты одной сессией, с одинаковым префиксом и одинаковым фоном; виновника **не** делай заметно «злодейским» — иначе дело решается по картинке.
+Подсказка для единого стиля: генерируй все портреты одной сессией, с одинаковым префиксом и одинаковым фоном (`#7d848a`); виновника **не** делай заметно «злодейским» — иначе дело решается по картинке.
 
 ## Звуки (P2, бесплатно)
 

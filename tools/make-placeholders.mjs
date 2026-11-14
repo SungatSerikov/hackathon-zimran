@@ -13,6 +13,9 @@ const PROTECTED = new Set([
   'scene/safe.png', 'scene/safe_open.png', 'scene/phone.png', 'scene/phone_ring.png', 'scene/cabinet.png', 'scene/bg.png',
   'scene/monitor.png', 'scene/monitor_on.png', 'scene/folder.png', 'scene/folder_open.png', 'scene/board.png', 'scene/stamps.png',
   'ui/stamp_guilty.png', 'ui/stamp_not_guilty.png', 'ui/claim_form.png',
+  'ui/logo.png', 'ui/menu_bg.png', // tools/draw-menu.mjs
+  // портреты: tools/draw-portraits.mjs
+  ...['linda_park', 'dale_hughes', 'tina_ruiz', 'marcus_bell', 'priya_shah', 'gloria_mendez', 'kyle_denton', 'ray_ortiz'].map((id) => `portraits/${id}.png`),
 ]);
 
 const make = (w, h, fn, outline = true) => { const c = new Canvas(w, h); fn(c, w, h); if (outline) c.outline(); return c; };

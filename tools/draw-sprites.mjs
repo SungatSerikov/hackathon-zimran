@@ -6,6 +6,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { P, Canvas } from './lib/pixel.mjs';
+import { FONT } from './lib/font.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const ASSETS = join(ROOT, 'public', 'assets');
@@ -467,68 +468,127 @@ function drawBackground() {
   return c;
 }
 
-// ---------- Монитор 150x120 (с клавиатурой) ----------
-const MONITOR_SCREEN = { x: 26, y: 20, w: 98, h: 52 }; // чистая область под текст (однотонная)
-// скруглённый прямоугольник (срезаны угловые пиксели)
-const rr = (c, x, y, w, h, col) => {
+// ---------- Монитор 150x120: ретро-ЭЛТ в 3/4 сверху (бежевый корпус с задней «колбой»), стекло, клавиатура ----------
+// Чистая область под текст (однотонная, вся декорация экрана — только вне неё: рамка стекла, строка заголовка сверху, строка статуса снизу)
+const MONITOR_SHIFT = 2; // верхняя часть рисуется со строки 0 и сдвигается на 2 px вниз: видимый контур корпуса на y=42 сцены, зазор до подоконника 3 px
+const MONITOR_SCREEN0 = { x: 29, y: 28, w: 92, h: 48 }; // в координатах верхней части (до сдвига)
+const MONITOR_SCREEN = { ...MONITOR_SCREEN0, y: MONITOR_SCREEN0.y + MONITOR_SHIFT };
+// скруглённый прямоугольник: r — радиус угла в пикселях (срезаются угловые пиксели по окружности)
+const rrr = (c, x, y, w, h, r, col) => {
   for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
-    const dx = Math.min(i, w - 1 - i), dy = Math.min(j, h - 1 - j);
-    if (dx + dy < 2) continue;
+    const cx = i < r ? r - 0.5 : i >= w - r ? w - r - 0.5 : i + 0.5;
+    const cy = j < r ? r - 0.5 : j >= h - r ? h - r - 0.5 : j + 0.5;
+    if (Math.hypot(i + 0.5 - cx, j + 0.5 - cy) > r - 0.2) continue;
     c.set(x + i, y + j, col);
   }
 };
 function drawMonitor(on) {
   const c = new Canvas(150, 120);
-  // корпус: слева темнее, справа и сверху светлее
-  rr(c, 6, 2, 138, 90, P.mug);
-  for (let y = 2; y < 92; y++) for (let x = 6; x < 144; x++) {
-    if (!c.alpha(x, y)) continue;
-    if (y >= 88) c.set(x, y, P.mugDk);
-    else if (x <= 10) c.set(x, y, P.mugDk);
-    else if (x >= 139 || y <= 3) c.set(x, y, P.white);
+  // --- крыша корпуса: глубокая трапеция (y=0..10), сильно сужается к задней стенке (2.4 px за строку) ---
+  const roofX = (y) => [14 + Math.round((10 - y) * 2.4), 135 - Math.round((10 - y) * 2.4)];
+  for (let y = 0; y <= 10; y++) {
+    const [x0, x1] = roofX(y);
+    for (let x = x0; x <= x1; x++) c.set(x, y, y === 10 ? P.paperDk : y === 0 || x >= x1 - 5 ? P.white : x <= x0 + 4 ? P.paperDk : P.paper);
   }
-  // утопленная рамка экрана
-  c.rect(15, 9, 121, 75, P.mugDk);
-  c.rect(15, 83, 121, 1, P.white);
-  c.rect(135, 9, 1, 75, P.white);
-  rr(c, 16, 10, 118, 72, P.rimDk);
-  rr(c, 19, 13, 112, 66, on ? P.green : P.ink); // стекло: кромка
-  c.rect(22, 16, 106, 60, on ? P.screenOn : P.ink); // однотонная область (MONITOR_SCREEN внутри неё)
-  if (on) for (const [x, y] of [[22, 16], [23, 16], [22, 17], [127, 16], [126, 16], [127, 17], [22, 75], [23, 75], [22, 74], [127, 75], [126, 75], [127, 74]]) c.set(x, y, P.green);
-  // блик на стекле в правом верхнем углу (вне MONITOR_SCREEN)
-  for (const [x, y] of [[125, 16], [126, 17], [127, 18], [120, 16], [121, 17], [122, 18]]) c.set(x, y, on ? P.greenLt : P.rimDk);
-  // подбородок: щель дисковода, табличка без текста, кнопка и светодиод
-  c.rect(20, 86, 30, 2, P.rimDk);
-  c.rect(20, 88, 30, 1, P.white);
-  c.rect(64, 85, 16, 4, P.paper);
-  c.rect(64, 88, 16, 1, P.paperDk);
-  c.rect(112, 86, 8, 3, P.mugDk); c.rect(112, 86, 8, 1, P.white);
-  c.rect(124, 86, 3, 2, on ? P.greenLt : P.steelDk);
-  if (on) c.set(126, 86, P.glint);
-  // шея и подставка
-  c.rect(58, 92, 34, 6, P.mugDk);
-  c.rect(88, 92, 4, 6, P.mug);
-  c.rect(42, 98, 66, 8, P.mug);
-  c.rect(42, 98, 66, 1, P.white);
-  c.rect(42, 98, 3, 8, P.mugDk);
-  c.rect(42, 104, 66, 2, P.mugDk);
-  c.rect(104, 99, 4, 5, P.white);
-  // клавиатура
-  rr(c, 12, 108, 126, 12, P.mug);
-  c.rect(12, 108, 4, 12, P.mugDk);
-  c.rect(134, 109, 4, 10, P.white);
-  c.rect(12, 118, 126, 2, P.mugDk);
-  for (let r = 0; r < 3; r++) {
-    const y = 110 + r * 3;
-    if (r < 2) for (let x = 18; x <= 127; x += 5) { c.rect(x, y, 4, 1, P.white); c.rect(x, y + 1, 4, 1, P.paperDk); }
-    else {
-      for (let x = 18; x <= 38; x += 5) { c.rect(x, y, 4, 1, P.white); c.rect(x, y + 1, 4, 1, P.paperDk); }
-      c.rect(44, y, 56, 1, P.white); c.rect(44, y + 1, 56, 1, P.paperDk);
-      for (let x = 105; x <= 127; x += 5) { c.rect(x, y, 4, 1, P.white); c.rect(x, y + 1, 4, 1, P.paperDk); }
+  for (const y of [3, 5, 7]) { // вентиляционные прорези, длиннее к передней кромке
+    const [x0, x1] = roofX(y);
+    for (let x = x0 + 12; x + 3 <= x1 - 10; x += 5) c.rect(x, y, 3, 1, P.beigeDk);
+  }
+  // --- передняя панель x=14..135 (ширина = основание крыши): прямая сверху, скруглена снизу; торцы — полосы 3 px внутри силуэта ---
+  c.rect(14, 11, 122, 70, P.paperDk);
+  rrr(c, 14, 79, 122, 10, 4, P.paperDk);
+  c.rect(14, 11, 122, 3, P.paper);
+  c.rect(133, 14, 3, 66, P.paper);
+  c.rect(14, 14, 3, 66, P.beigeDk);
+  c.rect(16, 86, 118, 3, P.beigeDk);
+  // --- утопленная фаска вокруг стекла: тень сверху/слева, свет снизу/справа ---
+  rrr(c, 21, 18, 108, 63, 9, P.beigeDk);
+  for (let y = 18; y < 81; y++) for (let x = 21; x < 129; x++) {
+    if (c.alpha(x, y) && (y >= 79 || x >= 126)) c.set(x, y, y >= 80 || x >= 128 ? P.white : P.paper);
+  }
+  c.rect(17, 81, 116, 1, P.beigeDk); // перелом между рамкой и подбородком
+  c.rect(17, 82, 116, 1, P.paper);
+  rrr(c, 22, 19, 106, 61, 8, P.rimDk); // тёмный зазор между фаской и стеклом
+  // --- выпуклое стекло (y=21..77) ---
+  rrr(c, 24, 21, 102, 57, 8, on ? P.greenDk : P.ink);
+  if (on) {
+    rrr(c, 25, 22, 100, 55, 7, P.green); // виньетка: тёмная кромка и более тёмные углы
+    rrr(c, 27, 24, 96, 51, 5, P.screenOn);
+    for (let i = 0; i < 4; i++) for (let j = 0; j < 4 - i; j++) {
+      c.set(25 + i, 22 + j, P.greenDk); c.set(124 - i, 22 + j, P.greenDk); c.set(25 + i, 76 - j, P.greenDk); c.set(124 - i, 76 - j, P.greenDk);
+    }
+    for (let y = 24; y < 75; y += 2) { c.rect(26, y, 1, 1, P.green); c.rect(123, y, 1, 1, P.green); } // строки развёртки у боковых краёв
+  } else {
+    // светлая прерывистая кромка выпуклого стекла по периметру (только вне MONITOR_SCREEN0)
+    for (let x = 32; x <= 118; x += 2) { c.set(x, 22, P.rimDk); c.set(x, 77, P.rimDk); }
+    for (let y = 33; y <= 70; y += 2) c.set(25, y, P.rimDk);
+    for (let y = 32; y <= 46; y++) c.set(123, y, P.rimDk); // изогнутый блик вдоль правого края
+    for (let y = 47; y <= 56; y++) c.set(122, y, P.rimDk);
+    for (let y = 57; y <= 60; y++) c.set(121, y, P.rimDk);
+  }
+  // блик на изгибе: дуга у правого верхнего угла и диагональные штрихи в верхней полосе
+  const hl = on ? P.greenLt : P.rimDk;
+  for (let a = -90; a <= 0; a += 9) {
+    const px = Math.round(118 + 5.2 * Math.cos((a * Math.PI) / 180)), py = Math.round(28 + 5.2 * Math.sin((a * Math.PI) / 180));
+    c.set(px, py, hl);
+  }
+  for (const [x, y] of [[96, 27], [97, 26], [98, 25], [99, 24], [100, 23], [101, 22], [91, 27], [92, 26], [93, 25], [94, 24], [95, 23]]) c.set(x, y, on ? P.greenLt : P.steelDk);
+  if (!on) { c.rect(34, 24, 13, 1, P.rimDk); c.rect(34, 25, 7, 1, P.rimDk); } // отражение оконного света
+  if (on) {
+    c.rect(29, 23, 92, 4, P.greenDk); // строка заголовка окна (y=23..26) без текста
+    c.rect(31, 24, 2, 2, P.greenLt); c.rect(35, 24, 2, 2, P.greenLt); c.rect(39, 24, 2, 2, P.greenLt);
+    c.rect(52, 25, 40, 1, P.green);
+    c.rect(116, 24, 3, 2, P.greenLt); // блок размером с курсор
+    c.rect(29, 27, 92, 1, P.green);
+    // мягкое свечение: светлые полосы по центру верхней и нижней кромки зазора стекла и по бокам
+    c.rect(60, 19, 30, 1, P.greenLt); c.rect(60, 78, 30, 1, P.greenLt);
+    c.rect(22, 40, 1, 20, P.greenLt); c.rect(127, 40, 1, 20, P.greenLt);
+    for (let y = 32; y <= 44; y++) c.set(123, y, P.greenLt); // блик вдоль правого края
+  }
+  c.rect(MONITOR_SCREEN0.x, MONITOR_SCREEN0.y, MONITOR_SCREEN0.w, MONITOR_SCREEN0.h, on ? P.screenOn : P.ink); // чистая область
+  // --- подбородок: бейдж без текста, решётка, ручки, кнопка питания, светодиод ---
+  c.rect(24, 83, 26, 4, P.beigeDk);
+  c.rect(25, 83, 24, 3, P.paper);
+  c.rect(25, 85, 24, 1, P.paperDk);
+  c.rect(27, 84, 8, 1, P.beigeDk); // декоративная полоска бейджа
+  for (let x = 58; x <= 82; x += 4) c.rect(x, 83, 1, 3, P.beigeDk); // вентиляционная решётка
+  for (const x of [90, 96]) { c.rect(x, 83, 4, 4, P.steelDk); c.rect(x + 1, 83, 2, 1, P.steel); c.rect(x + 3, 84, 1, 2, P.steel); } // ручки яркости/контраста
+  c.rect(106, 83, 10, 4, P.steelDk); c.rect(106, 83, 10, 1, P.steel); c.rect(115, 84, 1, 3, P.steel); // кнопка питания
+  c.rect(120, 84, 3, 2, on ? P.greenLt : P.steelDk);
+  if (on) c.set(122, 84, P.glint);
+  // --- шея и поворотная подставка ---
+  c.rect(60, 89, 30, 4, P.beigeDk);
+  c.rect(84, 89, 6, 4, P.paperDk);
+  rrr(c, 44, 93, 62, 6, 2, P.paperDk);
+  c.rect(46, 93, 58, 1, P.paper);
+  c.rect(46, 98, 58, 1, P.beigeDk);
+  c.rect(100, 94, 4, 4, P.paper);
+  // --- сдвиг верхней части вниз и клавиатура в перспективе: сзади уже, спереди шире; видны толщина и колпачки клавиш ---
+  const o = new Canvas(150, 120);
+  blit(o, c, 0, MONITOR_SHIFT);
+  for (let y = 102; y <= 118; y++) {
+    const x0 = Math.round(24 - (y - 102) * 0.8), x1 = Math.round(125 + (y - 102) * 0.8);
+    for (let x = x0; x <= x1; x++) o.set(x, y, y >= 116 ? P.beigeDk : y === 102 ? P.paper : x >= x1 - 2 ? P.paper : x <= x0 + 1 ? P.beigeDk : P.paperDk);
+  }
+  for (let r = 0; r < 4; r++) {
+    const y = 103 + r * 3; // строка колпачков: 2 строки (светлая верхняя грань + тело) и 1 строка тени
+    const x0 = Math.round(24 - (y - 102) * 0.8) + 3, x1 = Math.round(125 + (y - 102) * 0.8) - 3;
+    const keyCap = (x, w, dark) => {
+      o.rect(x, y, w, 1, dark ? P.paper : P.white);
+      o.rect(x, y + 1, w, 1, dark ? P.paperDk : P.paper);
+    };
+    if (r < 3) {
+      let k = 0;
+      for (let x = x0; x + 3 <= x1; x += 5, k++) keyCap(x, 4, k === 0 || x + 8 > x1);
+    } else { // нижний ряд: боковые клавиши и длинный тёмный пробел
+      const mid0 = Math.round((x0 + x1) / 2) - 18;
+      for (let x = x0; x + 3 < mid0 - 2; x += 5) keyCap(x, 4, false);
+      o.rect(mid0, y, 36, 1, P.paperDk); o.rect(mid0, y + 1, 36, 2, P.beigeDk); // пробел: колпачок темнее остальных, верхняя кромка paperDk, тень снизу
+      for (let x = mid0 + 40; x + 3 <= x1; x += 5) keyCap(x, 4, false);
     }
   }
-  c.outline(P.edge);
-  return c;
+  o.outline(P.edge);
+  return o;
 }
 
 // ---------- Папка дела 140x80 ----------
@@ -678,13 +738,7 @@ function drawStamps() {
 }
 
 // ---------- Оттиски штампов 120x40: GUILTY (красный) / NOT GUILTY (зелёный); единственное место с текстом ----------
-const FONT = { // блочный шрифт, высота 5 (ширина у букв разная: 3–5)
-  G: ['.###', '#...', '#.##', '#..#', '.###'], U: ['#..#', '#..#', '#..#', '#..#', '.##.'],
-  I: ['###', '.#.', '.#.', '.#.', '###'], L: ['#...', '#...', '#...', '#...', '####'],
-  T: ['#####', '..#..', '..#..', '..#..', '..#..'], Y: ['#...#', '#...#', '.#.#.', '..#..', '..#..'],
-  N: ['#..#', '##.#', '#.##', '#..#', '#..#'], O: ['.##.', '#..#', '#..#', '#..#', '.##.'],
-  ' ': ['  ', '  ', '  ', '  ', '  '],
-};
+// шрифт — общий: tools/lib/font.mjs (глифы GUILTY / NOT GUILTY не менять)
 const STAMP_W = 120, STAMP_H = 40;
 function drawStampImpression(word, ink, inkLt) {
   const c = new Canvas(STAMP_W, STAMP_H);

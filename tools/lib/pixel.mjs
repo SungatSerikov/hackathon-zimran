@@ -47,6 +47,13 @@ export const P = Object.fromEntries(Object.entries({
   blueDk: '#4e6a88', blueLt: '#8fa8c2', redDk: '#8a4038', redLt: '#cc7466',
   rimDk: '#45464d', greenDk: '#46684f', greenLt: '#86ab8e', folderLt: '#dcc28c', mugDk: '#bcb9b0', glint: '#ffffff',
 }).map(([k, v]) => [k, hex(v)]));
+// Отдельная палитра портретов (tools/draw-portraits.mjs): ТОЛЬКО 4 новых оттенка кожи. Тени выстроены цепочкой:
+// тень тона N = база тона N+1 (fair -> light -> med -> brown -> P.desk), а два самых тёмных тона берутся из P
+// (deep = P.deskDk / тень P.coffee). Всё остальное (волосы, одежда, фон, контуры) тоже из P. Итого в игре 32 + 4 = 36 цветов.
+// Основная палитра P не менялась, поэтому уже нарисованные спрайты сцены остались прежними.
+export const PP = Object.fromEntries(Object.entries({
+  skinFair: '#e8c4a6', skinLight: '#dcb088', skinMed: '#c28d62', skinBrown: '#a06c48',
+}).map(([k, v]) => [k, hex(v)]));
 export const CLEAR = [0, 0, 0, 0];
 
 // ---------- Холст ----------
