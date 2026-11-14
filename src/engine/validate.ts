@@ -294,7 +294,7 @@ function searchActions(
   return [...signatures.values()];
 }
 
-function shortestSolution(
+export function findShortestSearchPath(
   caseData: CaseData,
   initial: string[],
 ): string[] | undefined {
@@ -384,7 +384,7 @@ export function validateCase(input: unknown): ValidationReport {
   const path =
     caseData.solution.requiredEvidence.filter((id) => reachable.has(id))
       .length >= 2
-      ? shortestSolution(caseData, initial)
+      ? findShortestSearchPath(caseData, initial)
       : undefined;
   if (path) {
     report.solutionPath = path;

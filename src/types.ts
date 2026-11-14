@@ -105,4 +105,5 @@ export interface ScoreInput {
   wrongAttempts: number;
   searches: number;
   minimumSearches: number;
+  hints?: number;
 }

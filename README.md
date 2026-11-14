@@ -30,12 +30,13 @@ npm run preview   # preview the production build locally
 - APPROVED/DENIED stamp + responsible person + explanation + **two pinned supporting documents**.
 - Three attempts. Each wrong conclusion adds 60 seconds and removes one coffee. Repeating the identical conclusion does not burn another attempt accidentally.
 - Stopwatch, score breakdown, solution explanation, fresh attempts, best scores, progress saved per browser, daily play streak.
+- A bureau safe starting at $100, case fees with speed/accuracy bonuses, 25% replay fees, and paid two-level informant hints ($40 and 50 points per call).
 - Local leaderboard and duel-interest tracking. Optional Supabase enables shared records.
 - A clearly labeled subscription preview. **No subscription purchase, notification subscription or multiplayer is implemented.**
 
 The current repository specification takes precedence over the earlier one-attempt concept. Correctness requires all four answer components; incomplete submissions are not charged as attempts. The timer counts time while a case is open, including reading overlays, and pauses after returning to the case list. A browser refresh resumes saved progress after choosing Continue.
 
-Scores follow `max(0, 1000 - elapsedSeconds - 150*wrongAttempts - 5*extraSearches)`. `elapsedSeconds` includes the additional 60 seconds per wrong attempt. Failed cases score zero. The exact shortest path is calculated by the same search rules used by the game: 2 searches for the tutorial and 3 for the main case. A natural main-case walkthrough is 4 searches; we preserved the partner's accessible clue graph instead of inserting artificial steps.
+Scores follow `max(0, 1000 - elapsedSeconds - 150*wrongAttempts - 5*extraSearches - 50*paidHints)`. `elapsedSeconds` includes the additional 60 seconds per wrong attempt. Failed cases score zero. The exact shortest path is calculated by the same search rules used by the game: 2 searches for the tutorial and 3 for the main case. A natural main-case walkthrough is 4 searches; we preserved the partner's accessible clue graph instead of inserting artificial steps.
 
 ## Artist workflow
 
@@ -44,7 +45,7 @@ The partner's original assets, prompts, scene editor and layout are included. Th
 1. Replace matching PNG files in `public/assets/scene/`, `public/assets/portraits/` or `public/assets/ui/`.
 2. Keep filename, transparency, base size and existing case portrait references. Do not bake document text or interaction labels into art.
 3. Adjust positions/sizes in `src/scene/layout.json` if the object composition changes.
-4. Reload the running app; missing images use CSS placeholders. Restart Vite if your filesystem does not deliver file-watch events.
+4. Reload the running app; missing images use CSS placeholders. Restart Vite after adding new image filenames (the build scans available art), or if your filesystem does not deliver file-watch events. For such filesystems, run `CASE_DESK_POLL=1 npm run dev`.
 5. `npm run build` includes all current assets in `dist/`.
 
 ```bash
@@ -66,6 +67,12 @@ Cases live in `src/cases/tutorial.json` and `src/cases/main.json`; the registry 
 - Every document is reachable in both shipped cases. The case tests ensure that searchable text matches what the UI shows.
 
 Walkthroughs and spoiler-heavy content notes are in `docs/CASE_WALKTHROUGHS.md`. We minimally strengthened the teammate's records to establish actual ownership and transaction/domain authorship, rather than treating a registered agent or a matching phone number as sufficient proof. All people, companies and stories are fictional; domains use `.example` and phone numbers use the reserved fictional range. This is entertainment, not financial or legal advice.
+
+## Bureau cash and informant
+
+The safe is the player's wallet; the cabinet is the premium archive. The phone offers a clue from the shortest remaining search path. The first paid call names a clue type and its source document; the second names the exact query. Re-reading an already paid hint and final “pin your evidence” guidance are free. Insufficient funds open the clearly unavailable pass/cash-pack preview; players can keep investigating without paying.
+
+The local wallet key is `cd.wallet`. Fees follow SPEC §8.1: `100*difficulty`, +50% for finishing within the estimated time (otherwise +25% within1.5×), +$50 for no wrong answers. Later clears of the same case pay25%, preserving cents. A persistent run ID makes fee credit and hint receipts idempotent across reloads. Browser-local cash has no monetary value and is not protected against editing browser storage. The planned $500/$1.99 pack cannot be purchased.
 
 ## Optional shared leaderboard
 

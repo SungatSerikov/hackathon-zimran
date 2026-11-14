@@ -3374,3 +3374,263 @@ nav > button.active {
   font: 6px var(--pixel);
   color: var(--muted);
 }
+/* Bureau economy: fictional cash, useful hints, and a separate premium archive. */
+.economy-toolbar {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid var(--line);
+  padding: 16px 0;
+  flex-wrap: wrap;
+}
+.economy-toolbar button {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: #b9c5a9;
+  font-size: 11px;
+}
+.economy-toolbar button:hover {
+  color: var(--yellow);
+}
+.economy-toolbar span {
+  font: 7px var(--pixel);
+  color: #859875;
+}
+.wallet-balance {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 12px 0 25px;
+  color: var(--yellow);
+}
+.wallet-balance strong {
+  font: 32px var(--pixel);
+  display: block;
+  margin-top: 8px;
+}
+.wallet-balance .eyebrow {
+  font-size: 8px;
+}
+.wallet-history {
+  margin: 15px 0 25px;
+}
+.wallet-history > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.wallet-history > p {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--muted);
+  margin-top: 15px;
+}
+.wallet-history small {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.wallet-history strong {
+  color: #a5c690;
+  white-space: nowrap;
+}
+.wallet-history strong.spent {
+  color: #d6aa7a;
+}
+.hint-history {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.hint-history > div {
+  padding: 16px 19px;
+  border-left: 3px solid #a69b69;
+  background: #cad7b00a;
+}
+.hint-history .eyebrow {
+  font-size: 8px;
+}
+.hint-history p {
+  font-size: 14px;
+  line-height: 1.8;
+  margin-top: 8px;
+}
+.hint-buy {
+  width: 100%;
+  margin: 10px 0 16px;
+  justify-content: space-between;
+}
+.free-hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  background: #64794c22;
+  margin-bottom: 20px;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.free-hint p {
+  flex: 1;
+}
+.fee-receipt {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 23px 30px;
+  background: #bccaa36b;
+  border-bottom: 1px dashed #889a70;
+  color: #49673a;
+  position: relative;
+  overflow: hidden;
+}
+.fee-receipt strong {
+  display: block;
+  font: 28px var(--pixel);
+  margin: 9px 0;
+}
+.fee-receipt .eyebrow {
+  font-size: 8px;
+  color: #6c8059;
+}
+.fee-receipt small {
+  display: block;
+  font-size: 10px;
+  line-height: 1.6;
+  color: #778563;
+}
+.flying-bill {
+  position: absolute;
+  right: 25px;
+  bottom: 15px;
+  background: #7b9969;
+  border: 2px solid #627c51;
+  padding: 1px 14px;
+  font: 20px var(--pixel);
+  color: #c8dbb5;
+  opacity: 0;
+  animation: cashIn 1.2s ease-out 1;
+}
+@keyframes cashIn {
+  0% {
+    opacity: 1;
+    transform: translate(40px, -30px) rotate(12deg);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(-5deg);
+  }
+}
+.cash-pack {
+  font-size: 13px !important;
+  padding: 17px;
+  border: 1px dashed #738060;
+  margin: 0 0 20px !important;
+}
+.cash-pack small {
+  font-size: 10px;
+  color: var(--muted);
+}
+.pixel-phone {
+  background: #303e32;
+  border-bottom: 4em solid #15251a;
+  box-shadow: 2em 2em #122116;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #a6bd8a;
+}
+.pixel-phone svg {
+  width: 24em;
+  height: 24em;
+}
+.pixel-phone span {
+  font: 3.3em var(--pixel);
+  margin-top: 2em;
+}
+.pixel-cabinet {
+  width: 100%;
+  height: 100%;
+  background: #6f7661;
+  border: 3em solid #414d3c;
+  box-shadow: 2em 2em #1e2d22;
+  position: relative;
+  padding: 4em;
+}
+.pixel-cabinet i {
+  display: block;
+  border: 1em solid #a0a78b;
+  height: 11em;
+  margin-bottom: 2em;
+  position: relative;
+}
+.pixel-cabinet i:after {
+  content: "";
+  position: absolute;
+  top: 3em;
+  left: 42%;
+  width: 13em;
+  height: 3em;
+  background: #bfc09b;
+}
+.pixel-cabinet > span {
+  position: absolute;
+  left: 22em;
+  bottom: 1em;
+  font: 3.5em var(--pixel);
+  color: #c7d0b1;
+}
+.safe-cash-label {
+  position: absolute;
+  left: 15%;
+  bottom: 15%;
+  color: #bdd7a2;
+  background: #233a29;
+  font: 5em var(--pixel);
+  padding: 1em 3em;
+  pointer-events: none;
+}
+@media (max-width: 767px) {
+  .economy-toolbar {
+    gap: 15px;
+    justify-content: space-between;
+  }
+  .economy-toolbar button {
+    font-size: 10px;
+    gap: 5px;
+  }
+  .economy-toolbar span {
+    display: none;
+  }
+  .wallet-balance strong {
+    font-size: 29px;
+  }
+  .fee-receipt {
+    padding: 22px 20px;
+    gap: 14px;
+  }
+  .fee-receipt strong {
+    font-size: 24px;
+  }
+  .fee-receipt small {
+    max-width: 220px;
+  }
+  .cash-pack {
+    font-size: 12px !important;
+  }
+}

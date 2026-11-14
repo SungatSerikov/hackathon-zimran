@@ -8,9 +8,19 @@ import { Dialog } from "../components/Dialog";
 import { DocumentView, docLabels } from "../components/DocumentView";
 import { Scene, Asset, formatTime, type DeskAction } from "../components/Scene";
 import { Result } from "./Result";
+import { EconomyPanel, bureauMoney } from "../components/EconomyPanel";
+import { getWallet } from "../engine/wallet";
 
 type Panel =
-  "folder" | "search" | "board" | "verdict" | "calendar" | "help" | null;
+  | "folder"
+  | "search"
+  | "board"
+  | "verdict"
+  | "calendar"
+  | "help"
+  | "wallet"
+  | "hint"
+  | null;
 export function Desk({
   caseData,
   onExit,
@@ -28,6 +38,7 @@ export function Desk({
     (c) => loadRun(c) || createRun(c),
   );
   const [panel, setPanel] = useState<Panel>(null);
+  const [balance, setBalance] = useState(() => getWallet().balance);
   const [selected, setSelected] = useState(
     caseData.documents.find((d) => d.initial)?.id || "",
   );
@@ -47,7 +58,6 @@ export function Desk({
   );
   const selectedDoc = documents.find((d) => d.id === selected) || documents[0];
   const pinned = documents.filter((d) => run.pinnedIds.includes(d.id));
-  const initialCount = caseData.documents.filter((d) => d.initial).length;
   const tutorial = caseData.difficulty === 1;
   const initialRead = run.seenIds.some(
     (id) => caseData.documents.find((d) => d.id === id)?.initial,
@@ -126,7 +136,9 @@ export function Desk({
     if (id === "folder") openFolder();
     if (id === "board") setPanel("board");
     if (id === "stamps") setPanel("verdict");
-    if (id === "safe") onPaywall();
+    if (id === "safe") setPanel("wallet");
+    if (id === "phone") setPanel("hint");
+    if (id === "cabinet") onPaywall();
     if (id === "calendar") setPanel("calendar");
     if (id === "coffee")
       setToast(
@@ -233,6 +245,7 @@ export function Desk({
         elapsed={run.elapsedSeconds}
         lives={3 - run.wrongAttempts}
         evidence={pinned.length}
+        balance={balance}
         date={caseData.gameDate || caseData.worldDate}
       />
       <div className="desk-toolbar">
@@ -252,6 +265,20 @@ export function Desk({
           <Icon name="stamp" />
           Make a verdict
           <Icon name="arrow" size={16} />
+        </button>
+      </div>
+      <div className="economy-toolbar">
+        <button onClick={() => setPanel("wallet")}>
+          <Icon name="lock" size={14} />
+          {bureauMoney(balance)} <span>BUREAU CASH</span>
+        </button>
+        <button onClick={() => setPanel("hint")}>
+          <Icon name="phone" size={14} />
+          Call the informant <span>$40 / HINT</span>
+        </button>
+        <button onClick={onPaywall}>
+          <Icon name="folder" size={14} />
+          Premium archive
         </button>
       </div>
       <div className="desk-bottom">
@@ -274,6 +301,21 @@ export function Desk({
       <div className="toast" role="status" aria-live="polite">
         {toast && <span>{toast}</span>}
       </div>
+      {(panel === "wallet" || panel === "hint") && (
+        <EconomyPanel
+          mode={panel}
+          caseData={caseData}
+          run={run}
+          onClose={close}
+          onHint={(hint) => dispatch({ type: "hint", hint })}
+          onBalance={setBalance}
+          onSearch={(q) => {
+            setQuery(q);
+            setPanel("search");
+          }}
+          onPaywall={onPaywall}
+        />
+      )}
       {panel === "folder" && (
         <Dialog
           title="Case folder"

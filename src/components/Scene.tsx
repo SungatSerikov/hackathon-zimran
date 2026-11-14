@@ -1,6 +1,8 @@
 import { useState, type CSSProperties, type ReactNode } from "react";
 import layout from "../scene/layout.json";
 import { Icon } from "./Icons";
+declare const __SCENE_ASSETS__: string[];
+const availableAssets = new Set(__SCENE_ASSETS__);
 export type DeskAction =
   | "clock"
   | "calendar"
@@ -9,7 +11,9 @@ export type DeskAction =
   | "safe"
   | "coffee"
   | "folder"
-  | "stamps";
+  | "stamps"
+  | "phone"
+  | "cabinet";
 export function Asset({
   src,
   children,
@@ -22,7 +26,7 @@ export function Asset({
   const [failed, setFailed] = useState(false);
   return (
     <span className={`asset ${className}`}>
-      {!failed && (
+      {!failed && availableAssets.has(src) && (
         <img
           src={src}
           alt=""
@@ -48,6 +52,7 @@ export function Scene({
   elapsed = 0,
   lives = 3,
   evidence = 0,
+  balance = 100,
   hero = false,
   date = "11/14/2026",
 }: {
@@ -55,6 +60,7 @@ export function Scene({
   elapsed?: number;
   lives?: number;
   evidence?: number;
+  balance?: number;
   hero?: boolean;
   date?: string;
 }) {
@@ -143,6 +149,19 @@ export function Scene({
                   <div className="monitor-base" />
                 </div>
               )}
+              {item.id === "phone" && (
+                <div className="pixel-phone">
+                  <Icon name="phone" size={30} />
+                  <span>INFORMANT</span>
+                </div>
+              )}
+              {item.id === "cabinet" && (
+                <div className="pixel-cabinet">
+                  <i />
+                  <i />
+                  <span>CASE ARCHIVE</span>
+                </div>
+              )}
               {item.id === "safe" && (
                 <div className="pixel-safe">
                   <span />
@@ -192,7 +211,7 @@ export function Scene({
                 key={item.id}
               >
                 <Asset
-                  src={`/assets/${item.id.startsWith("coffee_") && Number(item.id.slice(-1)) > lives ? "scene/coffee_empty.png" : item.sprite}`}
+                  src={`/assets/${item.id.startsWith("coffee_") && Number(item.id.slice(-1)) > lives ? "scene/coffee_empty.png" : item.id === "safe" && balance > 0 ? "scene/safe_open.png" : item.sprite}`}
                 >
                   {fallback}
                 </Asset>
@@ -221,10 +240,13 @@ export function Scene({
               }
             >
               <Asset
-                src={`/assets/${item.id.startsWith("coffee_") && Number(item.id.slice(-1)) > lives ? "scene/coffee_empty.png" : item.sprite}`}
+                src={`/assets/${item.id.startsWith("coffee_") && Number(item.id.slice(-1)) > lives ? "scene/coffee_empty.png" : item.id === "safe" && balance > 0 ? "scene/safe_open.png" : item.sprite}`}
               >
                 {fallback}
               </Asset>
+              {item.id === "safe" && (
+                <span className="safe-cash-label">${balance.toFixed(0)}</span>
+              )}
               {item.id === "monitor" && (
                 <span className="monitor-live-label">
                   RCA / ARCHIVE

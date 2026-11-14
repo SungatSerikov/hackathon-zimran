@@ -65,3 +65,10 @@ Files: `src/main.tsx`, `src/App.tsx`, focused components, `src/styles.css`, `src
 - Independent review fixed renderer-schema mismatches for dates/receipt notes and distinguished local score saving from online leaderboard reads.
 - Browser checks: both solved outcomes,3-error failure, reload/resume, ranking, duel/pass,375px document width. The observed mobile grid overflow was reproduced and fixed.
 - Production build is Vercel-ready. Live hosting and shared Supabase still require the team's hosting/project credentials.
+
+## Teammate update 4ad4f15 — implemented extension
+- Safe now holds bureau money; phone sells two-level contextual hints; separate cabinet opens planned premium archive.
+- Start100; solve fees use speed+clean bonuses and repeat25%; idempotent run/hint receipts prevent reload duplication.
+- Paid hints cost40 and50points. The shortest remaining path uses the engine's actual unlock rules.
+- New phone/cabinet art remains the partner's task; CSS placeholders are visible and clickable without missing-file requests.
+- Final verification: 167 tests passed, both case graphs validated, TypeScript and production build passed. Browser checks confirmed two paid hints, free guidance, insufficient funds, persistence, and a single $350 award after reopening the result ($370 final balance). The wallet also fits a 375px viewport; browser error log was empty.

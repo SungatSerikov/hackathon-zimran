@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 
 const paths: Record<string, string> = {
+  phone: "M3 2h6v6H6v4l6 6h4v-3h6v6h-7L3 9V2z",
   folder: "M2 5h7l2 3h11v13H2V5zm2 5v9h16v-9H4z",
   search:
     "M10 2a8 8 0 1 0 4.9 14.3L21 22l2-2-6.1-5.7A8 8 0 0 0 10 2zm0 3a5 5 0 1 1 0 10 5 5 0 0 1 0-10z",

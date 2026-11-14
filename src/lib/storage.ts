@@ -1,6 +1,12 @@
 import type { Accusation, CaseData } from "../types";
-import { createRun, MAX_ELAPSED_SECONDS, type GameRun } from "../store/game";
+import {
+  createRun,
+  isPaidHint,
+  MAX_ELAPSED_SECONDS,
+  type GameRun,
+} from "../store/game";
 import { evaluateVerdict } from "../engine/verdict";
+import type { HintOffer } from "../engine/hint";
 
 export function safeRead<T>(key: string, fallback: T): T {
   try {
@@ -79,11 +85,51 @@ export function saveRun(run: GameRun): boolean {
   return safeWrite(runKey(run.caseId), run);
 }
 
+function legacyRunId(value: Record<string, unknown>): string {
+  // Deterministic identity prevents repeat awards even if a legacy save cannot
+  // be migrated because the browser allows reads but rejects writes.
+  const serialized = JSON.stringify(value);
+  let first = 0x811c9dc5;
+  let second = 0x9e3779b9;
+  for (let index = 0; index < serialized.length; index++) {
+    first = Math.imul(first ^ serialized.charCodeAt(index), 0x01000193);
+    second = Math.imul(second ^ serialized.charCodeAt(index), 0x85ebca6b);
+  }
+  return `legacy-${(first >>> 0).toString(16).padStart(8, "0")}${(second >>> 0).toString(16).padStart(8, "0")}`;
+}
+
+function readHints(value: unknown): HintOffer[] {
+  if (!Array.isArray(value)) return [];
+  const hints: HintOffer[] = [];
+  for (const hint of value) {
+    if (
+      !isPaidHint(hint) ||
+      hints.some(
+        (item) => item.stepKey === hint.stepKey && item.level === hint.level,
+      )
+    )
+      continue;
+    hints.push({
+      stepKey: hint.stepKey,
+      level: hint.level,
+      message: hint.message,
+      free: false,
+      ...(hint.query !== undefined ? { query: hint.query } : {}),
+    });
+  }
+  return hints;
+}
+
 export function loadRun(caseData: CaseData): GameRun | null {
   const value = safeRead<unknown>(runKey(caseData.id), null);
   if (
     !object(value) ||
     value.caseId !== caseData.id ||
+    (value.runId !== undefined &&
+      (typeof value.runId !== "string" ||
+        !value.runId.trim() ||
+        value.runId.length > 200)) ||
+    (value.hints !== undefined && !Array.isArray(value.hints)) ||
     !Array.isArray(value.openedIds) ||
     !Array.isArray(value.seenIds) ||
     !Array.isArray(value.pinnedIds) ||
@@ -104,6 +150,8 @@ export function loadRun(caseData: CaseData): GameRun | null {
   const opened = new Set(openedIds);
   const run: GameRun = {
     ...initial,
+    runId: typeof value.runId === "string" ? value.runId : legacyRunId(value),
+    hints: readHints(value.hints),
     openedIds,
     seenIds: knownIds(value.seenIds, opened),
     pinnedIds: knownIds(value.pinnedIds, opened),
@@ -151,6 +199,8 @@ export function loadRun(caseData: CaseData): GameRun | null {
     (run.wrongAttempts === 0 && run.lastAccusation)
   )
     return null;
+  // Commit migration before the result screen can award this run's fee.
+  if (value.runId === undefined || value.hints === undefined) saveRun(run);
   return run;
 }
 

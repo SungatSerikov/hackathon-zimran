@@ -378,9 +378,18 @@ export default function App() {
               </li>
               <li>
                 <Icon name="check" size={17} />
+                Unlimited informant hints
+              </li>
+              <li>
+                <Icon name="check" size={17} />
                 Private leagues with friends
               </li>
             </ul>
+            <p className="cash-pack">
+              Optional cash pack · $500 bureau cash for $1.99
+              <br />
+              <small>Planned only. Not available for purchase.</small>
+            </p>
             <button className="button" disabled>
               Subscriptions are not available yet
             </button>

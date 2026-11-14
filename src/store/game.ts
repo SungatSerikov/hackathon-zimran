@@ -1,16 +1,20 @@
 import type { Accusation, CaseData } from "../types";
 import { searchCase } from "../engine/search";
 import { evaluateVerdict } from "../engine/verdict";
+import type { HintOffer } from "../engine/hint";
 
 // The cap keeps milliseconds inside a PostgreSQL signed integer for score records.
 export const MAX_ELAPSED_SECONDS = 2_147_483;
+let runSequence = 0;
 
 export interface GameRun {
+  runId: string;
   caseId: string;
   openedIds: string[];
   seenIds: string[];
   pinnedIds: string[];
   queries: Array<{ query: string; documentIds: string[]; newCount: number }>;
+  hints: HintOffer[];
   wrongAttempts: number;
   elapsedSeconds: number;
   status: "playing" | "solved" | "failed";
@@ -21,10 +25,14 @@ export type GameAction =
   | { type: "read"; documentId: string }
   | { type: "pin"; documentId: string }
   | { type: "tick"; seconds: number }
+  | { type: "hint"; hint: HintOffer }
   | { type: "accuse"; caseData: CaseData; accusation: Accusation };
 
 export function createRun(caseData: CaseData): GameRun {
   return {
+    runId:
+      globalThis.crypto?.randomUUID?.() ??
+      `run-${Date.now().toString(36)}-${(++runSequence).toString(36)}-${Math.random().toString(36).slice(2)}`,
     caseId: caseData.id,
     openedIds: [
       ...new Set(
@@ -36,10 +44,26 @@ export function createRun(caseData: CaseData): GameRun {
     seenIds: [],
     pinnedIds: [],
     queries: [],
+    hints: [],
     wrongAttempts: 0,
     elapsedSeconds: 0,
     status: "playing",
   };
+}
+
+export function isPaidHint(value: unknown): value is HintOffer {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const hint = value as Record<string, unknown>;
+  return (
+    hint.free === false &&
+    (hint.level === 1 || hint.level === 2) &&
+    typeof hint.stepKey === "string" &&
+    !!hint.stepKey.trim() &&
+    typeof hint.message === "string" &&
+    !!hint.message.trim() &&
+    (hint.query === undefined ||
+      (typeof hint.query === "string" && !!hint.query.trim()))
+  );
 }
 
 function sameAccusation(
@@ -60,6 +84,30 @@ export function gameReducer(state: GameRun, action: GameAction): GameRun {
   if (state.status !== "playing") return state;
 
   switch (action.type) {
+    case "hint": {
+      const hint = action.hint;
+      if (
+        !isPaidHint(hint) ||
+        state.hints.some(
+          (existing) =>
+            existing.stepKey === hint.stepKey && existing.level === hint.level,
+        )
+      )
+        return state;
+      return {
+        ...state,
+        hints: [
+          ...state.hints,
+          {
+            stepKey: hint.stepKey,
+            level: hint.level,
+            message: hint.message,
+            free: false,
+            ...(hint.query !== undefined ? { query: hint.query } : {}),
+          },
+        ],
+      };
+    }
     case "search": {
       if (
         action.caseData.id !== state.caseId ||

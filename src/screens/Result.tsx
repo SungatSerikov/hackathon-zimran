@@ -7,6 +7,8 @@ import { getScores, submitScore, type ScoreRecord } from "../lib/records";
 import { safeRead, safeWrite } from "../lib/storage";
 import { Icon } from "../components/Icons";
 import { formatTime } from "../components/Scene";
+import { awardCaseFee } from "../engine/wallet";
+import { bureauMoney } from "../components/EconomyPanel";
 
 export function Result({
   caseData,
@@ -27,9 +29,14 @@ export function Result({
         wrongAttempts: run.wrongAttempts,
         searches: run.queries.length,
         minimumSearches: report.minimumSearches,
+        hints: run.hints.length,
       })
     : 0;
   const [scores, setScores] = useState<ScoreRecord[]>([]);
+  const [fee, setFee] = useState(0);
+  useEffect(() => {
+    setFee(awardCaseFee(caseData, run).fee);
+  }, [caseData, run]);
   const [source, setSource] = useState<"online" | "local">("local");
   const [nickname, setNickname] = useState(() => {
     const saved = safeRead<unknown>("case-desk:nickname", "");
@@ -160,12 +167,31 @@ export function Result({
               </strong>
             </div>
             <div>
+              <span>Informant calls</span>
+              <strong>
+                {run.hints.length} <small>(−{run.hints.length * 50} pts)</small>
+              </strong>
+            </div>
+            <div>
               <span>Extra-search deduction</span>
               <strong>
                 −{Math.max(0, run.queries.length - report.minimumSearches) * 5}{" "}
                 pts
               </strong>
             </div>
+          </div>
+          <div className="fee-receipt">
+            <Icon name="lock" size={27} />
+            <div>
+              <span className="eyebrow">CASE FEE · ADDED TO YOUR SAFE</span>
+              <strong>+{bureauMoney(fee)}</strong>
+              <small>
+                {solved
+                  ? "Already paid fees are never credited twice. Repeat clears earn 25%."
+                  : "Close the case successfully to earn a fee."}
+              </small>
+            </div>
+            <span className="flying-bill">$</span>
           </div>
           <div className="case-resolution">
             <span

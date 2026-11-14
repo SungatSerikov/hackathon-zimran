@@ -76,15 +76,79 @@ function readyRun() {
 describe("game reducer", () => {
   it("starts with only the initial documents, all unread", () => {
     expect(createRun(caseData)).toEqual({
+      runId: expect.any(String),
       caseId: "test-case",
       openedIds: ["initial"],
       seenIds: [],
       pinnedIds: [],
       queries: [],
+      hints: [],
       wrongAttempts: 0,
       elapsedSeconds: 0,
       status: "playing",
     });
+  });
+
+  it("gives each replay a fresh identity while preserving identity during play", () => {
+    const first = createRun(caseData);
+    const second = createRun(caseData);
+    expect(first.runId).toBeTruthy();
+    expect(second.runId).not.toBe(first.runId);
+    expect(gameReducer(first, { type: "tick", seconds: 1 }).runId).toBe(
+      first.runId,
+    );
+  });
+
+  it("records distinct paid hint levels once without storing free guidance", () => {
+    const first = createRun(caseData);
+    const hint = {
+      stepKey: "test-case:alpha",
+      level: 1 as const,
+      message: "Check the company in the claim.",
+      free: false,
+    };
+    const hinted = gameReducer(first, { type: "hint", hint });
+    expect(hinted.hints).toEqual([hint]);
+    expect(
+      gameReducer(hinted, {
+        type: "hint",
+        hint: { ...hint, message: "Same paid step." },
+      }),
+    ).toBe(hinted);
+    const second = {
+      ...hint,
+      level: 2 as const,
+      message: "Search: Alpha",
+      query: "Alpha",
+    };
+    const more = gameReducer(hinted, { type: "hint", hint: second });
+    expect(more.hints).toEqual([hint, second]);
+    expect(
+      gameReducer(more, { type: "hint", hint: { ...second, free: true } }),
+    ).toBe(more);
+    expect(
+      gameReducer(more, {
+        type: "hint",
+        hint: {
+          stepKey: "verdict",
+          level: 0,
+          message: "Pin evidence.",
+          free: true,
+        },
+      }),
+    ).toBe(more);
+    hint.message = "Caller mutation";
+    expect(hinted.hints[0].message).toBe("Check the company in the claim.");
+  });
+
+  it("cannot append hints after a case is finished", () => {
+    const solved = accuse(readyRun(), correct);
+    expect(
+      gameReducer(solved, {
+        type: "hint",
+        hint: { stepKey: "alpha", level: 1, message: "Hint", free: false },
+      }),
+    ).toBe(solved);
   });
 
   it("records only nonempty searches and counts only newly discovered documents", () => {

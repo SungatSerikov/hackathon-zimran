@@ -102,6 +102,76 @@ describe("safe storage", () => {
 });
 
 describe("saved runs", () => {
+  it("migrates a solved legacy save before its result can award a fee", () => {
+    saveRun(createRun(caseData));
+    const key = [...memory.keys()][0];
+    const old = JSON.parse(memory.get(key)!);
+    delete old.runId;
+    delete old.hints;
+    old.openedIds = ["initial", "one", "two"];
+    old.pinnedIds = ["one", "two"];
+    old.status = "solved";
+    old.lastAccusation = {
+      verdict: "APPROVED",
+      culprit: "vendor",
+      method: "double",
+      evidence: ["one", "two"],
+    };
+    memory.set(key, JSON.stringify(old));
+    const migrated = loadRun(caseData)!;
+    expect(migrated.runId).toBeTruthy();
+    expect(migrated.status).toBe("solved");
+    expect(migrated.hints).toEqual([]);
+    expect(JSON.parse(memory.get(key)!).runId).toBe(migrated.runId);
+    expect(loadRun(caseData)?.runId).toBe(migrated.runId);
+  });
+
+  it("keeps legacy award identity stable when migration cannot write storage", () => {
+    saveRun(createRun(caseData));
+    const key = [...memory.keys()][0];
+    const old = JSON.parse(memory.get(key)!);
+    delete old.runId;
+    delete old.hints;
+    memory.set(key, JSON.stringify(old));
+    vi.stubGlobal("localStorage", {
+      getItem: (key: string) => memory.get(key) ?? null,
+      setItem() {
+        throw new Error("quota");
+      },
+    });
+    const first = loadRun(caseData)!;
+    const second = loadRun(caseData)!;
+    expect(first.runId).toBeTruthy();
+    expect(first.runId).toBe(second.runId);
+  });
+
+  it("preserves paid hint history and removes free, duplicate, and malformed entries", () => {
+    const hint = {
+      stepKey: "persistence-test:alpha",
+      level: 1 as const,
+      message: "Check the claim.",
+      free: false,
+    };
+    const run = { ...createRun(caseData), hints: [hint] };
+    saveRun(run);
+    expect(loadRun(caseData)).toEqual(run);
+    const key = [...memory.keys()][0];
+    const corrupt = JSON.parse(memory.get(key)!);
+    corrupt.hints = [
+      hint,
+      { ...hint, message: "Duplicate" },
+      null,
+      { ...hint, level: 0, free: true },
+      { ...hint, stepKey: "" },
+      { ...hint, level: 2, query: "Alpha", message: "Search: Alpha" },
+    ];
+    memory.set(key, JSON.stringify(corrupt));
+    expect(loadRun(caseData)?.hints).toEqual([
+      hint,
+      { ...hint, level: 2, query: "Alpha", message: "Search: Alpha" },
+    ]);
+  });
+
   it("round-trips a run and clears only that case", () => {
     const run = {
       ...createRun(caseData),
