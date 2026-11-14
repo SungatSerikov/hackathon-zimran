@@ -651,21 +651,29 @@ nav > button.active {
 }
 .desk-mat {
   position: absolute;
-  top: 172em;
-  left: 154em;
-  width: 172em;
-  height: 92em;
-  background: #4b382c;
-  border: 2em solid #30261f;
-  box-shadow: 0 3em #251f1a, inset 0 1em #8b6b4c, inset 0 -2em #3b2d24;
+  /* Six base pixels around the folder; four clear of the stamp tray. */
+  top: 176em;
+  left: 164em;
+  width: 152em;
+  height: 88em;
+  background-color: #50585b;
+  background-image: linear-gradient(90deg, #ffffff07 1em, transparent 1em),
+    linear-gradient(#0000000b 1em, transparent 1em);
+  background-size: 3em 3em;
+  border: 1em solid #343b3e;
+  box-shadow: inset 1em 1em #747c7d, inset -1em -1em #3e474a;
+  clip-path: polygon(0 2em, 2em 2em, 2em 0,
+    calc(100% - 2em) 0, calc(100% - 2em) 2em, 100% 2em,
+    100% calc(100% - 2em), calc(100% - 2em) calc(100% - 2em),
+    calc(100% - 2em) 100%, 2em 100%, 2em calc(100% - 2em), 0 calc(100% - 2em));
   z-index: 1;
   pointer-events: none;
 }
 .desk-mat::before {
   content: "";
   position: absolute;
-  inset: 3em;
-  border: 1em dashed #a2875d;
+  inset: 2em;
+  border: 1em solid #636d70;
 }
 .desk-pen {
   position: absolute;
