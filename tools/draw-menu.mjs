@@ -75,26 +75,61 @@ function drawLogo(text) {
 const W = 480, H = 270;
 const layout = JSON.parse(readFileSync(join(ROOT, 'src', 'scene', 'layout.json'), 'utf8'));
 const spriteMap = new Map(spriteTargets.map(([n, canvas]) => [n.includes('/') ? n : `scene/${n}`, canvas]));
-// не рисуем в меню: папку с делом (лежит прямо за кнопками)
-const MENU_SKIP = new Set(['folder']);
+// Композиция фона меню (отдельная от layout.json): слева (x<~170) весь текст меню рисует код поверх тёмного градиента,
+// поэтому там нет предметов; справа ~65% — стол. Координаты — левый верх спрайта на холсте 480x270.
+const BG_SHIFT = 26; // фон сцены сдвигается вправо (с заворотом справа налево): окно и монитор встают над одним местом в правой части
+const MENU_OBJECTS = [
+  ['scene/board.png', 330, 24], // под кнопкой звука (сверху справа) — она остаётся над доской
+  ['scene/monitor.png', 176, 40],
+  ['scene/safe.png', 345, 118],
+  ['scene/folder.png', 196, 178],
+  ['scene/stamps.png', 352, 186], // ниже подписи «YOUR NEXT CASE IS WAITING» снизу справа остаётся полоса
+];
+const LAMP_AT = { dx: 412, dy: -44 }; // зеркальная настольная лампа у правого края; пятно света на сейфе и столе
 
 function composeScene() {
   const c = new Canvas(W, H);
-  const bg = spriteMap.get(layout.background);
-  c.d.set(bg.d);
-  const objs = layout.objects.filter((o) => !MENU_SKIP.has(o.id)).map((o, i) => ({ o, i })).sort((a, b) => a.o.z - b.o.z || a.i - b.i);
-  for (const { o } of objs) {
-    const s = spriteMap.get(o.sprite);
-    if (!s) throw new Error(`нет спрайта ${o.sprite}`);
-    for (let y = 0; y < s.h; y++) for (let x = 0; x < s.w; x++) if (s.alpha(x, y)) c.set(o.x + x, o.y + y, s.d.subarray((y * s.w + x) * 4, (y * s.w + x) * 4 + 4));
+  const bg = new Canvas(W, H);
+  bg.d.set(spriteMap.get(layout.background).d);
+  // фон сцены уже содержит контактные тени под предметами в позициях layout.json — в меню предметы стоят иначе, поэтому тени стираем
+  // (заменяем пикселем чистой столешницы из колонки x=476, где предметов нет) и рисуем свои под новыми позициями
+  const CONTACT = ['monitor', 'safe', 'folder', 'stamps'];
+  const shadowPixels = (name, ox, oy) => {
+    const sp = spriteMap.get(name), pts = [];
+    for (let x = 0; x < sp.w; x++) {
+      let bottom = -1;
+      for (let y = 0; y < sp.h; y++) if (sp.alpha(x, y)) bottom = y;
+      if (bottom >= 0) pts.push([ox + x - 2, oy + bottom + 1], [ox + x - 2, oy + bottom + 2], [ox + x - 2, oy + bottom + 3]);
+    }
+    return pts;
+  };
+  const clean = (x, y) => bg.d.set(bg.d.subarray((y * W + 476) * 4, (y * W + 476) * 4 + 4), (y * W + x) * 4);
+  for (const o of layout.objects) if (CONTACT.includes(o.id)) for (const [x, y] of shadowPixels(o.sprite, o.x, o.y)) if (x >= 0 && x < 476 && y >= 112 && y < 262) clean(x, y);
+  // убираем растение из фона (оно стояло справа от монитора): копируем доски с соседнего куска стола на 112 px левее (период стыков досок)
+  for (let y = 110; y < 190; y++) for (let x = 296; x < 380; x++) bg.d.set(bg.d.subarray((y * W + x - 112) * 4, (y * W + x - 112) * 4 + 4), (y * W + x) * 4);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const sx = (x - BG_SHIFT + W) % W;
+    c.d.set(bg.d.subarray((y * W + sx) * 4, (y * W + sx) * 4 + 4), (y * W + x) * 4);
+  }
+  // контактные тени под предметами в новых позициях (стиль как в bg: смещены на 2 px влево, edge + deskDk)
+  for (const [name, ox, oy] of MENU_OBJECTS) {
+    if (!CONTACT.some((id) => name.endsWith(`/${id}.png`))) continue;
+    const pts = shadowPixels(name, ox, oy);
+    pts.forEach(([x, y], i) => { const k = i % 3; if (k === 0) c.set(x, y, P.edge); else if (k === 1) c.set(x, y, P.deskDk); else if (x % 2 === 0) c.set(x, y, P.deskDk); });
+  }
+  // предметы рисуем поверх теней
+  for (const [name, ox, oy] of MENU_OBJECTS) {
+    const s = spriteMap.get(name);
+    for (let y = 0; y < s.h; y++) for (let x = 0; x < s.w; x++) if (s.alpha(x, y)) c.set(ox + x, oy + y, s.d.subarray((y * s.w + x) * 4, (y * s.w + x) * 4 + 4));
   }
   return c;
 }
 
 const PALETTE = Object.values(P);
-const nearest = (r, g, b) => {
+const WARM_PALETTE = Object.entries(P).filter(([k]) => !/^green|^screenOn/.test(k)).map(([, v]) => v); // в тёплом свете лампы зелёные тона не подходят (сталь иначе становится зелёной)
+const nearest = (r, g, b, warm = false) => {
   let best = PALETTE[0], bd = Infinity;
-  for (const p of PALETTE) { const d = (p[0] - r) ** 2 + (p[1] - g) ** 2 + (p[2] - b) ** 2; if (d < bd) { bd = d; best = p; } }
+  for (const p of warm ? WARM_PALETTE : PALETTE) { const d = (p[0] - r) ** 2 + (p[1] - g) ** 2 + (p[2] - b) ** 2; if (d < bd) { bd = d; best = p; } }
   return best;
 };
 const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
@@ -102,41 +137,42 @@ const clamp = (v) => Math.max(0, Math.min(255, v));
 
 // Вечерняя цветокоррекция. Каждый пиксель приводится к ближайшему цвету палитры P (цвета только из P).
 // Дизеринг (Bayer 4x4) выбирает всегда между ДВУМЯ уже готовыми цветами палитры (соседние ступени), а не добавляет шум к RGB.
-// 1) сумрак: холодный синий множитель; 2) свет настольной лампы слева: 3 тёплые ступени вокруг лампы, узкий дизер-обод на стыке ступеней;
-// 3) спокойная зона под кнопки: вертикальная полоса x 144..316 (границы идут по пустой стене/столу между полкой, монитором и доской)
-//    затемняется целиком, переход 16 px, тоже выбором из двух цветов.
+// 1) сумрак: холодный синий множитель; 2) свет настольной лампы справа: 4 тёплые ступени вокруг лампы, узкий дизер-обод;
+// 3) левая колонка под текст меню: широкий плавный градиент затемнения (6 ступеней), слева плоский тёмный тон.
 const DUSK = [0.44, 0.5, 0.7];
-const LIGHT_LEVELS = [DUSK, [0.6, 0.58, 0.62], [0.78, 0.72, 0.7], [1.0, 0.9, 0.8], [1.2, 1.1, 0.95]]; // сумрак -> тёплые ступени к лампе (4 шага, внешний край гаснет мягко)
-const LAMP_C = { x: 52, y: 205, rx: 86, ry: 40 }; // центр пятна прямо под открытым краем абажура (см. drawLamp)
-const SHADE = { x: 51, y: 178 }; // нижний центр абажура: отсюда вниз идёт конус света
-const CALM = { x0: 144, x1: 316, feather: 16, dim: 0.6 };
+const LIGHT_LEVELS = [DUSK, [0.6, 0.58, 0.62], [0.78, 0.72, 0.7], [1.0, 0.9, 0.8], [1.2, 1.1, 0.95]]; // сумрак -> тёплые ступени к лампе
+// центр пятна под открытым краем абажура (абажур лампы после отражения и сдвига LAMP_AT)
+const LAMP_C = { x: LAMP_AT.dx + 11, y: 205 + LAMP_AT.dy, rx: 86, ry: 40 };
+const SHADE = { x: LAMP_AT.dx + 12, y: 178 + LAMP_AT.dy };
+const SHADE_DIM = [1, 0.8, 0.62, 0.48, 0.38, 0.3]; // ступени затемнения слева (1 = без затемнения)
+const SHADE_X = { full: 118, none: 196 }; // до x=118 самый тёмный тон, к x=196 сцена без затемнения
 function drawMenuBg() {
   const src = composeScene();
   const out = new Canvas(W, H);
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-    const i4 = (y * W + x) * 4, r = src.d[i4], g = src.d[i4 + 1], b = src.d[i4 + 2];
+    const i4 = (y * W + x) * 4, r = src.d[i4], gg = src.d[i4 + 1], b = src.d[i4 + 2];
     const th = (BAYER[(y & 3) * 4 + (x & 3)] + 0.5) / 16;
-    // ступень света: f 0..3, дизер только в средней трети каждой ступени (узкий обод)
     const lamp = Math.max(0, 1 - Math.hypot((x - LAMP_C.x) / LAMP_C.rx, (y - LAMP_C.y) / LAMP_C.ry));
-    // конус света от абажура вниз к пятну: добавляет до ступени ~1.8
     const cy = y - SHADE.y, cw = 6 + cy * 0.75;
-    const cone = cy > 0 && cy < 40 ? Math.max(0, 1 - Math.abs(x - SHADE.x - cy * 0.1) / cw) * 1.8 * (1 - cy / 40) : 0;
+    const cone = cy > 0 && cy < 40 ? Math.max(0, 1 - Math.abs(x - SHADE.x + cy * 0.1) / cw) * 1.8 * (1 - cy / 40) : 0;
     const f = Math.min(4, Math.max(lamp * 4.4, cone)), lvl = Math.min(3, Math.floor(f));
     const p = Math.max(0, Math.min(1, ((f - lvl) - 0.5) * 4 + 0.5));
     const k = p > th ? LIGHT_LEVELS[lvl + 1] : LIGHT_LEVELS[lvl];
-    const dx = Math.max(CALM.x0 - x, 0, x - CALM.x1);
-    const calm = Math.max(0, 1 - dx / CALM.feather);
-    const dim = calm > th ? CALM.dim : 1;
-    out.set(x, y, nearest(clamp(r * k[0] * dim), clamp(g * k[1] * dim), clamp(b * k[2] * dim)));
+    // градиент слева: g 0..1 (1 — полностью тёмная колонка); ступень выбирается между двумя соседними значениями SHADE_DIM
+    const gr = Math.max(0, Math.min(1, (SHADE_X.none - x) / (SHADE_X.none - SHADE_X.full)));
+    const gf = gr * (SHADE_DIM.length - 1), gi = Math.min(SHADE_DIM.length - 2, Math.floor(gf));
+    const dim = gf - gi > th ? SHADE_DIM[gi + 1] : SHADE_DIM[gi];
+    out.set(x, y, nearest(clamp(r * k[0] * dim), clamp(gg * k[1] * dim), clamp(b * k[2] * dim), k !== LIGHT_LEVELS[0] && k !== LIGHT_LEVELS[1]));
   }
-  drawLamp(out);
+  drawLamp(out, LAMP_AT);
   return out;
 }
 
-// настольная лампа на шарнирах (стоит НА столе слева, не задевает спрайты телефона и кружек): тяжёлое основание, нижнее и верхнее
-// колено, шарнир, абажур наклонён вниз-вправо и висит над точкой (38..58, 165..178); под открытым краем светится лампочка.
-function drawLamp(dst) {
-  const c = new Canvas(W, H); // отдельный прозрачный холст, чтобы обвести контуром только лампу
+// настольная лампа на шарнирах, ЗЕРКАЛЬНО (абажур смотрит влево, на стол и сейф): тяжёлое основание, нижнее и верхнее колено,
+// шарнир, абажур наклонён вниз; под открытым краем светится лампочка. Рисуется в локальных координатах (абажур над x 38..58, y 165..178),
+// затем отражается (x -> 63 - x) и сдвигается на (dx, dy).
+function drawLamp(dst, { dx, dy }) {
+  const c = new Canvas(64, H); // отдельный прозрачный холст, чтобы обвести контуром только лампу
   const thick = (x0, y0, x1, y1) => { // колено 4 px: тёмная левая половина, светлая правая
     c.line(x0 - 1, y0, x1 - 1, y1, P.steelDk); c.line(x0, y0, x1, y1, P.steelDk);
     c.line(x0 + 1, y0, x1 + 1, y1, P.steel); c.line(x0 + 2, y0, x1 + 2, y1, P.steel);
@@ -160,7 +196,7 @@ function drawLamp(dst) {
   c.rect(45, 175, 12, 1, P.corkDk); c.rect(45, 176, 12, 1, P.corkDk); // нижний срез абажура
   c.rect(47, 177, 8, 1, P.folderLt); c.rect(49, 178, 4, 1, P.folderLt); // лампочка: свет под абажуром
   c.outline(P.edge);
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (c.alpha(x, y)) dst.set(x, y, c.d.subarray((y * W + x) * 4, (y * W + x) * 4 + 4));
+  for (let y = 0; y < H; y++) for (let x = 0; x < 64; x++) if (c.alpha(x, y)) dst.set(dx + (63 - x), y + dy, c.d.subarray((y * 64 + x) * 4, (y * 64 + x) * 4 + 4));
 }
 
 // ---------- Запись ----------

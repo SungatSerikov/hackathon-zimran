@@ -19,8 +19,8 @@ no text, no letters, no logos, no watermark
 
 | Файл | Промпт (после STYLE) | Итоговый размер |
 |---|---|---|
-| `scene/bg.png` | `front view of an empty walnut wood office desk against a light warm grey wall, subtle wall panelling and skirting board, a wide window with soft daylight and a city skyline, desk top occupies the bottom 60% of the image, empty spaces for objects, wide 16:9 composition` | 480×270 |
-| `ui/menu_bg.png` | тот же промпт, + `evening dusk, cool blue shadows, warm desk lamp light pool on the left, calm dark empty center for menu buttons` (сейчас рисуется скриптом `tools/draw-menu.mjs` из спрайтов сцены) | 480×270 |
+| `scene/bg.png` | `front view of an empty solid walnut wood office desk with long horizontal grain and a visible front edge, soft contact shadows, against a light warm grey wall with subtle panelling and skirting board, a wide window with soft daylight and a city skyline, desk top occupies the bottom 60% of the image, empty spaces for objects, wide 16:9 composition` | 480×270 |
+| `ui/menu_bg.png` | тот же промпт, + `evening dusk, cool blue shadows, warm desk lamp light pool on the right; left third a smooth dark empty gradient for menu text, desk scene (monitor, board, safe, folder, stamps, lamp) on the right 65%, no busy detail in top-right and bottom-right corners` (сейчас рисуется скриптом `tools/draw-menu.mjs` из спрайтов сцены) | 480×270 |
 
 ## Предметы стола
 
@@ -31,7 +31,7 @@ no text, no letters, no logos, no watermark
 | `scene/clock.png` | `round wall clock with simple face, dark wooden rim, no hands` | ~36×36 | стрелки рисует код |
 | `scene/calendar.png` | `tear-off wall calendar, muted green header strip with metal rings, torn paper remnants, blank off-white page` | ~44×52 | число рисует код |
 | `scene/coffee.png` | `white ceramic coffee mug full of black coffee, small steam` | ~24×28 | `coffee_empty.png`: та же кружка пустая, без пара |
-| `scene/stamps.png` | `small walnut wood tray with two rubber stamps, one with muted green handle (NOT GUILTY), one with muted red handle (GUILTY), blue ink pad` | ~110×55 | — |
+| `scene/stamps.png` | `small wooden stand holding two real rubber stamps with turned wooden mushroom handles, one with a red mark, one with a green mark, brass base plates with thin black rubber, next to a tin ink pad with its lid flipped open and dark inked felt, 3/4 top-down view, cozy 1990s complaints bureau` | ~110×55 | — |
 | `scene/safe.png` | `small steel office safe with muted green painted door, round combination dial, side handle, hinges and small feet, closed, front view` | ~70×60 | `safe_open.png`: дверца распахнута, внутри стопки зелёных банкнот с бумажными лентами (без цифр) |
 | `scene/phone.png` | `classic office push-button desk telephone, dark charcoal wedge-shaped body, sloped front keypad panel with 12 light buttons and a few function keys, small green indicator light, light grey dog-bone handset resting in the cradle, coiled cord, soft shadow on the desk, front view slightly from above` | 56×40 | `phone_ring.png`: трубка приподнята над вилкой, светодиод горит ярко, короткие штрихи звонка по бокам |
 | `scene/cabinet.png` | `wall-mounted wooden shelf with a row of archive binders, spines in muted green, beige, steel blue, muted red and walnut, blank label patches, two binders with small brass padlocks, front view` | 110×40 | — |
@@ -41,7 +41,7 @@ no text, no letters, no logos, no watermark
 
 | Файл | Промпт | Размер |
 |---|---|---|
-| `ui/stamp_guilty.png` | `rubber stamp ink impression, double rectangular border, muted red ink, slightly worn edges, blocky pixel letters spelling GUILTY` | 120×40 |
+| `ui/stamp_guilty.png` | `rubber stamp ink impression, uneven ink coverage with bald patches, double rectangular border, small line COMPLAINTS BUREAU, big blocky word GUILTY, muted burgundy red ink, slight 2 degree tilt` | 120×40 |
 | `ui/stamp_not_guilty.png` | то же, `muted green ink, NOT GUILTY` | 120×40 |
 | `ui/claim_form.png` | `complaint form on off-white paper, green header strip with a small shield emblem, three empty ruled rows, no text` | ~200×120 |
 | `ui/paper.png` | `seamless tileable texture of slightly yellowed office paper, subtle grain` | 64×64 |

@@ -2,11 +2,11 @@
 // папку, доску, штампы, bg и оттиски ui/stamp_guilty|stamp_not_guilty и бланк ui/claim_form. Без зависимостей.
 // ВСЕГДА перезаписывает все свои PNG (список — массив targets внизу) и src/scene/sprite-meta.json.
 // Стиль: приглушённая чистая палитра, тёмные тонированные контуры; свет справа-сверху, мягкий.
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { P, Canvas } from './lib/pixel.mjs';
-import { FONT } from './lib/font.mjs';
+import { glyph, textWidth } from './lib/font.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const ASSETS = join(ROOT, 'public', 'assets');
@@ -405,7 +405,7 @@ function drawPlant() {
 }
 // фиксированные смещения/длины прожилок [o1, l1, o2, l2] (px от начала куска доски)
 const GRAIN = [[6, 28, 52, 22], [30, 20, 4, 30], [14, 34, 60, 18], [48, 24, 10, 26], [4, 22, 44, 30], [24, 30, 70, 16], [38, 26, 18, 24]];
-function drawBackground() {
+function drawBackground(spr) {
   const W = 480, H = 270;
   const c = new Canvas(W, H);
   // --- стена ---
@@ -434,30 +434,66 @@ function drawBackground() {
   c.rect(wx + ww - 6, wy, 6, wh, P.paper); // блик от света справа
   c.rect(wx - 5, wy + wh + 3, ww + 10, 2, P.white); // подоконник
   c.rect(wx - 5, wy + wh + 5, ww + 10, 1, P.beigeDk);
-  // --- кромка стола ---
-  c.rect(0, 108, W, 1, P.deskLt);
-  c.rect(0, 109, W, 2, P.desk);
-  c.rect(0, 111, W, 1, P.deskDk); // тень под кромкой
-  // --- столешница: доски (орех) ---
-  c.rect(0, 112, W, H - 112, P.desk);
-  for (let y = 112, r = 0; y < H; y += 16, r++) {
-    c.rect(0, y, W, 1, P.deskDk);
-    c.rect(0, y + 1, W, 1, P.deskLt);
-    const off = (r % 2) * 56;
-    for (let x = off; x < W; x += 112) c.rect(x, y + 1, 1, 15, P.deskDk); // стыки досок
-    // прожилки: фиксированная таблица на кусок доски между стыками; не пересекают стыки, не выходят за x=479
-    const xs = [off === 0 ? 0 : 0, ...Array.from({ length: 5 }, (_, k) => off + k * 112)].filter((x, i, arr) => x < W && arr.indexOf(x) === i).sort((p, q) => p - q);
-    xs.forEach((x0, k) => {
-      const x1 = Math.min((xs[k + 1] ?? W), W) - 1; // последний пиксель куска
-      const [o1, l1, o2, l2] = GRAIN[(r * 5 + k) % GRAIN.length];
-      const seg = (ox, len, dy, col) => {
-        const sx = x0 + 3 + ox;
-        if (sx + len - 1 <= x1 - 2) c.rect(sx, y + dy, len, 1, col);
-      };
-      seg(o1, l1, 5, P.deskDk);
-      seg(o1 + 6, Math.max(8, l1 - 10), 10, P.deskLt);
-      seg(o2, l2, 8, P.deskDk);
-      seg(o2 + 12, 12, 13, P.deskLt);
+  // --- стык стены и стола: чёткая линия и тень за столом у горизонта ---
+  c.rect(0, 108, W, 1, P.edge);
+  c.rect(0, 109, W, 3, P.deskDk);
+  // --- столешница: одна цельная ореховая поверхность из трёх широких досок вдоль стола; дальний край темнее, ближний светлее ---
+  const FAR_DARK_END = 124, MID_START = 145, NEAR_LIGHT = [218, 230, 239, 247, 254];
+  const TRANS = [0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1]; // 0 = deskDk, 1 = desk: строки-«дизеринг» между соседними цветами (без шахматки)
+  for (let y = 112; y < 262; y++) {
+    let col = P.desk;
+    if (y <= FAR_DARK_END) col = P.deskDk;
+    else if (y < MID_START) col = TRANS[y - FAR_DARK_END - 1] ? P.desk : P.deskDk;
+    else if (NEAR_LIGHT.includes(y)) col = P.deskLt;
+    c.rect(0, y, W, 1, col);
+  }
+  for (const sy of [166, 212]) { c.rect(0, sy, W, 1, P.deskDk); c.rect(0, sy + 1, W, 1, P.deskLt); } // стыки досок (сплошные, без смещений; первый ниже тени монитора)
+  // длинные мягкие прожилки вдоль стола: фиксированная таблица [x, y, длина, 0 тёмная / 1 светлая]
+  const GRAIN_LINES = [[20, 118, 90, 0], [200, 121, 140, 0], [380, 116, 80, 0], [60, 131, 150, 1], [260, 134, 110, 0], [400, 129, 70, 1],
+    [10, 146, 120, 0], [170, 150, 95, 1], [300, 143, 160, 0], [90, 172, 130, 0], [250, 176, 100, 1], [390, 170, 85, 0], [30, 190, 60, 1],
+    [150, 196, 150, 0], [330, 193, 120, 1], [5, 205, 100, 0], [220, 208, 90, 1], [360, 203, 110, 0], [70, 222, 140, 0], [250, 226, 80, 1],
+    [380, 224, 95, 0], [20, 238, 110, 1], [160, 242, 120, 0], [300, 240, 150, 1], [100, 252, 90, 0], [260, 255, 130, 1], [400, 250, 60, 0]];
+  for (const [gx, gy, len, light] of GRAIN_LINES) {
+    const col = light ? (gy < 140 ? P.desk : P.deskLt) : P.deskDk;
+    c.rect(gx, gy, Math.min(len, W - gx), 1, col);
+  }
+  // --- передняя кромка стола (толщина 6 px: блик сверху, тень снизу) и тёмная зона под столом ---
+  c.rect(0, 261, W, 1, P.deskDk); // тонкая тень у лицевого края (скос столешницы)
+  c.rect(0, 262, W, 2, P.deskLt);
+  c.rect(0, 264, W, 2, P.desk);
+  c.rect(0, 266, W, 2, P.deskDk);
+  c.rect(0, 268, W, 1, P.edge);
+  c.rect(0, 269, W, 1, P.ink);
+  // --- контактные тени под предметами, стоящими на столе (кружки и телефон уже несут свою тень; растение рисуется ниже) ---
+  const layout = JSON.parse(readFileSync(join(ROOT, 'src', 'scene', 'layout.json'), 'utf8'));
+  // тень строится по «дну» спрайта: берутся только колонки, чьё дно в пределах 2 px от общего дна (петли, выступы и верх ножек не дают
+  // висящих теней); отрезки колонок внутри mergeGap сливаются (сейф: тень под корпусом между ножками и под площадью открытой дверцы).
+  const SHADOW_OPTS = { safe: { mergeGap: 60, extendLeft: 12 } };
+  for (const o of layout.objects) {
+    const sp = spr[o.id];
+    if (!sp) continue;
+    const opts = SHADOW_OPTS[o.id] ?? { mergeGap: 0, extendLeft: 0 };
+    const bottoms = [];
+    for (let x = 0; x < sp.w; x++) {
+      let bottom = -1;
+      for (let y = 0; y < sp.h; y++) if (sp.alpha(x, y)) bottom = y;
+      bottoms.push(bottom);
+    }
+    const B = Math.max(...bottoms);
+    const runs = [];
+    bottoms.forEach((bt, x) => {
+      if (bt < B - 2) return;
+      const last = runs[runs.length - 1];
+      if (last && x - last[1] <= opts.mergeGap + 1) last[1] = x; else runs.push([x, x]);
+    });
+    runs.forEach(([x0, x1], i) => {
+      if (i === 0) x0 = Math.max(0, x0 - opts.extendLeft);
+      for (let x = x0; x <= x1; x++) {
+        const px = o.x + x - 2, y0 = o.y + B + 1; // тень смещена влево на 2 px (свет сверху-справа)
+        c.set(px, y0, P.edge);
+        c.set(px, y0 + 1, P.deskDk);
+        if (x > x0 && x < x1) c.set(px, y0 + 2, P.deskDk); // третья строка короче на 1 px с концов, без пунктира
+      }
     });
   }
   // --- растение справа от монитора (стоит на столе) ---
@@ -694,45 +730,57 @@ function drawBoard() {
 // ---------- Лоток со штампами 110x55 ----------
 function drawStamps() {
   const c = new Canvas(110, 55);
-  // лоток: задняя стенка и дно
-  c.rect(0, 30, 110, 25, P.desk);
-  c.rect(0, 30, 110, 2, P.deskLt);
-  c.rect(3, 32, 104, 12, P.deskDk);
-  c.rect(3, 32, 104, 1, P.edge);
-  // штампы стоят в лотке
-  const stamp = (ox, ramp) => {
-    for (let y = 2; y <= 14; y++) for (let x = ox + 3; x <= ox + 25; x++) { // ручка-грибок
-      if (!inEll(x, y, ox + 14, 8, 8, 6)) continue;
-      c.set(x, y, x <= ox + 9 ? ramp.dk : x >= ox + 19 ? ramp.lit : ramp.mid);
+  // --- деревянная стойка в 3/4 сверху: задняя стенка, дно, боковые торцы, передний борт ---
+  c.rect(3, 24, 63, 2, P.deskLt); // верхняя грань задней стенки
+  c.rect(3, 26, 63, 10, P.deskDk); // её внутренняя сторона (в тени)
+  c.rect(58, 26, 8, 10, P.desk); // отсвет справа
+  c.rect(3, 36, 63, 8, P.desk); // дно
+  c.rect(3, 36, 63, 1, P.deskDk); // тень под стенкой
+  c.rect(0, 24, 3, 28, P.deskDk); // левый торец
+  c.rect(66, 24, 3, 28, P.deskLt); // правый торец (светлее)
+  c.rect(0, 44, 69, 8, P.desk); // передний борт
+  c.rect(0, 44, 69, 1, P.deskLt);
+  c.rect(0, 50, 69, 2, P.deskDk);
+  // --- штамп: точёная деревянная ручка-«гриб» с цветной меткой, латунная плита, тонкая резина ---
+  const stamp = (cx, mark, markLt) => {
+    c.rect(cx - 9, 27, 18, 8, P.deskLt); // колодка светлее стойки, блик справа и тёмный верх
+    c.rect(cx - 9, 27, 3, 8, P.desk); c.rect(cx + 5, 27, 4, 8, P.cork); c.rect(cx - 9, 27, 18, 1, P.deskDk);
+    c.rect(cx - 12, 35, 24, 3, P.gold); // латунная плита
+    c.rect(cx - 12, 35, 24, 1, P.folderLt); c.rect(cx - 12, 37, 24, 1, P.corkDk);
+    c.rect(cx - 11, 38, 22, 2, P.rimDk); // резина
+    c.rect(cx - 6, 24, 12, 3, P.desk); c.rect(cx - 6, 24, 2, 3, P.deskDk); c.rect(cx + 4, 24, 2, 3, P.deskLt); // воротник
+    c.rect(cx - 3, 14, 7, 10, P.desk); c.rect(cx - 3, 14, 2, 10, P.deskDk); c.rect(cx + 2, 14, 2, 10, P.deskLt); // шейка
+    c.rect(cx - 4, 18, 9, 2, P.gold); c.rect(cx - 4, 18, 9, 1, P.folderLt); // латунное кольцо
+    [12, 15, 17, 18, 18, 17, 15, 12, 9, 7].forEach((w, i) => { // выпуклая шляпка: наибольшая ширина на трети высоты, плавно в шейку
+      const y = 4 + i, x0 = cx - (w >> 1);
+      c.rect(x0, y, w, 1, P.desk);
+      c.rect(x0, y, 3, 1, P.deskDk); c.rect(x0 + w - 4, y, 4, 1, P.deskLt);
+    });
+    for (let y = 1; y <= 6; y++) for (let x = cx - 8; x <= cx + 8; x++) { // верхняя грань: эллипс с цветной меткой
+      if (inEll(x, y, cx, 3.6, 6.5, 2.3)) c.set(x, y, inEll(x, y, cx, 3.6, 3.8, 1.2) ? mark : P.deskLt);
     }
-    c.rect(ox + 14, 6, 3, 1, ramp.lit);
-    c.rect(ox + 11, 14, 7, 8, ramp.mid);
-    c.rect(ox + 11, 14, 2, 8, ramp.dk);
-    c.rect(ox + 16, 14, 2, 8, ramp.lit);
-    c.rect(ox + 8, 21, 13, 3, ramp.dk);
-    c.rect(ox + 8, 21, 13, 1, ramp.mid);
-    c.rect(ox + 2, 24, 25, 15, P.cork); // деревянное основание
-    c.rect(ox + 2, 24, 25, 1, P.folderLt);
-    c.rect(ox + 2, 24, 3, 15, P.corkDk);
-    c.rect(ox + 24, 25, 3, 14, P.folderLt);
-    c.rect(ox + 3, 39, 23, 3, P.rimDk); // резина
+    c.set(cx + 1, 3, markLt);
   };
-  stamp(4, { lit: P.greenLt, mid: P.green, dk: P.greenDk });
-  stamp(80, { lit: P.redLt, mid: P.red, dk: P.redDk });
-  // штемпельная подушка
-  c.rect(39, 32, 34, 12, P.rimDk);
-  c.rect(41, 34, 30, 7, P.blueDk);
-  c.rect(41, 34, 30, 1, P.blue);
-  c.rect(68, 35, 3, 6, P.blue);
-  c.set(69, 35, P.blueLt);
-  c.rect(39, 41, 34, 3, P.steelDk);
-  c.rect(39, 41, 34, 1, P.steel);
-  // передняя стенка лотка (перекрывает основания)
-  c.rect(0, 43, 110, 12, P.desk);
-  c.rect(0, 43, 110, 2, P.deskLt);
-  c.rect(0, 52, 110, 3, P.deskDk);
-  c.rect(0, 45, 3, 7, P.deskDk);
-  c.rect(107, 45, 3, 7, P.deskLt);
+  stamp(20, P.red, P.redLt); // GUILTY: красная метка
+  stamp(48, P.green, P.greenLt); // NOT GUILTY: зелёная метка
+  // --- низкая жестянка (синяя эмаль, латунный кант): сверху виден тёмный войлок, крышка откинута назад короткой трапецией ---
+  for (let y = 34; y <= 39; y++) { // крышка (изнанка, потёртая латунь), наклонена назад
+    const inset = 40 - y; // скос заканчивается на линии контура корпуса (на y=39 — со срезанным углом, как у ободка)
+    c.rect(74 + inset, y, 30 - 2 * inset, 1, y === 34 ? P.folderLt : P.corkDk);
+  }
+  c.rect(84, 36, 10, 2, P.gold); // маленькая плашка на изнанке
+  c.rect(84, 36, 10, 1, P.folderLt);
+  const cutBox = (x, y, w, h, col) => { // прямоугольник со срезанными угловыми пикселями (полный, без пропавших рядов)
+    c.rect(x, y, w, h, col);
+    for (const [cx2, cy2] of [[x, y], [x + w - 1, y], [x, y + h - 1], [x + w - 1, y + h - 1]]) c.set(cx2, cy2, [0, 0, 0, 0]);
+  };
+  cutBox(74, 40, 30, 8, P.gold); // латунный ободок коробки: y=40..47, x=74..103 (та же ширина, что у стенки)
+  c.rect(76, 40, 26, 1, P.folderLt);
+  cutBox(76, 41, 26, 6, P.ink); // пропитанный войлок
+  for (const [gx, gy] of [[76, 41], [101, 41], [76, 46], [101, 46]]) c.set(gx, gy, P.gold); // углы войлока — латунь, без дыр — главная видимая плоскость
+  c.rect(80, 42, 8, 1, P.rimDk); c.rect(92, 44, 5, 1, P.rimDk); // влажные блики
+  c.rect(74, 48, 30, 4, P.blueDk); // передняя стенка — тёмно-синяя эмаль
+  c.rect(100, 49, 4, 3, P.blue); c.rect(74, 49, 3, 3, P.ink);
   c.outline(P.edge);
   return c;
 }
@@ -740,27 +788,46 @@ function drawStamps() {
 // ---------- Оттиски штампов 120x40: GUILTY (красный) / NOT GUILTY (зелёный); единственное место с текстом ----------
 // шрифт — общий: tools/lib/font.mjs (глифы GUILTY / NOT GUILTY не менять)
 const STAMP_W = 120, STAMP_H = 40;
-function drawStampImpression(word, ink, inkLt) {
-  const c = new Canvas(STAMP_W, STAMP_H);
-  const S = 2;
-  const wpx = word.split('').reduce((a, ch) => a + FONT[ch][0].length + 1, -1) * S;
-  let x = Math.floor((STAMP_W - wpx) / 2);
-  const y = 15;
-  for (const ch of word) {
-    FONT[ch].forEach((row, j) => [...row].forEach((v, i) => { if (v === '#') c.rect(x + i * S, y + j * S, S, S, ink); }));
-    x += (FONT[ch][0].length + 1) * S;
-  }
+// оттиск: двойная рамка, строка бюро, крупное слово, наклон 2° (по пикселям, без сглаживания), неровная краска и «лысины» (детерминированно)
+function drawStampImpression(word, ink, inkDk, inkLt, gap = 2) {
   const W = STAMP_W, H = STAMP_H;
-  c.rect(2, 2, W - 4, 2, ink); c.rect(2, H - 4, W - 4, 2, ink); c.rect(2, 2, 2, H - 4, ink); c.rect(W - 4, 2, 2, H - 4, ink); // внешняя рамка
-  c.rect(6, 6, W - 12, 1, ink); c.rect(6, H - 7, W - 12, 1, ink); c.rect(6, 6, 1, H - 12, ink); c.rect(W - 7, 6, 1, H - 12, ink); // внутренняя
-  // износ оттиска: детерминированный; сильнее у краёв рамки, слабее в середине (потёртости + неравномерная краска)
-  for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) {
-    if (!c.alpha(i, j)) continue;
-    const h = ((i * 73856093) ^ (j * 19349663)) >>> 0;
-    const edgeD = Math.min(i, j, W - 1 - i, H - 1 - j);
-    const wear = edgeD < 8 ? 12 : 2; // потёртость в основном у краёв рамки, текст почти чистый
-    if (h % 100 < wear) c.set(i, j, [0, 0, 0, 0]);
-    else if (h % 100 < wear + (edgeD < 8 ? 14 : 6)) c.set(i, j, inkLt);
+  const TAN = Math.tan((2 * Math.PI) / 180), CX = (W - 1) / 2;
+  const off = (x) => Math.round(-(x - CX) * TAN); // наклон 2°: правая сторона выше
+  // рамки и разделитель рисуются прямо, затем каждая колонка сдвигается целиком (линии не рвутся)
+  const u = new Canvas(W, H);
+  u.rect(2, 3, W - 4, 2, ink); u.rect(2, H - 5, W - 4, 2, ink); u.rect(2, 3, 2, H - 6, ink); u.rect(W - 4, 3, 2, H - 6, ink);
+  u.rect(6, 7, W - 12, 1, ink); u.rect(6, H - 8, W - 12, 1, ink); u.rect(6, 7, 1, H - 14, ink); u.rect(W - 7, 7, 1, H - 14, ink);
+  u.rect(10, 17, W - 20, 1, ink);
+  const c = new Canvas(W, H);
+  for (let x = 0; x < W; x++) for (let y = 0; y < H; y++) if (u.alpha(x, y)) c.set(x, y + off(x), ink);
+  // текст: каждый глиф целиком сдвигается на смещение своего центра (буквы не ломаются); слово «NOT GUILTY» — между словами 3 px
+  const line = (text, y0, S, g, wordGap) => {
+    const parts = text.split(' ');
+    const wordsW = parts.map((p) => textWidth(p, S, g));
+    const total = wordsW.reduce((a, b) => a + b, 0) + wordGap * (parts.length - 1);
+    let x = Math.floor((W - total) / 2);
+    parts.forEach((p, k) => {
+      for (const ch of p) {
+        const gl = glyph(ch), gw = gl[0].length * S, dy = off(x + (gw >> 1));
+        gl.forEach((row, j) => [...row].forEach((v, i) => { if (v === '#') c.rect(x + i * S, y0 + j * S + dy, S, S, ink); }));
+        x += gw + g;
+      }
+      x += wordGap - g;
+    });
+  };
+  line('COMPLAINTS BUREAU', 10, 1, 1, 4);
+  line(word, 20, 2, gap, gap === 1 ? 5 : 6);
+  // износ: потёртости у краёв, фиксированные «лысины» только у рамок и в полях (буквы читаемы), неравномерная плотность краски
+  const bald = [[5, 12, 3], [114, 14, 3], [60, 34, 3], [113, 30, 3], [14, 33, 3]];
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    if (!c.alpha(x, y)) continue;
+    const h = ((x * 73856093) ^ (y * 19349663)) >>> 0;
+    const edgeD = Math.min(x, y, W - 1 - x, H - 1 - y);
+    let gone = h % 100 < (edgeD < 9 ? 9 : 1);
+    for (const [bx, by, br] of bald) if (Math.hypot(x - bx, y - by) < br && (h >>> 3) % 100 < 70) gone = true;
+    if (gone) { c.set(x, y, [0, 0, 0, 0]); continue; }
+    if ((h >>> 7) % 100 < 10) c.set(x, y, inkDk);
+    else if ((h >>> 11) % 100 < (x > 85 ? 20 : 11)) c.set(x, y, inkLt);
   }
   return c;
 }
@@ -801,25 +868,26 @@ const META = {
   board: { area: { ...BOARD_AREA } },
   claim_form: { rows: CLAIM_ROWS.map((r) => ({ ...r })) },
 };
+const SPR = { monitor: drawMonitor(false), safe: drawSafe(false), folder: drawFolder(false), stamps: drawStamps() }; // для контактных теней в bg
 const targets = [
   ['clock.png', drawClock()],
   ['calendar.png', drawCalendar()],
   ['coffee.png', drawMug(true)],
   ['coffee_empty.png', drawMug(false)],
-  ['safe.png', drawSafe(false)],
+  ['safe.png', SPR.safe],
   ['safe_open.png', drawSafe(true)],
   ['phone.png', drawPhone(false)],
   ['phone_ring.png', drawPhone(true)],
   ['cabinet.png', drawCabinet()],
-  ['bg.png', drawBackground()],
-  ['monitor.png', drawMonitor(false)],
+  ['bg.png', drawBackground(SPR)],
+  ['monitor.png', SPR.monitor],
   ['monitor_on.png', drawMonitor(true)],
-  ['folder.png', drawFolder(false)],
+  ['folder.png', SPR.folder],
   ['folder_open.png', drawFolder(true)],
   ['board.png', drawBoard()],
-  ['stamps.png', drawStamps()],
-  ['ui/stamp_guilty.png', drawStampImpression('GUILTY', P.red, P.redLt)],
-  ['ui/stamp_not_guilty.png', drawStampImpression('NOT GUILTY', P.green, P.greenLt)],
+  ['stamps.png', SPR.stamps],
+  ['ui/stamp_guilty.png', drawStampImpression('GUILTY', P.red, P.redDk, P.redLt)],
+  ['ui/stamp_not_guilty.png', drawStampImpression('NOT GUILTY', P.green, P.greenDk, P.greenLt, 1)],
   ['ui/claim_form.png', drawClaimForm()],
 ];
 export { targets };
