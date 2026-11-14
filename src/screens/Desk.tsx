@@ -10,8 +10,11 @@ import { Scene, Asset, formatTime, type DeskAction } from "../components/Scene";
 import { Result } from "./Result";
 import { EconomyPanel, bureauMoney } from "../components/EconomyPanel";
 import { getWallet } from "../engine/wallet";
+import type { GameSound } from "../lib/gameAudio";
 
 type Panel =
+  | "briefing"
+  | "pause"
   | "folder"
   | "search"
   | "board"
@@ -26,18 +29,39 @@ export function Desk({
   onExit,
   onNext,
   onPaywall,
+  externallyPaused = false,
+  soundEnabled,
+  onSound,
+  playSound,
 }: {
   caseData: CaseData;
   onExit: () => void;
   onNext: () => void;
   onPaywall: () => void;
+  externallyPaused?: boolean;
+  soundEnabled: boolean;
+  onSound: () => void;
+  playSound: (kind: GameSound) => void;
 }) {
   const [run, dispatch] = useReducer(
     gameReducer,
     caseData,
     (c) => loadRun(c) || createRun(c),
   );
-  const [panel, setPanel] = useState<Panel>(null);
+  const [panel, setPanel] = useState<Panel>(() =>
+    run.elapsedSeconds === 0 && !run.seenIds.length && !run.queries.length
+      ? "briefing"
+      : null,
+  );
+  const [hotspots, setHotspots] = useState(false);
+  const client =
+    caseData.characters.find((c) => c.role.toLowerCase() === "client") ||
+    caseData.characters[0];
+  const paused =
+    externallyPaused ||
+    panel === "pause" ||
+    panel === "briefing" ||
+    panel === "help";
   const [balance, setBalance] = useState(() => getWallet().balance);
   const [selected, setSelected] = useState(
     caseData.documents.find((d) => d.initial)?.id || "",
@@ -79,7 +103,7 @@ export function Desk({
     setStorageFailed(!saveRun(run));
   }, [run]);
   useEffect(() => {
-    if (run.status !== "playing") return;
+    if (run.status !== "playing" || paused) return;
     let last = Date.now();
     const timer = window.setInterval(() => {
       const now = Date.now();
@@ -90,7 +114,7 @@ export function Desk({
       }
     }, 500);
     return () => window.clearInterval(timer);
-  }, [run.status]);
+  }, [run.status, paused]);
   useEffect(() => {
     if (!toast) return;
     const t = window.setTimeout(() => setToast(""), 4500);
@@ -124,6 +148,7 @@ export function Desk({
     setPanel("folder");
   }
   function pin(id: string) {
+    playSound("pin");
     dispatch({ type: "pin", documentId: id });
     setToast(
       run.pinnedIds.includes(id)
@@ -132,6 +157,9 @@ export function Desk({
     );
   }
   function action(id: DeskAction) {
+    playSound(
+      id === "folder" ? "paper" : id === "monitor" ? "record" : "click",
+    );
     if (id === "monitor") setPanel("search");
     if (id === "folder") openFolder();
     if (id === "board") setPanel("board");
@@ -153,9 +181,48 @@ export function Desk({
     const clean = query.trim();
     if (!clean) return;
     dispatch({ type: "search", caseData, query: clean });
+    playSound("record");
     setSearchFeedback(clean);
     setQuery("");
   }
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (
+        run.status !== "playing" ||
+        externallyPaused ||
+        panel ||
+        e.repeat ||
+        e.ctrlKey ||
+        e.metaKey ||
+        e.altKey ||
+        document.querySelector("dialog[open]")
+      )
+        return;
+      if (
+        (e.target as HTMLElement).closest(
+          "input, textarea, select, [contenteditable=true]",
+        )
+      )
+        return;
+      const key = e.key.toLowerCase();
+      const actions: Record<string, DeskAction> = {
+        f: "folder",
+        a: "monitor",
+        e: "board",
+        v: "stamps",
+        h: "phone",
+      };
+      if (key === "escape") {
+        e.preventDefault();
+        setPanel("pause");
+      } else if (actions[key]) {
+        e.preventDefault();
+        action(actions[key]);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
   const latest = run.queries.at(-1);
   const ready = !!verdict && !!culprit && !!method && evidence.length === 2;
   const accusation = useMemo(
@@ -183,121 +250,197 @@ export function Desk({
       <Result caseData={caseData} run={run} onExit={onExit} onNext={onNext} />
     );
   return (
-    <main className="desk-page page-enter">
-      <div className="case-heading">
-        <div>
-          <button className="text-button" onClick={onExit}>
-            <Icon name="back" size={15} />
-            Case files · save & leave
-          </button>
+    <main className={`investigation ${panel ? "object-open" : ""}`}>
+      <header className="game-hud">
+        <button
+          className="hud-menu"
+          onClick={() => setPanel("pause")}
+          aria-label="Pause game"
+        >
+          <span aria-hidden="true">Ⅱ</span>
+          <kbd>ESC</kbd>
+        </button>
+        <div className="hud-case">
+          <span>{tutorial ? "TRAINING / 001" : "CASE / 002"}</span>
           <h1>{caseData.title}</h1>
-          <span className="eyebrow">
-            {tutorial ? "TRAINING FILE 001" : "INVESTIGATION 002"}{" "}
-            <span className="muted">/</span> RIVERTON, USA
-          </span>
         </div>
-        <div className="desk-stats">
-          <div>
-            <Icon name="clock" />
-            <strong>{formatTime(run.elapsedSeconds)}</strong>
-            <span>ELAPSED</span>
-          </div>
-          <div className="coffee-stats">
-            <span aria-label={`${3 - run.wrongAttempts} attempts remaining`}>
-              {[0, 1, 2].map((i) => (
-                <Icon
-                  key={i}
-                  name="coffee"
-                  style={{ opacity: i < 3 - run.wrongAttempts ? 1 : 0.2 }}
-                />
-              ))}
-            </span>
-            <span>ATTEMPTS</span>
-          </div>
-          <button
-            className="icon-button"
-            aria-label="How to play"
-            onClick={() => setPanel("help")}
-          >
-            <Icon name="help" />
-          </button>
+        <div
+          className="hud-clock"
+          aria-label={`Elapsed time ${formatTime(run.elapsedSeconds)}`}
+        >
+          <Icon name="clock" size={16} />
+          <strong>{formatTime(run.elapsedSeconds)}</strong>
         </div>
+        <div
+          className="hud-lives"
+          aria-label={`${3 - run.wrongAttempts} attempts remaining`}
+        >
+          {[0, 1, 2].map((i) => (
+            <Icon
+              key={i}
+              name="coffee"
+              size={20}
+              style={{ opacity: i < 3 - run.wrongAttempts ? 1 : 0.2 }}
+            />
+          ))}
+        </div>
+        <button
+          className="hud-wallet"
+          onClick={() => setPanel("wallet")}
+          aria-label={`Bureau cash ${bureauMoney(balance)}`}
+        >
+          <Icon name="lock" size={14} />
+          {bureauMoney(balance)}
+        </button>
+        <button
+          className="hud-sound"
+          onClick={onSound}
+          aria-label={soundEnabled ? "Mute sound" : "Enable sound"}
+          aria-pressed={soundEnabled}
+        >
+          <Icon name="sound" size={18} />
+          {!soundEnabled && <i />}
+        </button>
+      </header>
+      <div className="office-stage">
+        <Scene
+          onAction={action}
+          elapsed={run.elapsedSeconds}
+          lives={3 - run.wrongAttempts}
+          evidence={pinned.length}
+          balance={balance}
+          date={caseData.gameDate || caseData.worldDate}
+          showHotspots={hotspots}
+          highlight={
+            tutorial
+              ? ["folder", "monitor", "folder", "stamps"][tutorialStep]
+              : undefined
+          }
+        />
       </div>
-      {tutorial && (
-        <aside className="tutorial-guide">
-          <span className="guide-step">0{tutorialStep + 1}</span>
-          <div>
-            <span className="eyebrow">YOUR FIRST DAY · FIELD GUIDE</span>
+      <div className="desk-instructions">
+        {tutorial ? (
+          <div className="field-note">
+            <span>FIELD NOTE {tutorialStep + 1}/4</span>
             <p>{guidance[tutorialStep]}</p>
           </div>
-          <div
-            className="guide-dots"
-            aria-label={`Step ${tutorialStep + 1} of 4`}
-          >
-            {[0, 1, 2, 3].map((s) => (
-              <i key={s} className={s <= tutorialStep ? "active" : ""} />
-            ))}
-          </div>
-        </aside>
-      )}
-      <Scene
-        onAction={action}
-        elapsed={run.elapsedSeconds}
-        lives={3 - run.wrongAttempts}
-        evidence={pinned.length}
-        balance={balance}
-        date={caseData.gameDate || caseData.worldDate}
-      />
-      <div className="desk-toolbar">
-        <button onClick={openFolder}>
+        ) : (
+          <span className="room-caption">
+            Your desk. Your investigation.
+            <small>Click an object to examine it.</small>
+          </span>
+        )}
+        <button
+          className="hotspot-toggle"
+          aria-pressed={hotspots}
+          onClick={() => setHotspots((v) => !v)}
+        >
+          <Icon name="search" size={14} />
+          {hotspots ? "Hide labels" : "Show objects"}
+        </button>
+      </div>
+      <nav className="game-toolbelt" aria-label="Investigation tools">
+        <button onClick={openFolder} data-sound="paper">
+          <kbd>F</kbd>
           <Icon name="folder" />
-          Case folder <span>{documents.length}</span>
+          <span>Folder</span>
+          <b>{documents.length}</b>
         </button>
-        <button onClick={() => setPanel("search")}>
+        <button onClick={() => action("monitor")}>
+          <kbd>A</kbd>
           <Icon name="search" />
-          Archive search
+          <span>Archive</span>
         </button>
-        <button onClick={() => setPanel("board")}>
+        <button onClick={() => action("board")}>
+          <kbd>E</kbd>
           <Icon name="pin" />
-          Evidence board <span>{pinned.length}</span>
+          <span>Evidence</span>
+          <b>{pinned.length}</b>
         </button>
-        <button className="verdict-tool" onClick={() => setPanel("verdict")}>
+        <button onClick={() => action("phone")}>
+          <kbd>H</kbd>
+          <Icon name="phone" />
+          <span>Informant</span>
+        </button>
+        <button className="tool-verdict" onClick={() => action("stamps")}>
+          <kbd>V</kbd>
           <Icon name="stamp" />
-          Make a verdict
-          <Icon name="arrow" size={16} />
+          <span>Verdict</span>
         </button>
+      </nav>
+      <div
+        className={`save-indicator ${storageFailed ? "save-failed" : ""}`}
+        role={storageFailed ? "status" : undefined}
+      >
+        {storageFailed
+          ? "Progress is temporary: browser storage unavailable"
+          : "AUTO-SAVED"}
+        <span className="status-dot" />
       </div>
-      <div className="economy-toolbar">
-        <button onClick={() => setPanel("wallet")}>
-          <Icon name="lock" size={14} />
-          {bureauMoney(balance)} <span>BUREAU CASH</span>
-        </button>
-        <button onClick={() => setPanel("hint")}>
-          <Icon name="phone" size={14} />
-          Call the informant <span>$40 / HINT</span>
-        </button>
-        <button onClick={onPaywall}>
-          <Icon name="folder" size={14} />
-          Premium archive
-        </button>
-      </div>
-      <div className="desk-bottom">
-        <span>
-          <i className="status-dot" />
-          {storageFailed
-            ? "Progress is temporary — browser storage unavailable"
-            : "Progress saved on this device"}
-        </span>
-        <span>Read carefully. Follow the trail. Trust the evidence.</span>
-      </div>
-      <div className="mobile-brief">
-        <span className="eyebrow">THE COMPLAINT</span>
-        <p>{caseData.brief}</p>
-        <button className="button" onClick={openFolder}>
-          Open case folder
-          <Icon name="arrow" />
-        </button>
-      </div>
+      {panel === "briefing" && (
+        <Dialog
+          title={client.name}
+          label="A CLIENT AT YOUR DESK"
+          onClose={close}
+          wide
+          tone="briefing-dialog"
+        >
+          <div className="client-arrival">
+            <div className="client-portrait-frame">
+              <Asset
+                src={`/assets/portraits/${client.portrait}`}
+                className="client-portrait"
+              >
+                <span>{client.name[0]}</span>
+              </Asset>
+              <span>COMPLAINANT / {caseData.gameDate}</span>
+            </div>
+            <div className="client-dialogue">
+              <span className="eyebrow">{caseData.title}</span>
+              <blockquote>
+                “{caseData.claim.replace(/ — [^.]+$/, "")}”
+              </blockquote>
+              <p>{caseData.brief}</p>
+              <button className="button" data-sound="paper" onClick={close}>
+                I’ll look into it.
+                <Icon name="folder" size={18} />
+              </button>
+              <small>The case file is on your desk. Open it to begin.</small>
+            </div>
+          </div>
+        </Dialog>
+      )}
+      {panel === "pause" && (
+        <Dialog
+          title="Take a breath, detective."
+          label="SHIFT PAUSED · YOUR CLOCK IS STOPPED"
+          onClose={close}
+          tone="pause-dialog"
+        >
+          <div className="pause-options">
+            <button className="button" onClick={close}>
+              Resume investigation
+              <Icon name="arrow" />
+            </button>
+            <button onClick={() => setPanel("briefing")}>
+              <Icon name="people" size={18} /> Read the client’s statement
+            </button>
+            <button onClick={() => setPanel("help")}>
+              <Icon name="help" size={18} /> How to play
+            </button>
+            <button onClick={onSound}>
+              <Icon name="sound" size={18} />
+              {soundEnabled ? "Sound: on" : "Sound: off"}
+            </button>
+            <button onClick={onExit}>
+              <Icon name="back" size={18} /> Save & return to case files
+            </button>
+          </div>
+          <p className="fine-print">
+            Your evidence and progress stay on this device.
+          </p>
+        </Dialog>
+      )}
       <div className="toast" role="status" aria-live="polite">
         {toast && <span>{toast}</span>}
       </div>
@@ -319,6 +462,7 @@ export function Desk({
       {panel === "folder" && (
         <Dialog
           title="Case folder"
+          tone="folder-dialog"
           label={`${documents.length} RECORDS ON FILE`}
           wide
           onClose={close}
@@ -478,6 +622,7 @@ export function Desk({
       {panel === "board" && (
         <Dialog
           title="Your evidence board"
+          tone="board-dialog"
           label={`${pinned.length} PINNED RECORDS`}
           wide
           onClose={close}
@@ -535,6 +680,7 @@ export function Desk({
       {panel === "verdict" && (
         <Dialog
           title="Make your verdict"
+          tone="verdict-dialog"
           label="FINAL REVIEW · SUPPORT YOUR CONCLUSION"
           wide
           onClose={close}
@@ -671,6 +817,7 @@ export function Desk({
                 disabled={submitLock}
                 onClick={() => {
                   setSubmitLock(true);
+                  playSound("stamp");
                   dispatch({ type: "accuse", caseData, accusation });
                 }}
               >

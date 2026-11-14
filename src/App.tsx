@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { cases } from "./cases";
 import { Desk } from "./screens/Desk";
+import { TitleScreen, CaseFiles } from "./screens/GameMenu";
 import { Scene } from "./components/Scene";
 import { Icon } from "./components/Icons";
 import { Dialog } from "./components/Dialog";
-import { loadRun, clearRun, safeRead } from "./lib/storage";
+import { loadRun, clearRun, safeRead, safeWrite } from "./lib/storage";
 import { getWaitlist, joinWaitlist } from "./lib/records";
 import { recordVisit } from "./lib/streak";
+import { useGameAudio, type GameSound } from "./lib/gameAudio";
 import type { CaseData } from "./types";
 
 export default function App() {
@@ -17,14 +19,28 @@ export default function App() {
   const [sessionKey, setSessionKey] = useState(0);
   const [modal, setModal] = useState<"how" | "pass" | null>(null);
   const [restart, setRestart] = useState<CaseData | null>(null);
-  const [streak, setStreak] = useState(1);
+  const sound = useGameAudio();
   useEffect(() => {
-    setStreak(recordVisit());
+    recordVisit();
   }, []);
   useEffect(() => {
-    window.scrollTo(0, 0);
+    const onKey = (e: KeyboardEvent) => {
+      if (
+        e.key === "Escape" &&
+        screen !== "desk" &&
+        !document.querySelector("dialog[open]")
+      )
+        setScreen("menu");
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [screen]);
+  const activeId = safeRead<unknown>("case-desk:active", "");
+  const activeCase =
+    cases.find((c) => c.id === activeId && loadRun(c)?.status === "playing") ||
+    cases.find((c) => loadRun(c)?.status === "playing");
   function play(c: CaseData) {
+    safeWrite("case-desk:active", c.id);
     setSelected(c);
     setSessionKey((k) => k + 1);
     setScreen("desk");
@@ -35,264 +51,53 @@ export default function App() {
     play(c);
   }
   return (
-    <div className="app-shell">
-      <header className="app-header">
-        <button
-          className="brand"
-          onClick={() => setScreen("menu")}
-          aria-label="Case Desk home"
-        >
-          <span className="brand-mark">
-            <Icon name="folder" size={23} />
-          </span>
-          <strong>
-            CASE DESK<span>RIVERTON CONSUMER AFFAIRS</span>
-          </strong>
-        </button>
-        <nav aria-label="Main navigation">
-          <button
-            className={screen === "cases" ? "active" : ""}
-            onClick={() => setScreen("cases")}
-          >
-            Case files
-          </button>
-          <button
-            className={screen === "duel" ? "active" : ""}
-            onClick={() => setScreen("duel")}
-          >
-            Duels <span className="soon-tag">SOON</span>
-          </button>
-          <button className="pass-nav" onClick={() => setModal("pass")}>
-            <Icon name="star" size={15} />
-            Detective Pass
-          </button>
-        </nav>
-        <span className="header-streak">
-          <span className="status-dot" />
-          {streak} DAY{streak === 1 ? "" : "S"} ON THE CASE
-        </span>
-      </header>
-      {screen === "menu" && (
-        <main className="home-page page-enter">
-          <div className="home-topline">
-            <span className="eyebrow">A LITTLE CURIOSITY GOES A LONG WAY.</span>
-            <span className="eyebrow">EST. 2026 / OPEN FOR INVESTIGATION</span>
+    <div
+      className={`game-shell game-screen-${screen}`}
+      onClickCapture={(e) => {
+        const button = (e.target as HTMLElement).closest("button");
+        if (button && !button.disabled)
+          sound.play((button.dataset.sound || "click") as GameSound);
+      }}
+    >
+      {screen !== "desk" && (
+        <>
+          <div className="menu-world" aria-hidden="true">
+            <Scene hero />
+            <div className="world-shade" />
           </div>
-          <section className="home-hero">
-            <div className="home-copy">
-              <span className="office-tag">
-                <i />
-                WELCOME TO YOUR DESK
-              </span>
-              <h1>
-                Something
-                <br />
-                doesn’t
-                <br />
-                <em>add up.</em>
-              </h1>
-              <p>
-                A suspicious charge. A missing package.
-                <br />
-                Everyday mysteries, waiting for a sharp eye.
-              </p>
-              <button
-                className="button primary-cta"
-                onClick={() => setScreen("cases")}
-              >
-                Take a case
-                <Icon name="arrow" />
-              </button>
-              <button
-                className="text-button how-button"
-                onClick={() => setModal("how")}
-              >
-                <Icon name="help" size={16} />
-                First day? Here’s how it works
-              </button>
-              <div className="home-meta">
-                <span>
-                  <Icon name="clock" size={15} />
-                  5–15 minute cases
-                </span>
-                <span>No sign-up needed</span>
-              </div>
-            </div>
-            <div className="home-scene">
-              <div className="scene-top-strip">
-                <span>YOUR OFFICE, AFTER HOURS</span>
-                <i />
-                <i />
-                <i />
-              </div>
-              <Scene hero />
-              <div className="scene-caption">
-                <span>01 / READ THE FILE</span>
-                <span>02 / FOLLOW THE CLUES</span>
-                <span>03 / MAKE THE CALL</span>
-              </div>
-              <div className="desk-note">
-                <Icon name="pin" size={18} />
-                <span>
-                  Trust the evidence.
-                  <br />
-                  <strong>Not the first story.</strong>
-                </span>
-              </div>
-            </div>
-          </section>
-          <div className="home-footer-row">
-            <div>
-              <span className="eyebrow">ON YOUR DESK TODAY</span>
-              <strong>Two stories. A few loose threads.</strong>
-            </div>
-            <button className="text-button" onClick={() => setScreen("cases")}>
-              Browse the case files
-              <Icon name="arrow" size={17} />
+          <div className="game-utilities">
+            <span>
+              <i className="status-dot" /> RIVERTON CONSUMER AFFAIRS
+            </span>
+            <button
+              className="sound-switch"
+              onClick={sound.toggle}
+              aria-pressed={sound.enabled}
+            >
+              <Icon name="sound" size={16} />
+              {sound.enabled ? "SOUND ON" : "SOUND OFF"}
             </button>
           </div>
-          <div className="home-case-teasers">
-            {cases.map((c, i) => (
-              <button key={c.id} onClick={() => play(c)}>
-                <span className="file-number">0{i + 1}</span>
-                <div>
-                  <span className="eyebrow">
-                    {i === 0
-                      ? "START HERE · GUIDED CASE"
-                      : "THE NEXT ASSIGNMENT"}
-                  </span>
-                  <h2>{c.title}</h2>
-                </div>
-                <span className="case-teaser-time">{c.estMinutes} MIN</span>
-                <Icon name="arrow" />
-              </button>
-            ))}
-          </div>
-        </main>
+        </>
+      )}
+      {screen === "menu" && (
+        <TitleScreen
+          onCases={() => setScreen("cases")}
+          onContinue={activeCase ? () => play(activeCase) : undefined}
+          continueTitle={activeCase?.title}
+          onHelp={() => setModal("how")}
+          onDuel={() => setScreen("duel")}
+          onPass={() => setModal("pass")}
+        />
       )}
       {screen === "cases" && (
-        <main className="case-list-page page-enter">
-          <div className="section-heading">
-            <div>
-              <span className="eyebrow">RCA / INVESTIGATIONS DEPARTMENT</span>
-              <h1>The case files.</h1>
-              <p>Somebody has a story. Find out if it holds up.</p>
-            </div>
-            <span className="paper-label">
-              2 OPEN FILES
-              <br />
-              <small>YOUR NEXT SHIFT STARTS HERE</small>
-            </span>
-          </div>
-          <div className="case-grid">
-            {cases.map((c, i) => {
-              const run = loadRun(c);
-              const best = safeRead<unknown>(`case-desk:best:${c.id}`, 0);
-              return (
-                <article
-                  className={`case-card ${i === 0 ? "tutorial-card" : ""}`}
-                  key={c.id}
-                >
-                  <div className="file-illustration">
-                    <div className="file-tab">
-                      FILE {String(i + 1).padStart(3, "0")}
-                    </div>
-                    <div className="case-illustration-icon">
-                      <Icon name={i === 0 ? "file" : "search"} size={58} />
-                    </div>
-                    <span className="file-illustration-stamp">
-                      {i === 0 ? "TRAINING" : "OPEN CASE"}
-                    </span>
-                    <span className="illustration-lines" />
-                  </div>
-                  <div className="case-card-content">
-                    <div className="case-card-meta">
-                      <span className="badge">
-                        {i === 0 ? "GUIDED TUTORIAL" : "STANDARD CASE"}
-                      </span>
-                      <span>
-                        {c.estMinutes} MIN · {"●".repeat(c.difficulty)}
-                        {"○".repeat(3 - c.difficulty)}
-                      </span>
-                    </div>
-                    <h2>{c.title}</h2>
-                    <p>
-                      {i === 0
-                        ? "Two charges. One repair. Learn to follow a paper trail and uncover what really happened."
-                        : "The jacket was returned. The refund never came. Someone along the way is hiding a detail."}
-                    </p>
-                    {run?.status === "solved" && (
-                      <span className="case-best">
-                        <Icon name="check" size={15} />
-                        Solved · best {typeof best === "number" ? best : 0} pts
-                      </span>
-                    )}
-                    <button className="button" onClick={() => play(c)}>
-                      {run?.status === "playing"
-                        ? "Continue investigation"
-                        : run
-                          ? "View case result"
-                          : i === 0
-                            ? "Learn the ropes"
-                            : "Investigate"}
-                      <Icon name="arrow" />
-                    </button>
-                    {run && (
-                      <button
-                        className="text-button replay-button"
-                        onClick={() => setRestart(c)}
-                      >
-                        Start a fresh attempt
-                      </button>
-                    )}
-                  </div>
-                </article>
-              );
-            })}
-            <article className="case-card premium-card">
-              <div className="premium-illustration">
-                <Icon name="lock" size={48} />
-                <span>THE ARCHIVE</span>
-                <div className="premium-spines">
-                  <i />
-                  <i />
-                  <i />
-                  <i />
-                </div>
-              </div>
-              <div className="case-card-content">
-                <span className="badge">DETECTIVE PASS · PLANNED</span>
-                <h2>There’s always another story.</h2>
-                <p>
-                  The Subscription Trap. The Perfect Tenant. New files and
-                  larger mysteries are on the drawing board.
-                </p>
-                <div className="premium-file-list">
-                  {["The Subscription Trap", "The Perfect Tenant"].map(
-                    (title) => (
-                      <button key={title} onClick={() => setModal("pass")}>
-                        <Icon name="lock" size={13} /> {title}{" "}
-                        <span>PLANNED</span>
-                      </button>
-                    ),
-                  )}
-                </div>
-                <button
-                  className="button secondary"
-                  onClick={() => setModal("pass")}
-                >
-                  Explore Detective Pass
-                  <Icon name="lock" size={16} />
-                </button>
-              </div>
-            </article>
-          </div>
-          <p className="case-list-note">
-            <Icon name="coffee" size={18} />
-            Three attempts per case. Your progress saves automatically on this
-            device.
-          </p>
-        </main>
+        <CaseFiles
+          cases={cases}
+          onPlay={play}
+          onReplay={setRestart}
+          onBack={() => setScreen("menu")}
+          onPass={() => setModal("pass")}
+        />
       )}
       {screen === "desk" && (
         <Desk
@@ -303,16 +108,13 @@ export default function App() {
             selected.difficulty === 1 ? play(cases[1]) : setScreen("cases")
           }
           onPaywall={() => setModal("pass")}
+          externallyPaused={!!modal}
+          soundEnabled={sound.enabled}
+          onSound={sound.toggle}
+          playSound={sound.play}
         />
       )}
       {screen === "duel" && <Duel onBack={() => setScreen("cases")} />}
-      <footer className="app-footer">
-        <span>
-          CASE DESK <span className="muted">/</span> FICTIONAL CASES. REAL
-          CURIOSITY.
-        </span>
-        <span>BUSINESS CUP 2.0 · PLAYABLE DEMO</span>
-      </footer>
       {modal === "how" && (
         <Dialog
           title="Your first shift, explained."

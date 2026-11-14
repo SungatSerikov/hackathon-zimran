@@ -24,7 +24,8 @@ npm run preview   # preview the production build locally
 
 - **The Double Charge:** guided tutorial, 6 documents, 3 characters.
 - **The Missing Refund:** a complete investigation, 14 documents, 5 characters.
-- Clickable pixel-art desk and a readable mobile interface at 375px.
+- Viewport-sized pixel-art office, title menu, dossier selection and client arrivals. The office remains visible on mobile, with a touch-friendly toolbelt at 375px.
+- Physical-object interfaces: paper folder, CRT archive, corkboard, stamped verdict, safe and informant phone. Optional procedural sound effects and reduced-motion support.
 - Search using clues from discovered records; exact normalized matches and one-character typo tolerance for longer keys. Hidden guesses do not unlock evidence.
 - Eight document types, unread markers, search history, pin/unpin, evidence board.
 - APPROVED/DENIED stamp + responsible person + explanation + **two pinned supporting documents**.
@@ -34,13 +35,17 @@ npm run preview   # preview the production build locally
 - Local leaderboard and duel-interest tracking. Optional Supabase enables shared records.
 - A clearly labeled subscription preview. **No subscription purchase, notification subscription or multiplayer is implemented.**
 
-The current repository specification takes precedence over the earlier one-attempt concept. Correctness requires all four answer components; incomplete submissions are not charged as attempts. The timer counts time while a case is open, including reading overlays, and pauses after returning to the case list. A browser refresh resumes saved progress after choosing Continue.
+The current repository specification takes precedence over the earlier one-attempt concept. Correctness requires all four answer components; incomplete submissions are not charged as attempts. The timer counts investigation time, including records and search. It pauses for the client introduction, pause/help menu, subscription preview, and after leaving the desk. A browser refresh resumes saved progress after choosing Continue.
+
+## Game controls
+
+Click the objects in the office or use the bottom toolbelt. **F** opens the folder, **A** the archive, **E** the evidence board, **H** the informant and **V** the verdict. Shortcuts are disabled while a dialog or input is active. **Escape** closes an object window; at the desk it opens Pause. “Show objects” marks clickable props. Audio starts off and can be enabled from the title screen or the speaker button; the preference is saved locally. Native browser fullscreen is not required.
 
 Scores follow `max(0, 1000 - elapsedSeconds - 150*wrongAttempts - 5*extraSearches - 50*paidHints)`. `elapsedSeconds` includes the additional 60 seconds per wrong attempt. Failed cases score zero. The exact shortest path is calculated by the same search rules used by the game: 2 searches for the tutorial and 3 for the main case. A natural main-case walkthrough is 4 searches; we preserved the partner's accessible clue graph instead of inserting artificial steps.
 
 ## Artist workflow
 
-The partner's original assets, prompts, scene editor and layout are included. The game reads **`src/scene/layout.json`** in its existing format (`base.w/h`, object `x/y/w/h/z`, `sprite`, `action`). The interactive desktop scene uses integer scaling; on phones, accessible task buttons replace the scene.
+The partner's original assets, prompts, scene editor and layout are included. The game reads **`src/scene/layout.json`** in its existing format (`base.w/h`, object `x/y/w/h/z`, `sprite`, `action`). The interactive scene scales proportionally to fit the available viewport, preserving all hotspot coordinates and pixelated image rendering. Phones retain the scene and provide larger task buttons below it.
 
 1. Replace matching PNG files in `public/assets/scene/`, `public/assets/portraits/` or `public/assets/ui/`.
 2. Keep filename, transparency, base size and existing case portrait references. Do not bake document text or interaction labels into art.

@@ -67,6 +67,7 @@ export function EconomyPanel({
       title={mode === "wallet" ? "Your bureau safe" : "Call the informant"}
       label="BUREAU CASH · FICTIONAL GAME CURRENCY"
       onClose={onClose}
+      tone={mode === "wallet" ? "safe-dialog" : "phone-dialog"}
     >
       <div className="wallet-balance">
         <Icon name={mode === "wallet" ? "lock" : "phone"} size={32} />

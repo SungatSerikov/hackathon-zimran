@@ -55,6 +55,8 @@ export function Scene({
   balance = 100,
   hero = false,
   date = "11/14/2026",
+  showHotspots = false,
+  highlight,
 }: {
   onAction?: (action: DeskAction) => void;
   elapsed?: number;
@@ -63,9 +65,13 @@ export function Scene({
   balance?: number;
   hero?: boolean;
   date?: string;
+  showHotspots?: boolean;
+  highlight?: string;
 }) {
   return (
-    <div className={`scene-shell ${hero ? "scene-hero" : ""}`}>
+    <div
+      className={`scene-shell ${hero ? "scene-hero" : ""} ${showHotspots ? "show-hotspots" : ""}`}
+    >
       <div
         className="scene"
         aria-label={hero ? "A cozy detective office" : "Detective desk"}
@@ -206,7 +212,7 @@ export function Scene({
           if (hero)
             return (
               <div
-                className={`scene-object object-${item.id}`}
+                className={`scene-object object-${item.id} ${item.id === highlight ? "guided-object" : ""}`}
                 style={style}
                 key={item.id}
               >
@@ -219,7 +225,7 @@ export function Scene({
             );
           return (
             <button
-              className={`scene-object object-${item.id}`}
+              className={`scene-object object-${item.id} ${item.id === highlight ? "guided-object" : ""}`}
               style={style}
               key={item.id}
               onClick={() =>
@@ -259,6 +265,17 @@ export function Scene({
               {item.id === "calendar" && (
                 <span className="calendar-live-date">{date.split("/")[1]}</span>
               )}
+              {item.id === "board" && evidence > 0 && (
+                <span className="board-live-notes" aria-hidden="true">
+                  {Array.from({ length: Math.min(evidence, 4) }, (_, i) => (
+                    <i key={i}>
+                      <b />
+                      EXHIBIT {String.fromCharCode(65 + i)}
+                    </i>
+                  ))}
+                </span>
+              )}
+              <span className="hotspot-dot" aria-hidden="true" />
               <span className="object-label">
                 {item.label}
                 {item.id === "clock" ? ` · ${formatTime(elapsed)}` : ""}
