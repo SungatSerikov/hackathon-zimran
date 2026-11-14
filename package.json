@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "placeholders": "node tools/make-placeholders.mjs",
+    "preview": "node tools/scene-preview/serve.mjs"
+  }
+}

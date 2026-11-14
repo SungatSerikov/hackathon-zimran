@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>Превью сцены</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/tools/scene-preview/preview.css">
+</head>
+<body>
+  <div id="app">
+    <div id="stage-wrap"><div id="stage"></div></div>
+    <button id="btn-panel" title="Показать/скрыть панель">✕</button>
+    <aside id="panel">
+      <h1>Превью сцены</h1>
+      <div class="row">
+        <button id="btn-reload">Перечитать</button>
+        <label><input type="checkbox" id="chk-hitbox"> показать хитбоксы</label>
+      </div>
+      <h2>Выбранный предмет</h2>
+      <div id="sel-none">Ничего не выбрано</div>
+      <div id="sel" hidden>
+        <div class="row"><b>id:</b> <span id="f-id"></span></div>
+        <div class="grid">
+          <label>x <input type="number" id="f-x" step="1"></label>
+          <label>y <input type="number" id="f-y" step="1"></label>
+          <label>w <input type="number" id="f-w" step="1" min="1"></label>
+          <label>h <input type="number" id="f-h" step="1" min="1"></label>
+        </div>
+        <small>Стрелки: 1px, Shift+стрелки: 10px</small>
+      </div>
+      <h2>Состояния</h2>
+      <div id="states"></div>
+      <h2>Раскладка</h2>
+      <div class="row">
+        <button id="btn-download">Скачать layout.json</button>
+        <button id="btn-copy">Скопировать JSON</button>
+      </div>
+      <div id="warn"></div>
+      <div id="msg"></div>
+    </aside>
+  </div>
+  <script src="/tools/scene-preview/preview.js"></script>
+</body>
+</html>

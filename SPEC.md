@@ -63,6 +63,7 @@
   "difficulty": 1,                 // 1..3
   "estMinutes": 5,
   "premium": false,
+  "gameDate": "10/12/2026",        // «сегодня» в мире дела — показывает календарь на столе
   "brief": "Клиентка утверждает, что дважды заплатила за ремонт...",
   "characters": [
     { "id": "c_client", "name": "Linda Park", "role": "Клиентка", "portrait": "linda.webp" }

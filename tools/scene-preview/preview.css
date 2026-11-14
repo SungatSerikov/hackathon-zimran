@@ -1,0 +1,31 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #14111c; color: #e8e4f0; font: 14px/1.4 system-ui, sans-serif; }
+#app { display: flex; height: 100vh; }
+#stage-wrap { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+#stage { position: relative; overflow: hidden; background: #000; image-rendering: pixelated; flex: none; }
+#stage > img.bg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; image-rendering: pixelated; pointer-events: none; }
+.obj { position: absolute; cursor: grab; user-select: none; touch-action: none; }
+.obj img { width: 100%; height: 100%; display: block; image-rendering: pixelated; pointer-events: none; -webkit-user-drag: none; }
+.obj.missing { border: 1px dashed #ff6; color: #ff6; font: 10px monospace; overflow: hidden; background: rgba(255, 255, 100, .08); }
+.obj.hover { outline: 1px solid #fff; outline-offset: 0; }
+.obj.selected { outline: 1px solid #4ad; outline-offset: 0; }
+.obj.dragging { cursor: grabbing; }
+body.hitbox .obj { outline: 1px dashed rgba(255, 60, 60, .9); background: rgba(255, 60, 60, .15); }
+body.hitbox .obj.hover { outline: 1px solid #fff; }
+body.hitbox .obj.selected { outline-color: #4ad; }
+.tip { position: absolute; z-index: 1000; background: #000c; color: #fff; padding: 1px 5px; font: 12px monospace; white-space: nowrap; pointer-events: none; transform: translateY(-100%); }
+#btn-panel { position: fixed; top: 6px; right: 6px; z-index: 2000; padding: 2px 8px; }
+#panel.collapsed { display: none; }
+#warn { color: #fa6; min-height: 1.4em; margin-top: 8px; }
+#panel { width: 260px; flex: none; padding: 34px 14px 14px; background: #221d30; overflow-y: auto; border-left: 1px solid #3a3350; }
+h1 { font-size: 18px; margin: 0 0 10px; }
+h2 { font-size: 13px; margin: 16px 0 6px; text-transform: uppercase; color: #a89cc8; }
+.row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 6px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+.grid label { display: flex; gap: 6px; align-items: center; }
+input[type=number] { width: 100%; background: #14111c; color: inherit; border: 1px solid #4a4260; padding: 3px 5px; }
+button { background: #4a3f6b; color: #fff; border: 1px solid #6a5d90; padding: 5px 10px; cursor: pointer; }
+button:hover { background: #5a4d80; }
+#states label { display: block; margin-bottom: 4px; }
+#msg { margin-top: 8px; color: #8fd; min-height: 1.4em; }
+small { color: #a89cc8; }

@@ -1,0 +1,16 @@
+{
+  "base": { "w": 480, "h": 270 },
+  "background": "scene/bg.png",
+  "objects": [
+    { "id": "clock", "sprite": "scene/clock.png", "x": 40, "y": 14, "w": 36, "h": 36, "z": 1, "label": "Clock", "action": "timer" },
+    { "id": "calendar", "sprite": "scene/calendar.png", "x": 88, "y": 10, "w": 44, "h": 52, "z": 1, "label": "Calendar", "action": "calendar" },
+    { "id": "board", "sprite": "scene/board.png", "x": 320, "y": 8, "w": 150, "h": 80, "z": 1, "label": "Evidence board", "action": "evidence" },
+    { "id": "monitor", "sprite": "scene/monitor.png", "x": 150, "y": 40, "w": 150, "h": 120, "z": 2, "label": "Computer", "action": "search" },
+    { "id": "safe", "sprite": "scene/safe.png", "x": 390, "y": 105, "w": 70, "h": 60, "z": 1, "label": "Archive safe", "action": "archive" },
+    { "id": "coffee_1", "sprite": "scene/coffee.png", "x": 40, "y": 190, "w": 24, "h": 28, "z": 3, "label": "Life 1", "action": "lives" },
+    { "id": "coffee_2", "sprite": "scene/coffee.png", "x": 70, "y": 190, "w": 24, "h": 28, "z": 3, "label": "Life 2", "action": "lives" },
+    { "id": "coffee_3", "sprite": "scene/coffee.png", "x": 100, "y": 190, "w": 24, "h": 28, "z": 3, "label": "Life 3", "action": "lives" },
+    { "id": "folder", "sprite": "scene/folder.png", "x": 170, "y": 180, "w": 140, "h": 80, "z": 3, "label": "Case file", "action": "case_file" },
+    { "id": "stamps", "sprite": "scene/stamps.png", "x": 320, "y": 190, "w": 110, "h": 55, "z": 3, "label": "Verdict stamps", "action": "verdict" }
+  ]
+}
