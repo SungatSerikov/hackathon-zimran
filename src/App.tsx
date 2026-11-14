@@ -155,38 +155,47 @@ export default function App() {
       )}
       {modal === "pass" && (
         <Dialog
-          title="For the endlessly curious."
-          label="DETECTIVE PASS · COMING LATER"
+          title="More cases. A new rival."
+          label="DETECTIVE PASS · COMING SOON"
           onClose={() => setModal(null)}
         >
           <div className="pass-panel">
             <span className="pass-emblem">
               <Icon name="star" size={44} />
             </span>
-            <p>More stories to untangle. One small monthly ritual.</p>
+            <p>A new mystery every week. Someone to outthink next.</p>
             <div className="pass-price">
               $4.99<span>/ month · planned price</span>
             </div>
-            <ul>
-              <li>
-                <Icon name="check" size={17} />
-                The full archive of investigations
+            <ul aria-label="Planned Detective Pass benefits">
+              <li className="pass-duel-benefit">
+                <Icon name="people" size={20} />
+                <span className="pass-benefit-copy">
+                  <strong>1v1 detective duels <span className="pass-soon">COMING SOON</span></strong>
+                  <small><b>Only with Detective Pass.</b> Two detectives, the same case.
+                    Race to name the culprit and prove it with evidence.</small>
+                </span>
               </li>
               <li>
                 <Icon name="check" size={17} />
-                New cases every week
+                <span className="pass-benefit-copy">
+                  <strong>The complete case archive</strong>
+                  <small>Play every investigation, including subscriber-only cases.</small>
+                </span>
               </li>
               <li>
                 <Icon name="check" size={17} />
-                Author’s notes and case breakdowns
+                <span className="pass-benefit-copy">
+                  <strong>A fresh case every week</strong>
+                  <small>New suspects, new clues, and another story to untangle.</small>
+                </span>
               </li>
               <li>
                 <Icon name="check" size={17} />
-                Unlimited informant hints
-              </li>
-              <li>
-                <Icon name="check" size={17} />
-                Private leagues with friends
+                <span className="pass-benefit-copy">
+                  <strong>See the whole story after you solve it</strong>
+                  <small>Unlock case breakdowns to connect the evidence and spot what you missed.</small>
+                </span>
               </li>
             </ul>
             <p className="cash-pack">
@@ -260,7 +269,7 @@ function Duel({ onBack }: { onBack: () => void }) {
   }
   return (
     <main className="duel-page page-enter">
-      <span className="badge">IN DEVELOPMENT</span>
+      <span className="badge">COMING SOON · PASS EXCLUSIVE</span>
       <div className="duel-art">
         <span>
           <Icon name="search" size={42} />
@@ -276,8 +285,9 @@ function Duel({ onBack }: { onBack: () => void }) {
         <em>Two sharp minds.</em>
       </h1>
       <p>
-        A future head-to-head mode: investigate the same file, follow your own
-        trail, and see who can support the right conclusion first.
+        1v1 detective duels are coming exclusively to Detective Pass.
+        Investigate the same file, follow your own trail, and see who can
+        support the right conclusion first.
       </p>
       <div className="duel-rule">
         <Icon name="clock" />

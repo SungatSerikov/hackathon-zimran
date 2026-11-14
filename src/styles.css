@@ -2506,13 +2506,50 @@ nav > button.active {
 }
 .pass-panel li {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   font-size: 13px;
   color: #ced7bf;
 }
 .pass-panel li svg {
   color: #93b57b;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.pass-benefit-copy {
+  min-width: 0;
+  flex: 1;
+}
+.pass-benefit-copy strong {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: #e7e7cf;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.pass-benefit-copy small {
+  display: block;
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #b8c3a9;
+}
+.pass-panel .pass-duel-benefit {
+  padding: 16px;
+  border: 1px solid #b79b5d;
+  background: #cdb8740d;
+  box-shadow: 3px 3px #10131a;
+}
+.pass-duel-benefit svg, .pass-duel-benefit small b {
+  color: var(--yellow);
+}
+.pass-soon {
+  padding: 4px 6px;
+  border: 1px solid #b79b5d;
+  color: var(--yellow);
+  font: 7px/1.6 var(--pixel);
 }
 .pass-panel > .button {
   width: 100%;
