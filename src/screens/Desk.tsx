@@ -331,6 +331,10 @@ export function Desk({
           balance={balance}
           date={caseData.gameDate || caseData.worldDate}
           showHotspots={hotspots}
+          activeObject={
+            panel === "search" ? "monitor" : panel === "hint" ? "phone"
+              : panel === "wallet" ? "safe" : panel === "folder" ? "folder" : undefined
+          }
           highlight={
             tutorial && guideExpanded
               ? ["folder", "monitor", "folder", "stamps"][tutorialStep]

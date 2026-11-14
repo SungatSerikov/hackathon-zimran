@@ -15,6 +15,12 @@ export type DeskAction =
   | "stamps"
   | "phone"
   | "cabinet";
+const activeSprites: Partial<Record<DeskAction, string>> = {
+  phone: "scene/phone_ring.png",
+  folder: "scene/folder_open.png",
+  monitor: "scene/monitor_on.png",
+  safe: "scene/safe_open.png",
+};
 export function Asset({
   src,
   children,
@@ -58,6 +64,7 @@ export function Scene({
   date = "11/14/2026",
   showHotspots = false,
   highlight,
+  activeObject,
 }: {
   onAction?: (action: DeskAction) => void;
   elapsed?: number;
@@ -68,6 +75,7 @@ export function Scene({
   date?: string;
   showHotspots?: boolean;
   highlight?: string;
+  activeObject?: DeskAction;
 }) {
   return (
     <div
@@ -102,6 +110,10 @@ export function Scene({
           <strong>CONSUMER AFFAIRS</strong>
         </div>
         {layout.objects.map((item) => {
+          const variant = item.id.startsWith("coffee_") && Number(item.id.slice(-1)) > lives
+            ? "scene/coffee_empty.png"
+            : item.id === activeObject ? activeSprites[activeObject] : undefined;
+          const sprite = `/assets/${variant && availableAssets.has(`/assets/${variant}`) ? variant : item.sprite}`;
           const style = {
             left: `${(item.x / layout.base.w) * 100}%`,
             top: `${(item.y / layout.base.h) * 100}%`,
@@ -241,7 +253,8 @@ export function Scene({
                 key={item.id}
               >
                 <Asset
-                  src={`/assets/${item.id.startsWith("coffee_") && Number(item.id.slice(-1)) > lives ? "scene/coffee_empty.png" : item.id === "safe" && balance > 0 ? "scene/safe_open.png" : item.sprite}`}
+                  key={sprite}
+                  src={sprite}
                 >
                   {fallback}
                 </Asset>
@@ -271,11 +284,12 @@ export function Scene({
               }
             >
               <Asset
-                src={`/assets/${item.id.startsWith("coffee_") && Number(item.id.slice(-1)) > lives ? "scene/coffee_empty.png" : item.id === "safe" && balance > 0 ? "scene/safe_open.png" : item.sprite}`}
+                key={sprite}
+                src={sprite}
               >
                 {fallback}
               </Asset>
-              {item.id === "safe" && (
+              {item.id === "safe" && activeObject === "safe" && (
                 <span className="safe-cash-label">${balance.toFixed(0)}</span>
               )}
               {item.id === "monitor" && (
