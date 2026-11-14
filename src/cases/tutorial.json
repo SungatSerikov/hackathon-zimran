@@ -6,11 +6,26 @@
   "premium": false,
   "gameDate": "10/12/2026",
   "brief": "Linda Park says she paid FixRight Plumbing twice for one water heater repair. The owner says they only charged her once. Read the file, then use the computer to search any company, name, address or number you spot in the documents. Decide: APPROVE her claim or DENY it.",
-  "claim": "I am asking for a refund of $480. I paid FixRight Plumbing twice for the same repair on October 3. — Linda Park",
+  "claim": "I am asking for a refund of $480. I was charged twice for the water heater repair performed by FixRight Plumbing on 10/03/2026. — Linda Park",
   "characters": [
-    { "id": "c_linda", "name": "Linda Park", "role": "Client, homeowner", "portrait": "linda_park.png" },
-    { "id": "c_dale", "name": "Dale Hughes", "role": "Owner, FixRight Plumbing", "portrait": "dale_hughes.png" },
-    { "id": "c_tina", "name": "Tina Ruiz", "role": "Billing & scheduling, FixRight Plumbing", "portrait": "tina_ruiz.png" }
+    {
+      "id": "c_linda",
+      "name": "Linda Park",
+      "role": "Client, homeowner",
+      "portrait": "linda_park.png"
+    },
+    {
+      "id": "c_dale",
+      "name": "Dale Hughes",
+      "role": "Owner, FixRight Plumbing",
+      "portrait": "dale_hughes.png"
+    },
+    {
+      "id": "c_tina",
+      "name": "Tina Ruiz",
+      "role": "Billing & scheduling, FixRight Plumbing",
+      "portrait": "tina_ruiz.png"
+    }
   ],
   "documents": [
     {
@@ -23,13 +38,20 @@
         "number": "4471",
         "date": "10/03/2026",
         "items": [
-          { "name": "Water heater thermostat replacement", "amount": 310 },
-          { "name": "Labor (2 hrs)", "amount": 170 }
+          {
+            "name": "Water heater thermostat replacement",
+            "amount": 310
+          },
+          {
+            "name": "Labor (2 hrs)",
+            "amount": 170
+          }
         ],
         "total": 480,
-        "paymentMethod": "Visa ending 2291 — PAID IN FULL"
+        "paymentMethod": "Visa ending 2291 — PAID IN FULL",
+        "body": "Customer: Linda Park, 27 Maple Ct, Harlow Creek. Thank you for choosing FixRight Plumbing!\n\nSTART HERE: Type FixRight Plumbing into the computer archive to find the company record. Then follow names and merchant names from the records. The bank statement is from Harlow Creek Savings; compare what that bank says with the business record for the second merchant. Pin the two documents that prove who made the extra charge, then choose your stamp, the responsible person, the method, and those two pinned clues."
       },
-      "text": "FixRight Plumbing. Invoice #4471. Date 10/03/2026. Customer: Linda Park, 27 Maple Ct, Harlow Creek. Water heater thermostat replacement $310. Labor (2 hrs) $170. Total $480. Visa ending 2291 — PAID IN FULL. Thank you for choosing FixRight Plumbing!"
+      "text": "Invoice #4471 — FixRight Plumbing\nFixRight Plumbing\n4471\n10/03/2026\nWater heater thermostat replacement\n$310.00\nLabor (2 hrs)\n$170.00\n$480.00\nVisa ending 2291 — PAID IN FULL\nCustomer: Linda Park, 27 Maple Ct, Harlow Creek. Thank you for choosing FixRight Plumbing!\n\nSTART HERE: Type FixRight Plumbing into the computer archive to find the company record. Then follow names and merchant names from the records. The bank statement is from Harlow Creek Savings; compare what that bank says with the business record for the second merchant. Pin the two documents that prove who made the extra charge, then choose your stamp, the responsible person, the method, and those two pinned clues."
     },
     {
       "id": "d_bank",
@@ -39,14 +61,34 @@
       "body": {
         "owner": "Linda Park — Visa ending 2291",
         "rows": [
-          { "date": "10/01/2026", "description": "GREENLEAF GROCERY", "amount": -64.18 },
-          { "date": "10/03/2026", "description": "FIXRIGHT PLUMBING", "amount": -480 },
-          { "date": "10/04/2026", "description": "SHELL GAS #882", "amount": -41.5 },
-          { "date": "10/05/2026", "description": "FXR SERVICES LLC", "amount": -480 },
-          { "date": "10/07/2026", "description": "STREAMFLIX MONTHLY", "amount": -15.99 }
+          {
+            "date": "10/01/2026",
+            "description": "GREENLEAF GROCERY",
+            "amount": -64.18
+          },
+          {
+            "date": "10/03/2026",
+            "description": "FIXRIGHT PLUMBING",
+            "amount": -480
+          },
+          {
+            "date": "10/04/2026",
+            "description": "HARLOW FUEL #882",
+            "amount": -41.5
+          },
+          {
+            "date": "10/05/2026",
+            "description": "FXR SERVICES LLC",
+            "amount": -480
+          },
+          {
+            "date": "10/07/2026",
+            "description": "STREAMFLIX MONTHLY",
+            "amount": -15.99
+          }
         ]
       },
-      "text": "Harlow Creek Savings. Card statement, October. Linda Park — Visa ending 2291. 10/01/2026 GREENLEAF GROCERY -64.18. 10/03/2026 FIXRIGHT PLUMBING -480.00. 10/04/2026 SHELL GAS #882 -41.50. 10/05/2026 FXR SERVICES LLC -480.00. 10/07/2026 STREAMFLIX MONTHLY -15.99."
+      "text": "Harlow Creek Savings — Card statement (Oct)\nLinda Park — Visa ending 2291\n10/01/2026\nGREENLEAF GROCERY\n$-64.18\n10/03/2026\nFIXRIGHT PLUMBING\n$-480.00\n10/04/2026\nHARLOW FUEL #882\n$-41.50\n10/05/2026\nFXR SERVICES LLC\n$-480.00\n10/07/2026\nSTREAMFLIX MONTHLY\n$-15.99"
     },
     {
       "id": "d_dale_email",
@@ -54,13 +96,13 @@
       "title": "Re: charged twice?",
       "initial": true,
       "body": {
-        "from": "Dale Hughes <dale@fixrightplumbing.com>",
+        "from": "Dale Hughes <dale@fixrightplumbing.example>",
         "to": "Linda Park",
         "date": "10/09/2026",
         "subject": "Re: charged twice?",
         "body": "Hi Linda, I checked our books. We ran your card one time, $480 on 10/03, invoice #4471. That's it. Sounds like your bank double-charged you. You should take it up with them. — Dale, FixRight Plumbing"
       },
-      "text": "From Dale Hughes, FixRight Plumbing, to Linda Park, 10/09/2026. Subject: Re: charged twice? Hi Linda, I checked our books. We ran your card one time, $480 on 10/03, invoice #4471. That's it. Sounds like your bank double-charged you. You should take it up with them. — Dale"
+      "text": "Re: charged twice?\nDale Hughes <dale@fixrightplumbing.example>\nLinda Park\n10/09/2026\nRe: charged twice?\nHi Linda, I checked our books. We ran your card one time, $480 on 10/03, invoice #4471. That's it. Sounds like your bank double-charged you. You should take it up with them. — Dale, FixRight Plumbing"
     },
     {
       "id": "d_ad",
@@ -73,7 +115,7 @@
         "phone": "(937) 555-0117",
         "address": "410 Mill St, Harlow Creek"
       },
-      "text": "FixRight Plumbing — Family owned since 2009. Leaks, heaters, drains. Meet the team: Dale Hughes (owner, master plumber) and Tina Ruiz (billing & scheduling). Billing questions? Ask for Tina. Call (937) 555-0117. 410 Mill St, Harlow Creek."
+      "text": "FixRight Plumbing — Harlow Creek Yellow Pages\nFixRight Plumbing — Family owned since 2009\nLeaks, heaters, drains. Meet the team: Dale Hughes (owner, master plumber) and Tina Ruiz (billing & scheduling). Billing questions? Ask for Tina.\n(937) 555-0117\n410 Mill St, Harlow Creek"
     },
     {
       "id": "d_bank_letter",
@@ -85,9 +127,9 @@
         "to": "Linda Park",
         "date": "10/11/2026",
         "subject": "Your question about two $480 charges",
-        "body": "We reviewed both transactions. They are NOT a duplicate processing error. They came from two different merchant accounts: FIXRIGHT PLUMBING (10/03) and FXR SERVICES LLC (10/05). Both were keyed in manually with your full card number. If you did not authorize the second one, you may file a fraud claim."
+        "body": "We reviewed both transactions. They are NOT a duplicate processing error. They came from two different merchant accounts: FIXRIGHT PLUMBING (10/03) and FXR SERVICES LLC (10/05). Both were keyed in manually with your full card number. If you did not authorize the second one, you may file a fraud claim.\n\nProcessor verification for the 10/05/2026 transaction: the authenticated submitting user was Tina Ruiz, billing clerk at FixRight Plumbing. She manually submitted Linda’s stored card details through the FXR SERVICES LLC merchant account. The submission reused FixRight invoice #4471; there was no new repair invoice or additional customer authorization. The original $480 charge settled and was not reversed. The second $480 also settled to FXR SERVICES LLC and was not refunded."
       },
-      "text": "Harlow Creek Savings, Card Disputes, to Linda Park, 10/11/2026. Your question about two $480 charges. We reviewed both transactions. They are NOT a duplicate processing error. They came from two different merchant accounts: FIXRIGHT PLUMBING (10/03) and FXR SERVICES LLC (10/05). Both were keyed in manually with your full card number. If you did not authorize the second one, you may file a fraud claim."
+      "text": "Harlow Creek Savings — Dispute reply\nHarlow Creek Savings, Card Disputes\nLinda Park\n10/11/2026\nYour question about two $480 charges\nWe reviewed both transactions. They are NOT a duplicate processing error. They came from two different merchant accounts: FIXRIGHT PLUMBING (10/03) and FXR SERVICES LLC (10/05). Both were keyed in manually with your full card number. If you did not authorize the second one, you may file a fraud claim.\n\nProcessor verification for the 10/05/2026 transaction: the authenticated submitting user was Tina Ruiz, billing clerk at FixRight Plumbing. She manually submitted Linda’s stored card details through the FXR SERVICES LLC merchant account. The submission reused FixRight invoice #4471; there was no new repair invoice or additional customer authorization. The original $480 charge settled and was not reversed. The second $480 also settled to FXR SERVICES LLC and was not refunded."
     },
     {
       "id": "d_registry",
@@ -96,27 +138,56 @@
       "initial": false,
       "body": {
         "heading": "Ohio Business Registry (fictional) — Entity record",
-        "body": "Name: FXR Services LLC. Status: Active. Formed: 08/14/2026. Registered agent: Tina Ruiz. Address: 14 Birch Ln, Harlow Creek. Business purpose: billing services."
+        "body": "Name: FXR Services LLC. Status: Active. Formed: 08/14/2026. Sole member and owner: Tina Ruiz. Registered agent: Tina Ruiz. Address: 14 Birch Ln, Harlow Creek. Business purpose: billing services. Ownership information confirmed against the signed entity filing; registered-agent status alone would not establish ownership."
       },
-      "text": "State Business Registry. Entity record. Name: FXR Services LLC. Status: Active. Formed: 08/14/2026. Registered agent: Tina Ruiz. Address: 14 Birch Ln, Harlow Creek. Business purpose: billing services."
+      "text": "State Business Registry — FXR Services LLC\nOhio Business Registry (fictional) — Entity record\nName: FXR Services LLC. Status: Active. Formed: 08/14/2026. Sole member and owner: Tina Ruiz. Registered agent: Tina Ruiz. Address: 14 Birch Ln, Harlow Creek. Business purpose: billing services. Ownership information confirmed against the signed entity filing; registered-agent status alone would not establish ownership."
     }
   ],
   "searchIndex": [
-    { "id": "s_fixright", "keys": ["FixRight Plumbing", "FixRight"], "kind": "company", "reveals": ["d_ad"] },
-    { "id": "s_bank", "keys": ["Harlow Creek Savings"], "kind": "company", "reveals": ["d_bank_letter"] },
-    { "id": "s_fxr", "keys": ["FXR Services LLC", "FXR Services", "FXR"], "kind": "company", "reveals": ["d_registry"] },
-    { "id": "s_tina", "keys": ["Tina Ruiz"], "kind": "name", "reveals": ["d_ad"] }
+    {
+      "id": "s_fixright",
+      "keys": ["FixRight Plumbing", "FixRight"],
+      "kind": "company",
+      "reveals": ["d_ad"]
+    },
+    {
+      "id": "s_bank",
+      "keys": ["Harlow Creek Savings"],
+      "kind": "company",
+      "reveals": ["d_bank_letter"]
+    },
+    {
+      "id": "s_fxr",
+      "keys": ["FXR Services LLC", "FXR Services", "FXR"],
+      "kind": "company",
+      "reveals": ["d_registry"]
+    },
+    {
+      "id": "s_tina",
+      "keys": ["Tina Ruiz"],
+      "kind": "name",
+      "reveals": ["d_ad"]
+    }
   ],
   "solution": {
     "verdict": "APPROVED",
     "culprit": "c_tina",
     "methods": [
-      { "id": "m1", "text": "The bank processed the same payment twice by mistake." },
-      { "id": "m2", "text": "Linda misread her statement — she was only charged once." },
-      { "id": "m3", "text": "FixRight's billing clerk charged Linda's card a second time through her own company." }
+      {
+        "id": "m1",
+        "text": "The bank processed the same payment twice by mistake."
+      },
+      {
+        "id": "m2",
+        "text": "Linda misread her statement — she was only charged once."
+      },
+      {
+        "id": "m3",
+        "text": "FixRight's billing clerk charged Linda's card a second time through her own company."
+      }
     ],
     "correctMethod": "m3",
-    "requiredEvidence": ["d_registry", "d_ad", "d_bank", "d_bank_letter"],
-    "explanation": "Linda really was charged twice, so her claim is APPROVED. The bank confirmed the second $480 was not a duplicate — it came from a different merchant, FXR Services LLC. The state registry shows FXR Services LLC belongs to Tina Ruiz, and the FixRight ad shows Tina handles FixRight's billing — she had Linda's card number. Dale's 'bank error' theory was wrong. Lesson: when a charge looks doubled, check the merchant name on each line."
+    "requiredEvidence": ["d_registry", "d_bank_letter"],
+    "explanation": "Linda’s claim for the extra $480 is APPROVED. The bank’s processor verification identifies Tina Ruiz as the person who submitted a second settled charge through FXR SERVICES LLC, reusing the paid repair invoice without additional authorization. The registry’s signed ownership filing confirms that Tina owns that company; being a registered agent alone would not prove this. FixRight’s ad independently confirms her billing role, while the bank report rules out Dale’s duplicate-processing theory. Lesson: compare merchant names and verify who actually submitted an unexplained charge."
   }
 }

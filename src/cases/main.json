@@ -8,11 +8,36 @@
   "brief": "Marcus Bell returned a $312 jacket to Northwind Outfitters. Three weeks later — no refund, and the store says it never got the package. Marcus wants the bureau to force Northwind to pay. Find out where the jacket went before you stamp his claim.",
   "claim": "Northwind Outfitters refuses to refund $312 for a jacket I returned on October 2. I followed their support's instructions exactly. Make them pay. — Marcus Bell",
   "characters": [
-    { "id": "c_marcus", "name": "Marcus Bell", "role": "Client", "portrait": "marcus_bell.png" },
-    { "id": "c_priya", "name": "Priya Shah", "role": "Customer Care, Northwind Outfitters", "portrait": "priya_shah.png" },
-    { "id": "c_gloria", "name": "Gloria Mendez", "role": "Marcus's neighbor, apt 2B", "portrait": "gloria_mendez.png" },
-    { "id": "c_kyle", "name": "Kyle Denton", "role": "Owner, QuickShip Returns LLC", "portrait": "kyle_denton.png" },
-    { "id": "c_ray", "name": "Ray Ortiz", "role": "Clerk, ParcelGo Store #212", "portrait": "ray_ortiz.png" }
+    {
+      "id": "c_marcus",
+      "name": "Marcus Bell",
+      "role": "Client",
+      "portrait": "marcus_bell.png"
+    },
+    {
+      "id": "c_priya",
+      "name": "Priya Shah",
+      "role": "Customer Care, Northwind Outfitters",
+      "portrait": "priya_shah.png"
+    },
+    {
+      "id": "c_gloria",
+      "name": "Gloria Mendez",
+      "role": "Marcus's neighbor, apt 2B",
+      "portrait": "gloria_mendez.png"
+    },
+    {
+      "id": "c_kyle",
+      "name": "Kyle Denton",
+      "role": "Owner, QuickShip Returns LLC",
+      "portrait": "kyle_denton.png"
+    },
+    {
+      "id": "c_ray",
+      "name": "Ray Ortiz",
+      "role": "Clerk, ParcelGo Store #212",
+      "portrait": "ray_ortiz.png"
+    }
   ],
   "documents": [
     {
@@ -25,13 +50,20 @@
         "number": "NW-58213",
         "date": "09/20/2026",
         "items": [
-          { "name": "Ridgeline insulated jacket, M, charcoal", "amount": 298 },
-          { "name": "Shipping", "amount": 14 }
+          {
+            "name": "Ridgeline insulated jacket, M, charcoal",
+            "amount": 298
+          },
+          {
+            "name": "Shipping",
+            "amount": 14
+          }
         ],
         "total": 312,
-        "paymentMethod": "Mastercard ending 3318"
+        "paymentMethod": "Mastercard ending 3318",
+        "body": "Ship to Marcus Bell, 51 Elm St, Apt 2A, Harlow Creek. Delivered 09/24/2026. Returns accepted within 30 days of delivery. Questions? help@northwindoutfitters.example"
       },
-      "text": "Northwind Outfitters. Order #NW-58213. Date 09/20/2026. Ship to Marcus Bell, 51 Elm St, Apt 2A, Harlow Creek. Ridgeline insulated jacket, M, charcoal $298. Shipping $14. Total $312. Mastercard ending 3318. Delivered 09/24/2026. Returns accepted within 30 days of delivery. Questions? help@northwindoutfitters.com"
+      "text": "Order #NW-58213 — Northwind Outfitters\nNorthwind Outfitters\nNW-58213\n09/20/2026\nRidgeline insulated jacket, M, charcoal\n$298.00\nShipping\n$14.00\n$312.00\nMastercard ending 3318\nShip to Marcus Bell, 51 Elm St, Apt 2A, Harlow Creek. Delivered 09/24/2026. Returns accepted within 30 days of delivery. Questions? help@northwindoutfitters.example"
     },
     {
       "id": "d_label_email",
@@ -39,13 +71,13 @@
       "title": "Your Northwind return label",
       "initial": true,
       "body": {
-        "from": "Northwind Returns Support <support@northwind-returnshelp.com>",
+        "from": "Northwind Returns Support <support@northwind-returnshelp.example>",
         "to": "Marcus Bell",
         "date": "09/30/2026",
         "subject": "Your Northwind return label (Order NW-58213)",
         "body": "Hi Marcus, thanks for chatting with us! Your return is approved. A $4.99 label fee was charged to your card. Ship the item to: NW Returns Dept, 880 Industrial Way, Unit 12, Harlow Creek. Carrier: ParcelGo. Tracking: PG-77310452. Your refund will be issued within 5 days of delivery."
       },
-      "text": "From Northwind Returns Support, support@northwind-returnshelp.com, to Marcus Bell, 09/30/2026. Your Northwind return label (Order NW-58213). Hi Marcus, thanks for chatting with us! Your return is approved. A $4.99 label fee was charged to your card. Ship the item to: NW Returns Dept, 880 Industrial Way, Unit 12, Harlow Creek. Carrier: ParcelGo. Tracking: PG-77310452. Your refund will be issued within 5 days of delivery."
+      "text": "Your Northwind return label\nNorthwind Returns Support <support@northwind-returnshelp.example>\nMarcus Bell\n09/30/2026\nYour Northwind return label (Order NW-58213)\nHi Marcus, thanks for chatting with us! Your return is approved. A $4.99 label fee was charged to your card. Ship the item to: NW Returns Dept, 880 Industrial Way, Unit 12, Harlow Creek. Carrier: ParcelGo. Tracking: PG-77310452. Your refund will be issued within 5 days of delivery."
     },
     {
       "id": "d_store_reply",
@@ -53,13 +85,13 @@
       "title": "Re: Where is my refund?",
       "initial": true,
       "body": {
-        "from": "Priya Shah, Northwind Customer Care <help@northwindoutfitters.com>",
+        "from": "Priya Shah, Northwind Customer Care <help@northwindoutfitters.example>",
         "to": "Marcus Bell",
         "date": "10/20/2026",
         "subject": "Re: Where is my refund? (NW-58213)",
         "body": "Hello Marcus, I'm sorry for the frustration. Our returns center has no package and no return request for order NW-58213. We also have no record of a chat with you. If you still have the jacket, you can return it until 10/24/2026. — Priya"
       },
-      "text": "From Priya Shah, Northwind Customer Care, help@northwindoutfitters.com, to Marcus Bell, 10/20/2026. Re: Where is my refund? (NW-58213). Hello Marcus, I'm sorry for the frustration. Our returns center has no package and no return request for order NW-58213. We also have no record of a chat with you. If you still have the jacket, you can return it until 10/24/2026. — Priya"
+      "text": "Re: Where is my refund?\nPriya Shah, Northwind Customer Care <help@northwindoutfitters.example>\nMarcus Bell\n10/20/2026\nRe: Where is my refund? (NW-58213)\nHello Marcus, I'm sorry for the frustration. Our returns center has no package and no return request for order NW-58213. We also have no record of a chat with you. If you still have the jacket, you can return it until 10/24/2026. — Priya"
     },
     {
       "id": "d_chat",
@@ -69,14 +101,34 @@
       "body": {
         "participants": ["Marcus Bell", "Dana Bell"],
         "messages": [
-          { "from": "Marcus Bell", "time": "10/21 7:42 PM", "text": "Northwind is acting like I never sent the jacket back. $312!!" },
-          { "from": "Dana Bell", "time": "10/21 7:44 PM", "text": "Did you actually ship it? You leave boxes in the hallway for days." },
-          { "from": "Marcus Bell", "time": "10/21 7:45 PM", "text": "It sat in the hall one night. Honestly I bet Gloria Mendez from 2B took it. Two of my packages vanished this summer." },
-          { "from": "Dana Bell", "time": "10/21 7:46 PM", "text": "How did you even find their support?" },
-          { "from": "Marcus Bell", "time": "10/21 7:47 PM", "text": "Googled 'Northwind return', first result, had a live chat. Super fast." }
+          {
+            "from": "Marcus Bell",
+            "time": "10/21/2026 7:42 PM",
+            "text": "Northwind is acting like I never sent the jacket back. $312!!"
+          },
+          {
+            "from": "Dana Bell",
+            "time": "10/21/2026 7:44 PM",
+            "text": "Did you actually ship it? You leave boxes in the hallway for days."
+          },
+          {
+            "from": "Marcus Bell",
+            "time": "10/21/2026 7:45 PM",
+            "text": "It sat in the hall one night. Honestly I bet Gloria Mendez from 2B took it. Two of my packages vanished this summer."
+          },
+          {
+            "from": "Dana Bell",
+            "time": "10/21/2026 7:46 PM",
+            "text": "How did you even find their support?"
+          },
+          {
+            "from": "Marcus Bell",
+            "time": "10/21/2026 7:47 PM",
+            "text": "Googled 'Northwind return', first result, had a live chat. Super fast."
+          }
         ]
       },
-      "text": "Texts between Marcus Bell and Dana Bell. 10/21 7:42 PM Marcus: Northwind is acting like I never sent the jacket back. $312!! Dana: Did you actually ship it? You leave boxes in the hallway for days. Marcus: It sat in the hall one night. Honestly I bet Gloria Mendez from 2B took it. Two of my packages vanished this summer. Dana: How did you even find their support? Marcus: Googled 'Northwind return', first result, had a live chat. Super fast."
+      "text": "Texts: Marcus & his sister Dana\nMarcus Bell\nDana Bell\nMarcus Bell\n10/21/2026 7:42 PM\nNorthwind is acting like I never sent the jacket back. $312!!\nDana Bell\n10/21/2026 7:44 PM\nDid you actually ship it? You leave boxes in the hallway for days.\nMarcus Bell\n10/21/2026 7:45 PM\nIt sat in the hall one night. Honestly I bet Gloria Mendez from 2B took it. Two of my packages vanished this summer.\nDana Bell\n10/21/2026 7:46 PM\nHow did you even find their support?\nMarcus Bell\n10/21/2026 7:47 PM\nGoogled 'Northwind return', first result, had a live chat. Super fast."
     },
     {
       "id": "d_tracking",
@@ -87,7 +139,7 @@
         "heading": "ParcelGo shipment PG-77310452",
         "body": "10/02/2026 10:14 AM — Dropped off at ParcelGo Store #212, Harlow Creek (clerk: Ray Ortiz). 10/02/2026 6:30 PM — In transit. 10/03/2026 11:52 AM — Delivered to 880 Industrial Way, Unit 12, Harlow Creek. Signed by: K. DENTON."
       },
-      "text": "ParcelGo shipment PG-77310452. 10/02/2026 10:14 AM — Dropped off at ParcelGo Store #212, Harlow Creek (clerk: Ray Ortiz). 10/02/2026 6:30 PM — In transit. 10/03/2026 11:52 AM — Delivered to 880 Industrial Way, Unit 12, Harlow Creek. Signed by: K. DENTON."
+      "text": "ParcelGo tracking — PG-77310452\nParcelGo shipment PG-77310452\n10/02/2026 10:14 AM — Dropped off at ParcelGo Store #212, Harlow Creek (clerk: Ray Ortiz). 10/02/2026 6:30 PM — In transit. 10/03/2026 11:52 AM — Delivered to 880 Industrial Way, Unit 12, Harlow Creek. Signed by: K. DENTON."
     },
     {
       "id": "d_parcelgo_note",
@@ -98,7 +150,7 @@
         "heading": "Store #212 drop-off log, 10/02/2026 (excerpt)",
         "body": "10:14 AM — PG-77310452, 1 box, ~3 lb, customer: M. Bell (ID checked). Prepaid label. — R. Ortiz. Note from Ray: 'Third box this week going to 880 Industrial Way. Busy place.'"
       },
-      "text": "ParcelGo Store #212 drop-off log, 10/02/2026. 10:14 AM — PG-77310452, 1 box, about 3 lb, customer: M. Bell (ID checked). Prepaid label. — R. Ortiz. Note from Ray Ortiz: Third box this week going to 880 Industrial Way. Busy place."
+      "text": "ParcelGo Store #212 — drop-off log\nStore #212 drop-off log, 10/02/2026 (excerpt)\n10:14 AM — PG-77310452, 1 box, ~3 lb, customer: M. Bell (ID checked). Prepaid label. — R. Ortiz. Note from Ray: 'Third box this week going to 880 Industrial Way. Busy place.'"
     },
     {
       "id": "d_unit_listing",
@@ -110,7 +162,7 @@
         "body": "Units 1–20, 400 sq ft, roll-up doors. Currently leased: Unit 7 — Lakeside Cabinets. Unit 12 — QuickShip Returns LLC (since 09/2026). Unit 15 — B&B Auto Parts.",
         "address": "880 Industrial Way, Harlow Creek"
       },
-      "text": "Harlow Creek Commercial Rentals. 880 Industrial Way — small warehouse units. Units 1–20, 400 sq ft, roll-up doors. Currently leased: Unit 7 — Lakeside Cabinets. Unit 12 — QuickShip Returns LLC (since 09/2026). Unit 15 — B&B Auto Parts."
+      "text": "Harlow Creek Commercial Rentals — 880 Industrial Way\n880 Industrial Way — small warehouse units\nUnits 1–20, 400 sq ft, roll-up doors. Currently leased: Unit 7 — Lakeside Cabinets. Unit 12 — QuickShip Returns LLC (since 09/2026). Unit 15 — B&B Auto Parts.\n880 Industrial Way, Harlow Creek"
     },
     {
       "id": "d_registry",
@@ -119,20 +171,20 @@
       "initial": false,
       "body": {
         "heading": "Ohio Business Registry (fictional) — Entity record",
-        "body": "Name: QuickShip Returns LLC. Status: Active. Formed: 09/08/2026. Organizer: Kyle Denton. Mailing address: 880 Industrial Way, Unit 12, Harlow Creek. Phone: (937) 555-0142."
+        "body": "Name: QuickShip Returns LLC. Status: Active. Formed: 09/08/2026. Organizer, sole member, and managing owner: Kyle Denton. Mailing and operating address: 880 Industrial Way, Unit 12, Harlow Creek. Phone: (937) 555-0142. Ownership and operating address verified from the signed company filing."
       },
-      "text": "State Business Registry. Entity record. Name: QuickShip Returns LLC. Status: Active. Formed: 09/08/2026. Organizer: Kyle Denton. Mailing address: 880 Industrial Way, Unit 12, Harlow Creek. Phone: (937) 555-0142."
+      "text": "State Business Registry — QuickShip Returns LLC\nOhio Business Registry (fictional) — Entity record\nName: QuickShip Returns LLC. Status: Active. Formed: 09/08/2026. Organizer, sole member, and managing owner: Kyle Denton. Mailing and operating address: 880 Industrial Way, Unit 12, Harlow Creek. Phone: (937) 555-0142. Ownership and operating address verified from the signed company filing."
     },
     {
       "id": "d_whois",
       "type": "record",
-      "title": "Domain lookup — northwind-returnshelp.com",
+      "title": "Domain lookup — northwind-returnshelp.example",
       "initial": false,
       "body": {
         "heading": "Domain registration lookup",
-        "body": "Domain: northwind-returnshelp.com. Created: 09/12/2026. Registrar: CheapNames Inc. Registrant: privacy protected. Registrant phone: (937) 555-0142. Note: the official Northwind Outfitters domain is northwindoutfitters.com (created 2011)."
+        "body": "Domain: northwind-returnshelp.example. Created: 09/12/2026. Registrar: CheapNames Inc. Registrant: privacy protected in the public lookup. Registrant phone: (937) 555-0142. Note: the official Northwind Outfitters domain is northwindoutfitters.example (created 2011).\n\nDispute supplement, 10/21/2026: the registrar’s verified abuse response identifies the domain account administrator and fee beneficiary as Kyle Denton. Preserved support records show that this account sent Marcus the label for order NW-58213, tracking PG-77310452, directed the jacket to 880 Industrial Way, Unit 12, and collected the $4.99 label fee for the same operator. It presented itself as Northwind Returns Support. Northwind’s verified response confirms that this site and its operator are not affiliated with or authorized by Northwind, which has received neither this return request nor the jacket. This supplement identifies the operator; a shared phone number alone would not prove who sent the label."
       },
-      "text": "Domain registration lookup. Domain: northwind-returnshelp.com. Created: 09/12/2026. Registrar: CheapNames Inc. Registrant: privacy protected. Registrant phone: (937) 555-0142. Note: the official Northwind Outfitters domain is northwindoutfitters.com (created 2011)."
+      "text": "Domain lookup — northwind-returnshelp.example\nDomain registration lookup\nDomain: northwind-returnshelp.example. Created: 09/12/2026. Registrar: CheapNames Inc. Registrant: privacy protected in the public lookup. Registrant phone: (937) 555-0142. Note: the official Northwind Outfitters domain is northwindoutfitters.example (created 2011).\n\nDispute supplement, 10/21/2026: the registrar’s verified abuse response identifies the domain account administrator and fee beneficiary as Kyle Denton. Preserved support records show that this account sent Marcus the label for order NW-58213, tracking PG-77310452, directed the jacket to 880 Industrial Way, Unit 12, and collected the $4.99 label fee for the same operator. It presented itself as Northwind Returns Support. Northwind’s verified response confirms that this site and its operator are not affiliated with or authorized by Northwind, which has received neither this return request nor the jacket. This supplement identifies the operator; a shared phone number alone would not prove who sent the label."
     },
     {
       "id": "d_scam_ad",
@@ -144,7 +196,7 @@
         "body": "Return anything from Northwind fast! Instant labels, refunds in 5 days. Powered by QuickShip Returns.",
         "phone": "(937) 555-0142"
       },
-      "text": "Sponsored. Northwind Return Help — Live Chat 24/7. Return anything from Northwind fast! Instant labels, refunds in 5 days. Powered by QuickShip Returns. Call (937) 555-0142."
+      "text": "Sponsored search result\nSponsored · Northwind Return Help — Live Chat 24/7\nReturn anything from Northwind fast! Instant labels, refunds in 5 days. Powered by QuickShip Returns.\n(937) 555-0142"
     },
     {
       "id": "d_northwind_help",
@@ -152,10 +204,10 @@
       "title": "Northwind Outfitters — Official Help Center: Returns",
       "initial": false,
       "body": {
-        "heading": "northwindoutfitters.com/help/returns",
-        "body": "Start every return from your account page. Return labels are always FREE — we never charge a label fee. All returns ship to Northwind Returns Center, 4100 Commerce Pkwy, Fairview, OH. Our only support address is help@northwindoutfitters.com. Beware of lookalike 'support' websites and sponsored ads."
+        "heading": "northwindoutfitters.example/help/returns",
+        "body": "Start every return from your account page. Return labels are always FREE — we never charge a label fee. All returns ship to Northwind Returns Center, 4100 Commerce Pkwy, Fairview, OH. Our only support address is help@northwindoutfitters.example. Beware of lookalike 'support' websites and sponsored ads."
       },
-      "text": "Northwind Outfitters Official Help Center: Returns. Start every return from your account page. Return labels are always FREE — we never charge a label fee. All returns ship to Northwind Returns Center, 4100 Commerce Pkwy, Fairview, OH. Our only support address is help@northwindoutfitters.com. Beware of lookalike support websites and sponsored ads."
+      "text": "Northwind Outfitters — Official Help Center: Returns\nnorthwindoutfitters.example/help/returns\nStart every return from your account page. Return labels are always FREE — we never charge a label fee. All returns ship to Northwind Returns Center, 4100 Commerce Pkwy, Fairview, OH. Our only support address is help@northwindoutfitters.example. Beware of lookalike 'support' websites and sponsored ads."
     },
     {
       "id": "d_reviews",
@@ -166,7 +218,7 @@
         "heading": "Recent reviews",
         "body": "★★☆☆☆ 'Refund took 9 days, support was slow.' — J.T. ★★★★★ 'Great jackets, return was easy, refund in a week.' — Amy R. ★☆☆☆☆ 'Never got my refund!! …update: I had used some fake Northwind help site. Real support sorted it out.' — Ben K."
       },
-      "text": "Recent reviews of Northwind Outfitters, 3.9 stars. 2 stars: Refund took 9 days, support was slow. — J.T. 5 stars: Great jackets, return was easy, refund in a week. — Amy R. 1 star: Never got my refund!! Update: I had used some fake Northwind help site. Real support sorted it out. — Ben K."
+      "text": "Shopper reviews — Northwind Outfitters (3.9★)\nRecent reviews\n★★☆☆☆ 'Refund took 9 days, support was slow.' — J.T. ★★★★★ 'Great jackets, return was easy, refund in a week.' — Amy R. ★☆☆☆☆ 'Never got my refund!! …update: I had used some fake Northwind help site. Real support sorted it out.' — Ben K."
     },
     {
       "id": "d_forum",
@@ -176,11 +228,19 @@
       "body": {
         "participants": ["Gloria Mendez", "Tom Reyes"],
         "messages": [
-          { "from": "Gloria Mendez", "time": "08/14 9:10 PM", "text": "Heads up 51 Elm — my doorbell cam caught a guy in a gray hoodie grabbing boxes from our hallway. Police report filed. He was arrested last week, mail's been safe since." },
-          { "from": "Tom Reyes", "time": "08/14 9:22 PM", "text": "Thanks Gloria! Same guy took mine in July." }
+          {
+            "from": "Gloria Mendez",
+            "time": "08/14/2026 9:10 PM",
+            "text": "Heads up 51 Elm — my doorbell cam caught a guy in a gray hoodie grabbing boxes from our hallway. Police report filed. He was arrested last week, mail's been safe since."
+          },
+          {
+            "from": "Tom Reyes",
+            "time": "08/14/2026 9:22 PM",
+            "text": "Thanks Gloria! Same guy took mine in July."
+          }
         ]
       },
-      "text": "Elm Street Neighbors forum. 08/14 9:10 PM Gloria Mendez: Heads up 51 Elm — my doorbell cam caught a guy in a gray hoodie grabbing boxes from our hallway. Police report filed. He was arrested last week, mail's been safe since. 08/14 9:22 PM Tom Reyes: Thanks Gloria! Same guy took mine in July."
+      "text": "Elm Street Neighbors forum\nGloria Mendez\nTom Reyes\nGloria Mendez\n08/14/2026 9:10 PM\nHeads up 51 Elm — my doorbell cam caught a guy in a gray hoodie grabbing boxes from our hallway. Police report filed. He was arrested last week, mail's been safe since.\nTom Reyes\n08/14/2026 9:22 PM\nThanks Gloria! Same guy took mine in July."
     },
     {
       "id": "d_court",
@@ -191,31 +251,88 @@
         "heading": "Small Claims Court index — party: DENTON, KYLE",
         "body": "Case SC-2025-0419 — Plaintiff: R. Huang v. Denton, Kyle (d/b/a ParcelPro Refunds). Claim: items returned to fake retailer address, $540. Judgment for plaintiff. Case SC-2026-0077 — Plaintiff: L. Ford v. Denton, Kyle. Claim: same. Pending."
       },
-      "text": "Small Claims Court index, party: DENTON, KYLE. Case SC-2025-0419 — R. Huang v. Denton, Kyle, doing business as ParcelPro Refunds. Claim: items returned to fake retailer address, $540. Judgment for plaintiff. Case SC-2026-0077 — L. Ford v. Denton, Kyle. Claim: same. Pending."
+      "text": "Harlow Creek Small Claims — party search: Denton\nSmall Claims Court index — party: DENTON, KYLE\nCase SC-2025-0419 — Plaintiff: R. Huang v. Denton, Kyle (d/b/a ParcelPro Refunds). Claim: items returned to fake retailer address, $540. Judgment for plaintiff. Case SC-2026-0077 — Plaintiff: L. Ford v. Denton, Kyle. Claim: same. Pending."
     }
   ],
   "searchIndex": [
-    { "id": "s_tracking", "keys": ["PG-77310452"], "kind": "order", "reveals": ["d_tracking"] },
-    { "id": "s_store212", "keys": ["ParcelGo Store #212", "Store #212", "Ray Ortiz"], "kind": "company", "reveals": ["d_parcelgo_note"] },
-    { "id": "s_address", "keys": ["880 Industrial Way"], "kind": "address", "reveals": ["d_unit_listing"] },
-    { "id": "s_quickship", "keys": ["QuickShip Returns LLC", "QuickShip Returns", "QuickShip"], "kind": "company", "reveals": ["d_registry"] },
-    { "id": "s_domain", "keys": ["northwind-returnshelp.com", "northwind-returnshelp"], "kind": "other", "reveals": ["d_whois"] },
-    { "id": "s_phone", "keys": ["(937) 555-0142", "937-555-0142", "9375550142"], "kind": "phone", "reveals": ["d_scam_ad"] },
-    { "id": "s_northwind", "keys": ["Northwind Outfitters", "northwindoutfitters.com"], "kind": "company", "reveals": ["d_northwind_help", "d_reviews"] },
-    { "id": "s_gloria", "keys": ["Gloria Mendez"], "kind": "name", "reveals": ["d_forum"] },
-    { "id": "s_kyle", "keys": ["Kyle Denton", "K. Denton", "Denton"], "kind": "name", "reveals": ["d_court"] }
+    {
+      "id": "s_tracking",
+      "keys": ["PG-77310452"],
+      "kind": "order",
+      "reveals": ["d_tracking"]
+    },
+    {
+      "id": "s_store212",
+      "keys": ["ParcelGo Store #212", "Store #212", "Ray Ortiz"],
+      "kind": "company",
+      "reveals": ["d_parcelgo_note"]
+    },
+    {
+      "id": "s_address",
+      "keys": ["880 Industrial Way"],
+      "kind": "address",
+      "reveals": ["d_unit_listing"]
+    },
+    {
+      "id": "s_quickship",
+      "keys": ["QuickShip Returns LLC", "QuickShip Returns", "QuickShip"],
+      "kind": "company",
+      "reveals": ["d_registry"]
+    },
+    {
+      "id": "s_domain",
+      "keys": ["northwind-returnshelp.example", "northwind-returnshelp"],
+      "kind": "other",
+      "reveals": ["d_whois"]
+    },
+    {
+      "id": "s_phone",
+      "keys": ["(937) 555-0142", "937-555-0142", "9375550142"],
+      "kind": "phone",
+      "reveals": ["d_scam_ad"]
+    },
+    {
+      "id": "s_northwind",
+      "keys": ["Northwind Outfitters", "northwindoutfitters.example"],
+      "kind": "company",
+      "reveals": ["d_northwind_help", "d_reviews"]
+    },
+    {
+      "id": "s_gloria",
+      "keys": ["Gloria Mendez"],
+      "kind": "name",
+      "reveals": ["d_forum"]
+    },
+    {
+      "id": "s_kyle",
+      "keys": ["Kyle Denton", "K. Denton", "Denton"],
+      "kind": "name",
+      "reveals": ["d_court"]
+    }
   ],
   "solution": {
     "verdict": "DENIED",
     "culprit": "c_kyle",
     "methods": [
-      { "id": "m1", "text": "Northwind received the jacket and is stalling the refund." },
-      { "id": "m2", "text": "A neighbor stole the package from the hallway before it was shipped." },
-      { "id": "m3", "text": "A fake 'Northwind support' site sent Marcus a label to the scammer's own warehouse." },
-      { "id": "m4", "text": "ParcelGo lost the package in transit." }
+      {
+        "id": "m1",
+        "text": "Northwind received the jacket and is stalling the refund."
+      },
+      {
+        "id": "m2",
+        "text": "A neighbor stole the package from the hallway before it was shipped."
+      },
+      {
+        "id": "m3",
+        "text": "A fake 'Northwind support' site sent Marcus a label to the scammer's own warehouse."
+      },
+      {
+        "id": "m4",
+        "text": "ParcelGo lost the package in transit."
+      }
     ],
     "correctMethod": "m3",
-    "requiredEvidence": ["d_tracking", "d_registry", "d_whois", "d_unit_listing", "d_northwind_help", "d_scam_ad"],
-    "explanation": "Northwind never received the jacket, so the claim against them is DENIED. Marcus found 'support' through a sponsored ad and got a label from northwind-returnshelp.com — a lookalike domain created 09/12/2026, while real Northwind labels are free and go to Fairview, OH. ParcelGo tracking shows the box was delivered to 880 Industrial Way, Unit 12, signed by K. DENTON. That unit is leased to QuickShip Returns LLC, organized by Kyle Denton, whose phone matches the fake domain. The neighbor theory fails (the hallway thief was arrested in August, and Marcus shipped the box himself), and ParcelGo delivered it. Lesson: start returns from the store's own website, and never pay for a 'support' label. Marcus should still contact Northwind before 10/24 — and report Denton."
+    "requiredEvidence": ["d_registry", "d_whois"],
+    "explanation": "The claim demanding a refund from Northwind is DENIED: the retailer never received or authorized this return, although Marcus was a victim of a separate scam. The domain dispute record identifies Kyle Denton as the administrator who sent the fake Northwind label, and the company filing proves that Kyle owns QuickShip Returns LLC at the destination address. ParcelGo independently confirms delivery there, signed by K. DENTON, so neither a hallway theft nor a lost parcel explains this shipment. The official help page shows that real Northwind labels are free and go to Fairview; Kyle’s lookalike site charged $4.99 and sent the jacket to his own warehouse. Marcus can still contact the real Northwind support before 10/24/2026 and report the impersonation."
   }
 }
