@@ -112,6 +112,8 @@ describe("hint presentation", () => {
     expect(noLead.query).toBeUndefined();
   });
 
+  // This integration walk repeatedly computes shortest paths for both full cases.
+  // Shared CI runners can exceed Vitest's 5s default; keep the extra budget local.
   it.each(["en", "ru"] as const)("keeps every saved %s hint usable after switching language", (sourceLanguage) => {
     const language = sourceLanguage === "en" ? "ru" : "en";
     for (const source of getLocalizedCases(sourceLanguage)) {
@@ -143,7 +145,7 @@ describe("hint presentation", () => {
       }
       expect(current.solution.requiredEvidence.filter((id) => opened.includes(id)).length).toBeGreaterThanOrEqual(2);
     }
-  });
+  }, 20_000);
 
   it("keeps paid steps free after displaying saved history in the other language", async () => {
     const { en, ru } = bilingualCase();
