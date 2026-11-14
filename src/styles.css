@@ -651,14 +651,21 @@ nav > button.active {
 }
 .desk-mat {
   position: absolute;
-  top: 173em;
-  left: 135em;
-  width: 185em;
-  height: 87em;
-  background: #314d3e50;
-  border: 1em solid #73927770;
-  transform: skewX(-7deg);
+  top: 172em;
+  left: 154em;
+  width: 172em;
+  height: 92em;
+  background: #4b382c;
+  border: 2em solid #30261f;
+  box-shadow: 0 3em #251f1a, inset 0 1em #8b6b4c, inset 0 -2em #3b2d24;
   z-index: 1;
+  pointer-events: none;
+}
+.desk-mat::before {
+  content: "";
+  position: absolute;
+  inset: 3em;
+  border: 1em dashed #a2875d;
 }
 .desk-pen {
   position: absolute;

@@ -103,7 +103,7 @@ export function Scene({
         {!availableAssets.has(`/assets/${layout.background}`) && (
           <div className="scene-lamp"><i /><b /><span /></div>
         )}
-        <div className="desk-mat" />
+        <div className="desk-mat" aria-hidden="true" />
         <div className="desk-pen" />
         <div className="office-plaque">
           RIVERTON
