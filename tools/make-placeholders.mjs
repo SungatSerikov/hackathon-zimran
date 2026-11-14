@@ -1,114 +1,45 @@
 // Генератор пиксельных заглушек. Без зависимостей. Существующие файлы не трогает (кроме --force).
-import { deflateSync } from 'node:zlib';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { P, CLEAR, Canvas, hex } from './lib/pixel.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'public', 'assets');
 const FORCE = process.argv.includes('--force');
+// Рисованный арт (tools/draw-sprites.mjs): не перезаписывается даже с --force, создаётся только если файла нет.
+const PROTECTED = new Set([
+  'scene/clock.png', 'scene/calendar.png', 'scene/coffee.png', 'scene/coffee_empty.png',
+  'scene/safe.png', 'scene/safe_open.png', 'scene/phone.png', 'scene/phone_ring.png', 'scene/cabinet.png', 'scene/bg.png',
+]);
 
-// ---------- PNG ----------
-const crcTable = new Uint32Array(256).map((_, n) => {
-  let c = n;
-  for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
-  return c >>> 0;
-});
-function crc32(buf) {
-  let c = 0xffffffff;
-  for (const b of buf) c = crcTable[(c ^ b) & 0xff] ^ (c >>> 8);
-  return (c ^ 0xffffffff) >>> 0;
-}
-function chunk(type, data) {
-  const t = Buffer.from(type, 'ascii');
-  const len = Buffer.alloc(4); len.writeUInt32BE(data.length);
-  const crc = Buffer.alloc(4); crc.writeUInt32BE(crc32(Buffer.concat([t, data])));
-  return Buffer.concat([len, t, data, crc]);
-}
-function encodePng(w, h, rgba) {
-  const ihdr = Buffer.alloc(13);
-  ihdr.writeUInt32BE(w, 0); ihdr.writeUInt32BE(h, 4);
-  ihdr[8] = 8; ihdr[9] = 6; // 8 bit, RGBA
-  const raw = Buffer.alloc((w * 4 + 1) * h);
-  for (let y = 0; y < h; y++) {
-    raw[y * (w * 4 + 1)] = 0;
-    rgba.copy(raw, y * (w * 4 + 1) + 1, y * w * 4, (y + 1) * w * 4);
-  }
-  return Buffer.concat([
-    Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
-    chunk('IHDR', ihdr), chunk('IDAT', deflateSync(raw)), chunk('IEND', Buffer.alloc(0)),
-  ]);
-}
-
-// ---------- Палитра ----------
-const hex = (s) => [parseInt(s.slice(1, 3), 16), parseInt(s.slice(3, 5), 16), parseInt(s.slice(5, 7), 16), 255];
-const P = Object.fromEntries(Object.entries({
-  ink: '#1e1a2b', wall: '#7a6a8a', wallDk: '#6a5a7a', desk: '#8a5a3c', deskDk: '#774b31', deskLt: '#9c6a48',
-  edge: '#5a3a28', beige: '#c8b89a', beigeDk: '#a89878', screen: '#223a3a', screenOn: '#3fd08a',
-  paper: '#efe6cc', paperDk: '#d4c8a8', folder: '#d9a441', folderDk: '#b8832c', white: '#f4f0e6',
-  red: '#c8453c', green: '#4caf50', cork: '#b88a5a', corkDk: '#9a7048', steel: '#8a94a0', steelDk: '#6a7480',
-  mug: '#e8e0d0', coffee: '#5a3420', gold: '#e8c84a', blue: '#4a7ab8',
-}).map(([k, v]) => [k, hex(v)]));
-const CLEAR = [0, 0, 0, 0];
-
-// ---------- Холст ----------
-class Canvas {
-  constructor(w, h) { this.w = w; this.h = h; this.d = Buffer.alloc(w * h * 4); }
-  set(x, y, c) {
-    x = Math.round(x); y = Math.round(y);
-    if (x < 0 || y < 0 || x >= this.w || y >= this.h) return;
-    this.d.set(c, (y * this.w + x) * 4);
-  }
-  alpha(x, y) { return x < 0 || y < 0 || x >= this.w || y >= this.h ? 0 : this.d[(y * this.w + x) * 4 + 3]; }
-  rect(x, y, w, h, c) {
-    x = Math.round(x); y = Math.round(y);
-    for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) this.set(x + i, y + j, c);
-  }
-  circle(cx, cy, r, c) { this.ellipse(cx, cy, r, r, c); }
-  ellipse(cx, cy, rx, ry, c) {
-    for (let j = -ry; j <= ry; j++) for (let i = -rx; i <= rx; i++)
-      if ((i * i) / (rx * rx) + (j * j) / (ry * ry) <= 1.0) this.set(cx + i, cy + j, c);
-  }
-  line(x0, y0, x1, y1, c) {
-    const n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0), 1);
-    for (let i = 0; i <= n; i++) this.set(x0 + ((x1 - x0) * i) / n, y0 + ((y1 - y0) * i) / n, c);
-  }
-  // 1px контур по внутренней границе непрозрачной области (размер спрайта не меняется)
-  outline(c = P.ink) {
-    const edge = [];
-    for (let y = 0; y < this.h; y++) for (let x = 0; x < this.w; x++)
-      if (this.alpha(x, y) && !(this.alpha(x - 1, y) && this.alpha(x + 1, y) && this.alpha(x, y - 1) && this.alpha(x, y + 1))) edge.push([x, y]);
-    for (const [x, y] of edge) this.set(x, y, c);
-  }
-  png() { return encodePng(this.w, this.h, this.d); }
-}
 const make = (w, h, fn, outline = true) => { const c = new Canvas(w, h); fn(c, w, h); if (outline) c.outline(); return c; };
 
 // ---------- Рисовалки ----------
 const monitor = (on) => (w, h) => make(w, h, (c) => {
-  c.rect(0, 0, w, h - 22, P.beige);
+  c.rect(0, 0, w, h - 22, P.paperDk);
   c.rect(w - 14, h - 32, 6, 3, P.green); // led
   c.rect(10, 8, w - 20, h - 42, P.ink);
-  c.rect(12, 10, w - 24, h - 46, on ? P.screenOn : P.screen);
-  if (on) for (let y = 16; y < h - 38; y += 8) c.rect(18, y, w - 50 - (y % 16) * 2, 2, P.screen);
+  c.rect(12, 10, w - 24, h - 46, on ? P.screenOn : P.ink);
+  if (on) for (let y = 16; y < h - 38; y += 8) c.rect(18, y, w - 50 - (y % 16) * 2, 2, P.ink);
   c.rect(w / 2 - 20, h - 24, 40, 8, P.beigeDk); // шея
-  c.rect(w / 2 - 36, h - 16, 72, 16, P.beige); // подставка
+  c.rect(w / 2 - 36, h - 16, 72, 16, P.paperDk); // подставка
   c.rect(w / 2 - 36, h - 6, 72, 6, P.beigeDk);
 });
 const folder = (open) => (w, h) => make(w, h, (c) => {
   if (!open) {
     c.rect(0, 8, w, h - 8, P.folder);
     c.rect(0, 0, 50, 12, P.folder); // язычок
-    c.rect(2, h - 12, w - 4, 8, P.folderDk);
+    c.rect(2, h - 12, w - 4, 8, P.corkDk);
     c.rect(w / 2 - 16, 30, 32, 14, P.paper); // этикетка
     c.rect(w / 2 - 12, 35, 24, 2, P.ink);
   } else {
-    c.rect(0, 10, w, h - 10, P.folderDk);
-    c.rect(0, 0, 50, 14, P.folderDk);
+    c.rect(0, 10, w, h - 10, P.corkDk);
+    c.rect(0, 0, 50, 14, P.corkDk);
     c.rect(8, 4, w - 16, h - 14, P.paper);
     for (let y = 12; y < h - 28; y += 8) c.rect(14, y, w - 28 - (y % 16), 2, P.paperDk);
     c.rect(0, h - 26, w, 26, P.folder);
-    c.rect(2, h - 12, w - 4, 8, P.folderDk);
+    c.rect(2, h - 12, w - 4, 8, P.corkDk);
   }
 });
 const clock = (w, h) => make(w, h, (c) => {
@@ -184,7 +115,7 @@ const logo = (w, h) => make(w, h, (c) => {
 });
 const bg = (dim) => (w, h) => {
   const c = new Canvas(w, h);
-  const wall = dim ? P.wallDk : P.wall, wall2 = dim ? hex('#5a4a6a') : P.wallDk;
+  const wall = dim ? P.beigeDk : P.wall, wall2 = dim ? hex('#5a4a6a') : P.beigeDk;
   const desk = dim ? P.deskDk : P.desk, desk2 = dim ? hex('#66402a') : P.deskDk;
   c.rect(0, 0, w, 108, wall);
   for (let x = 0; x < w; x += 24) c.rect(x, 0, 2, 108, wall2); // полосы обоев
@@ -200,11 +131,11 @@ const bg = (dim) => (w, h) => {
 const portrait = (col) => (w, h) => make(w, h, (c) => {
   c.ellipse(w / 2, h - 4, 18, 14, col); // плечи
   c.rect(w / 2 - 4, 26, 8, 8, P.beigeDk); // шея
-  c.ellipse(w / 2, 18, 9, 11, P.beige); // голова
+  c.ellipse(w / 2, 18, 9, 11, P.paperDk); // голова
   c.ellipse(w / 2, 11, 10, 6, col); // волосы
   c.outline(); // контур силуэта
   // фон-плашка позади силуэта, после контура
-  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (!c.alpha(x, y)) c.set(x, y, P.wallDk);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (!c.alpha(x, y)) c.set(x, y, P.beigeDk);
 }, false);
 
 // ---------- Список ----------
@@ -240,7 +171,7 @@ for (const [rel, build] of files) {
   const path = join(OUT, rel);
   mkdirSync(dirname(path), { recursive: true });
   try {
-    writeFileSync(path, build().png(), { flag: FORCE ? 'w' : 'wx' });
+    writeFileSync(path, build().png(), { flag: FORCE && !PROTECTED.has(rel) ? 'w' : 'wx' });
     created.push(rel);
   } catch (e) {
     if (e.code !== 'EEXIST') throw e;

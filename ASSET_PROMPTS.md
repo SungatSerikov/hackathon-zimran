@@ -8,8 +8,8 @@
 
 ```
 pixel art, crisp hard pixel edges, no anti-aliasing, limited 32-color palette,
-warm evening office lighting from a desk lamp, muted browns and teal-green accents,
-cozy small-town American 1990s-era office, clean readable shapes, game asset,
+clean modern pixel art style, muted desaturated palette: warm light greys, beige, soft charcoal, walnut wood, silver and white, muted green accents,
+soft low-contrast shading in 2-3 steps, no pure black outlines (dark tinted outlines), calm daylight office, cozy small-town American office, clean readable shapes, game asset,
 no text, no letters, no logos, no watermark
 ```
 
@@ -19,8 +19,8 @@ no text, no letters, no logos, no watermark
 
 | Файл | Промпт (после STYLE) | Итоговый размер |
 |---|---|---|
-| `scene/bg.png` | `front view of an empty wooden office desk against a wall, wallpaper with subtle stripes, window with night street light on the left, desk lamp on the right edge, desk top occupies the bottom 60% of the image, empty spaces for objects, wide 16:9 composition` | 480×270 |
-| `ui/menu_bg.png` | тот же промпт, + `dark blue night tint, rain on the window` | 480×270 |
+| `scene/bg.png` | `front view of an empty walnut wood office desk against a light warm grey wall, subtle wall panelling and skirting board, a wide window with soft daylight and a city skyline, desk top occupies the bottom 60% of the image, empty spaces for objects, wide 16:9 composition` | 480×270 |
+| `ui/menu_bg.png` | тот же промпт, + `dimmed, slightly darker and bluer tint` | 480×270 |
 
 ## Предметы стола
 
@@ -32,7 +32,9 @@ no text, no letters, no logos, no watermark
 | `scene/calendar.png` | `tear-off wall calendar, red header strip, blank white page` | ~44×52 | число рисует код |
 | `scene/coffee.png` | `white ceramic coffee mug full of black coffee, small steam` | ~24×28 | `coffee_empty.png`: та же кружка пустая, без пара |
 | `scene/stamps.png` | `small wooden tray with two rubber stamps, one with green handle, one with red handle, ink pad` | ~110×55 | — |
-| `scene/safe.png` | `small heavy steel office safe with dial and handle, dark green paint` | ~70×60 | `safe_open.png`: дверца приоткрыта, внутри папки |
+| `scene/safe.png` | `small steel office safe with muted green painted door, round combination dial, side handle, hinges and small feet, closed, front view` | ~70×60 | `safe_open.png`: дверца распахнута, внутри стопки зелёных банкнот с бумажными лентами (без цифр) |
+| `scene/phone.png` | `off-white desk landline telephone, handset in cradle with coiled cord, keypad of 12 buttons, small indicator light, front view` | 56×40 | `phone_ring.png`: трубка приподнята, индикатор горит, короткие штрихи вибрации |
+| `scene/cabinet.png` | `wall-mounted wooden shelf with a row of archive binders, spines in muted green, beige, steel blue, muted red and walnut, blank label patches, two binders with small brass padlocks, front view` | 110×40 | — |
 | `scene/board.png` | `cork board on the wall with a few empty pins, wooden frame` | ~150×80 | карточки улик рисует код |
 
 ## UI

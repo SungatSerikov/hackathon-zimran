@@ -3,6 +3,7 @@
   "type": "module",
   "scripts": {
     "placeholders": "node tools/make-placeholders.mjs",
+    "sprites": "node tools/draw-sprites.mjs",
     "preview": "node tools/scene-preview/serve.mjs"
   }
 }
