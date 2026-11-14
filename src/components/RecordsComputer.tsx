@@ -5,6 +5,7 @@ import { findReusableSearch, getDocumentClues } from "../engine/clues";
 import { Dialog } from "./Dialog";
 import { DocumentView, docLabels } from "./DocumentView";
 import { Icon } from "./Icons";
+import { RecordPicker } from "./RecordPicker";
 
 const clueLabels: Record<SearchKind, string> = {
   name: "Person", company: "Company", phone: "Phone", address: "Address",
@@ -36,7 +37,7 @@ export function RecordsComputer({ caseData, run, selectedId, query,
   const reader = useRef<HTMLElement>(null);
   const resultPane = useRef<HTMLElement>(null);
   const resultHeading = useRef<HTMLHeadingElement>(null);
-  const recordSelect = useRef<HTMLSelectElement>(null);
+  const recordSelect = useRef<HTMLButtonElement>(null);
   const activeSearch = run.queries[activeIndex];
   const results = activeSearch?.documentIds.flatMap(id => {
     const doc = documents.find(item => item.id === id);
@@ -120,15 +121,8 @@ export function RecordsComputer({ caseData, run, selectedId, query,
           </div>
           <div className="computer-source-picker">
             <Icon name="folder" size={22} />
-            <div>
-              <label htmlFor="computer-source">Read a record</label>
-              <select id="computer-source" ref={recordSelect} value={source?.id ?? ""}
-                onChange={event => openRecord(event.target.value)}>
-                {documents.map(doc => <option value={doc.id} key={doc.id}>
-                  {!run.seenIds.includes(doc.id) ? "NEW · " : ""}{doc.title}
-                </option>)}
-              </select>
-            </div>
+            <RecordPicker documents={documents} seenIds={run.seenIds} value={source?.id ?? ""}
+              onChange={openRecord} triggerRef={recordSelect} />
           </div>
           <div className="computer-leads">
             <div className="computer-leads-label"><Icon name="search" size={14} />

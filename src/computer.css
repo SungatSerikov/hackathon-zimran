@@ -52,11 +52,32 @@
 .computer-reader { background: #c3c0a7; border-right: 3px solid #65735c; color: #2c3c2e; }
 .computer-pane-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 18px; font: 8px var(--pixel); color: #d8dec1; background: #3e5142; border-bottom: 1px solid #263a30; }
 .computer-pane-heading > span:last-child { font: 12px "DM Sans", sans-serif; }
-.computer-source-picker { display: flex; align-items: center; gap: 12px; padding: 15px 18px 12px; border-bottom: 1px solid #a4aa8e; }
-.computer-source-picker > svg { flex-shrink: 0; color: #4f6149; }
+.computer-source-picker { display: flex; align-items: flex-start; gap: 12px; padding: 15px 18px 12px; border-bottom: 1px solid #a4aa8e; }
+.computer-source-picker > svg { flex-shrink: 0; margin-top: 29px; color: #4f6149; }
 .computer-source-picker > div { flex: 1; min-width: 0; }
-.computer-source-picker label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 5px; color: #4a5944; }
-.computer-source-picker select { width: 100%; min-width: 0; border: 1px solid #7b886d; border-radius: 0; background: #ecebd5; color: #293e2c; padding: 10px 25px 10px 9px; font: 13px "DM Sans", sans-serif; text-overflow: ellipsis; }
+.record-picker-label { display: block; font: 8px/1.6 var(--pixel); margin-bottom: 7px; color: #4a5944; }
+.record-picker-trigger { width: 100%; min-width: 0; display: flex; align-items: center; gap: 12px; padding: 11px 12px; text-align: left; border: 2px solid #788165; border-radius: 0; background: #ece5c9 url('/assets/ui/paper.png'); color: #343f2b; box-shadow: inset 1px 1px #fff6dc, 2px 2px #9a9c80; font: 10px/1.7 var(--pixel); }
+.record-picker-trigger > span:first-child { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.record-picker-chevron { display: grid; place-items: center; width: 25px; height: 25px; flex-shrink: 0; border-left: 1px solid #a9a587; padding-left: 9px; }
+.record-picker-chevron svg { transform: rotate(90deg); }
+.record-picker-trigger[aria-expanded="true"] { border-color: #354d35; background-color: #f3e4ad; }
+.record-picker-trigger[aria-expanded="true"] .record-picker-chevron svg { transform: rotate(-90deg); }
+.record-picker-trigger:focus-visible { outline: 2px solid #546f42; outline-offset: 3px; }
+.record-picker-menu { margin-top: 7px; border: 2px solid #4c6045; background: #e7dfc4; box-shadow: 3px 3px #687259; }
+.record-picker-heading, .record-picker-footer { display: flex; justify-content: space-between; gap: 10px; padding: 10px 11px; font: 7px/1.6 var(--pixel); }
+.record-picker-heading { background: #3d5140; color: #eee6c7; border-bottom: 2px solid #a1aa87; }
+.record-picker-list { max-height: clamp(120px, calc(100dvh - 570px), 300px); overflow-y: auto; overscroll-behavior: contain; scrollbar-color: #758363 #e7dfc4; }
+.record-picker-option { display: flex; align-items: center; gap: 10px; padding: 12px 10px 12px 7px; border-left: 4px solid transparent; border-bottom: 1px solid #b9b295; background: #e9e1c7 url('/assets/ui/paper.png'); color: #39412f; cursor: pointer; }
+.record-picker-option:last-child { border-bottom: 0; }
+.record-picker-option.is-active { background: #f4df9d; border-left-color: #a9813f; }
+.record-picker-option[aria-selected="true"] { background: #d1d8bb; border-left-color: #466340; }
+.record-picker-option[aria-selected="true"].is-active { background: #bdcda7; }
+.record-picker-file { flex-shrink: 0; color: #65714f; }
+.record-picker-copy { flex: 1; min-width: 0; font: 10px/1.7 var(--pixel); overflow-wrap: anywhere; }
+.record-picker-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 5px; font: 7px/1.5 var(--pixel); color: #697052; }
+.record-picker-meta b { font-weight: 400; padding: 2px 4px; background: #8b4c31; color: #fff1ce; }
+.record-picker-check { width: 14px; flex-shrink: 0; color: #395737; }
+.record-picker-footer { border-top: 1px solid #aaa88a; color: #5c674a; background: #d9d6b9; font-size: 6px; }
 .computer-leads { padding: 13px 18px 16px; background: #d2ceb1; border-bottom: 1px solid #a0a58a; }
 .computer-leads-label { display: flex; align-items: center; gap: 7px; font-size: 12px; margin-bottom: 10px; }
 .computer-leads-label > span { margin-left: auto; color: #566347; font-size: 11px; }
